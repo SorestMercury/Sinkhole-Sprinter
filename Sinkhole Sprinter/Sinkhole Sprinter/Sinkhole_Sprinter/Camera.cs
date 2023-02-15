@@ -23,8 +23,9 @@ namespace Sinkhole_Sprinter
         /// </summary>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Sprite sprite)
         {
-            sprite.rect.X = (int)position.X;
-            sprite.rect.Y = (int)position.Y;
+            // Set the rectangle to the correct relative position
+            sprite.rect.X = (int)(position.X - sprite.position.X + boundingRectangle.Width / 2);
+            sprite.rect.Y = (int)(position.Y - sprite.position.Y + boundingRectangle.Height / 2);
             spriteBatch.Draw(sprite.texture, sprite.rect, null, Color.White, 0, new Vector2(sprite.texture.Width / 2, sprite.texture.Height / 2), SpriteEffects.None, 0);
         }
 
