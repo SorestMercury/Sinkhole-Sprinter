@@ -15,7 +15,7 @@ namespace Sinkhole_Sprinter
         /// <summary>
         /// Create a new Camera located at the starting position
         /// </summary>
-        public Camera(Vector2 screenSize) : this(screenSize, new Vector2(screenSize.X / 2, screenSize.Y / 2)) {}
+        public Camera(Vector2 screenSize) : this(screenSize, new Vector2(screenSize.X / 2, screenSize.Y / 2)) { }
 
         /// <summary>
         /// Create a new Camera with the same size as the screen centered at position
@@ -49,9 +49,9 @@ namespace Sinkhole_Sprinter
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Sprite sprite)
         {
             // Set the rectangle to the correct relative position
-            sprite.rect.X = (int)(sprite.position.X - position.X + boundingRectangle.Width / 2);
-            sprite.rect.Y = (int)(sprite.position.Y - position.Y + boundingRectangle.Height / 2);
-            spriteBatch.Draw(sprite.texture, sprite.rect, null, Color.White, 0, sprite.origin, SpriteEffects.None, 0);
+            sprite.rect.X = (int)(sprite.position.X - sprite.rect.Width / 2 - position.X + boundingRectangle.Width / 2);
+            sprite.rect.Y = (int)(sprite.position.Y - sprite.rect.Height / 2 - position.Y + boundingRectangle.Height / 2);
+            spriteBatch.Draw(sprite.texture, sprite.rect, null, Color.White);
         }
 
         /// <summary>
