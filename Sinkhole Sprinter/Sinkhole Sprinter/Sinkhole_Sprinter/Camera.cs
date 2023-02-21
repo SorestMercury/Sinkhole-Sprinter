@@ -12,10 +12,35 @@ namespace Sinkhole_Sprinter
         public Vector2 position;
         public Rectangle boundingRectangle;
 
-        public Camera(int screenWidth, int screenHeight)
+        /// <summary>
+        /// Create a new Camera located at the starting position
+        /// </summary>
+        public Camera(Vector2 screenSize) : this(screenSize, new Vector2(screenSize.X / 2, screenSize.Y / 2)) {}
+
+        /// <summary>
+        /// Create a new Camera with the same size as the screen centered at position
+        /// </summary>
+        public Camera(Vector2 screenSize, Vector2 position)
         {
-            position = new Vector2(screenWidth / 2, screenHeight / 2);
-            boundingRectangle = new Rectangle(0, 0, screenWidth, screenHeight);
+            this.position = position;
+            boundingRectangle = new Rectangle((int)(position.X - screenSize.X / 2), (int)(position.Y - screenSize.Y / 2), (int)screenSize.X, (int)screenSize.Y);
+        }
+
+        /// <summary>
+        /// Update the camera
+        /// </summary>
+        public void Update(GameTime gameTime)
+        {
+            UpdateBoundingRectangle();
+        }
+
+        /// <summary>
+        /// Update the boundingRectangle based on the position
+        /// </summary>
+        public void UpdateBoundingRectangle()
+        {
+            boundingRectangle.X = (int)(position.X - boundingRectangle.Width / 2);
+            boundingRectangle.Y = (int)(position.Y - boundingRectangle.Height / 2);
         }
 
         /// <summary>
@@ -24,9 +49,9 @@ namespace Sinkhole_Sprinter
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Sprite sprite)
         {
             // Set the rectangle to the correct relative position
-            sprite.rect.X = (int)(position.X - sprite.position.X + boundingRectangle.Width / 2);
-            sprite.rect.Y = (int)(position.Y - sprite.position.Y + boundingRectangle.Height / 2);
-            spriteBatch.Draw(sprite.texture, sprite.rect, null, Color.White, 0, new Vector2(sprite.texture.Width / 2, sprite.texture.Height / 2), SpriteEffects.None, 0);
+            sprite.rect.X = (int)(sprite.position.X - position.X + boundingRectangle.Width / 2);
+            sprite.rect.Y = (int)(sprite.position.Y - position.Y + boundingRectangle.Height / 2);
+            spriteBatch.Draw(sprite.texture, sprite.rect, null, Color.White, 0, sprite.origin, SpriteEffects.None, 0);
         }
 
         /// <summary>

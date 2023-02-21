@@ -39,8 +39,7 @@ namespace Sinkhole_Sprinter
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            camera = new Camera(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
-
+            camera = new Camera(new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
             base.Initialize();
         }
 
@@ -77,7 +76,7 @@ namespace Sinkhole_Sprinter
                 this.Exit();
 
             // TODO: Add your update logic here
-
+            
             base.Update(gameTime);
         }
 
@@ -90,7 +89,8 @@ namespace Sinkhole_Sprinter
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-
+            spriteBatch.Begin();
+            spriteBatch.End();
             base.Draw(gameTime);
         }
     }
