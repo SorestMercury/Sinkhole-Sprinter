@@ -18,13 +18,23 @@ namespace Sinkhole_Sprinter
         private Texture2D spreadsheet;
         private List<Rectangle> running, jumping;
         public Rectangle currentsource;
-        public Vector2 currentdest;
+        public Rectangle currentdest;
         private Rectangle standing;
         private int currentInt;
         private bool isJumping;
         int speed, jump;
         int timer, timer2;
         KeyboardState oldkb = Keyboard.GetState();
+        int gravity;
+
+        public enum movement
+        {
+            idle,
+            left,
+            right
+        }
+
+        public movement playerState = movement.idle;
         public Player(Texture2D s, List<Rectangle> r, List<Rectangle> j, Rectangle st)
         {
 
@@ -33,27 +43,30 @@ namespace Sinkhole_Sprinter
             jumping = j;
             currentsource = st;
             standing = st;
-            currentdest = new Vector2(100, 100);
+            currentdest = new Rectangle(100, 100, 75,75);
             currentInt = 0;
             isJumping = false;
-            speed = 1;
-            jump = 5;
+            speed = 7;
+            jump = 30;
             timer = 0;
             timer2 = 0;
+            gravity = 4;
         }
 
         public void Update()
         {
             timer++;
             timer2++;
-            currentdest.Y++;
             KeyboardState kb = Keyboard.GetState();
-            if (timer % 10 == 0)
+            if (timer % 8 == 0)
                 currentsource = standing;
+
+            playerState = movement.idle;
+
             if (kb.IsKeyDown(Keys.A) || kb.IsKeyDown(Keys.Left))
             {
                 currentdest.X -= speed;
-                if (timer % 10 == 0)
+                if (timer % 8 == 0)
                 {
                     currentInt++;
                     if (currentInt == running.Count)
@@ -62,13 +75,14 @@ namespace Sinkhole_Sprinter
                     }
 
                     currentsource = running[currentInt];
+                    playerState = movement.left;
                 }
 
             }
             if (kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.Right))
             {
                 currentdest.X += speed;
-                if (timer % 10 == 0)
+                if (timer % 8 == 0)
                 {
                     currentInt++;
                     if (currentInt == running.Count)
@@ -77,9 +91,10 @@ namespace Sinkhole_Sprinter
                     }
 
                     currentsource = running[currentInt];
+                    playerState = movement.right;
                 }
             }
-            if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Up))
+            if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Up) || kb.IsKeyDown(Keys.Space))
             {
                 if (timer2 > 25)
                 {
@@ -98,6 +113,9 @@ namespace Sinkhole_Sprinter
                 currentsource = jumping[0];
             }
             oldkb = kb;
+
+            if (currentdest.Bottom <= 720)
+                currentdest.Y += gravity;
         }
 
     }

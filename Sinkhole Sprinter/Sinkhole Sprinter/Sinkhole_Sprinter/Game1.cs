@@ -22,6 +22,7 @@ namespace Sinkhole_Sprinter
         private List<Rectangle> running, jumping;
         Player player;
         Camera camera;
+        SpriteEffects flip = SpriteEffects.None;
 
         public Game1()
         {
@@ -44,9 +45,11 @@ namespace Sinkhole_Sprinter
             camera = new Camera(new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
             running = new List<Rectangle>();
             jumping = new List<Rectangle>();
-            running.Add(new Rectangle(0, 0, 225, 180));
-            running.Add(new Rectangle(225, 0, 225, 180));
-            jumping.Add(new Rectangle(450, 0, 225, 180));
+            running.Add(new Rectangle(0, 0, 400, 400));
+            running.Add(new Rectangle(400, 0, 400, 400));
+            running.Add(new Rectangle(800, 0, 400, 400));
+            running.Add(new Rectangle(1200, 0, 400, 400));
+            jumping.Add(new Rectangle(0, 0, 400, 400));
 
             base.Initialize();
         }
@@ -61,8 +64,8 @@ namespace Sinkhole_Sprinter
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            spreadsheet = this.Content.Load<Texture2D>("Spreadsheet");
-            player = new Player(spreadsheet, running, jumping, new Rectangle(50, 50, 225, 180));
+            spreadsheet = this.Content.Load<Texture2D>("player_running_spritesheet_25");
+            player = new Player(spreadsheet, running, jumping, new Rectangle(0, 0, 400, 400));
         }
 
         /// <summary>
@@ -100,7 +103,14 @@ namespace Sinkhole_Sprinter
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
-            spriteBatch.Draw(spreadsheet, player.currentdest, player.currentsource, Color.White);
+
+            if (player.playerState == Player.movement.left)
+                flip = SpriteEffects.None;
+
+            else if(player.playerState==Player.movement.right)
+                flip = SpriteEffects.FlipHorizontally;
+
+            spriteBatch.Draw(spreadsheet, player.currentdest, player.currentsource, Color.White, 0, new Vector2(200,200), flip, 0);
             spriteBatch.End();
             base.Draw(gameTime);
         }

@@ -7,8 +7,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>\\Fisd-student1\hs\lhs\269606\Documents\GitHub\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_Sprinter\bin\x86\Debug\Content\blank.xnb</Output>
-      <Time>2023-02-21T16:02:04.6193105-06:00</Time>
+      <Output>C:\Users\169281\Desktop\github\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_Sprinter\bin\x86\Debug\Content\blank.xnb</Output>
+      <Time>2023-02-21T16:26:20.9598569-06:00</Time>
     </Item>
     <Item>
       <Source>Spreadsheet.png</Source>
@@ -16,8 +16,17 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>\\Fisd-student1\hs\lhs\269606\Documents\GitHub\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_Sprinter\bin\x86\Debug\Content\Spreadsheet.xnb</Output>
-      <Time>2023-02-21T16:19:27.9080808-06:00</Time>
+      <Output>C:\Users\169281\Desktop\github\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_Sprinter\bin\x86\Debug\Content\Spreadsheet.xnb</Output>
+      <Time>2023-02-23T15:10:47.5331939-06:00</Time>
+    </Item>
+    <Item>
+      <Source>player_running_spritesheet_25.png</Source>
+      <Name>player_running_spritesheet_25</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\169281\Desktop\github\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_Sprinter\bin\x86\Debug\Content\player_running_spritesheet_25.xnb</Output>
+      <Time>2023-02-23T15:21:27.6522485-06:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
@@ -26,10 +35,10 @@
       <TargetProfile>Reach</TargetProfile>
       <BuildConfiguration>Debug</BuildConfiguration>
       <CompressContent>false</CompressContent>
-      <RootDirectory>\\Fisd-student1\hs\lhs\269606\Documents\GitHub\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_SprinterContent\</RootDirectory>
-      <LoggerRootDirectory>\\Fisd-student1\hs\lhs\269606\Documents\GitHub\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_Sprinter\</LoggerRootDirectory>
-      <IntermediateDirectory>\\Fisd-student1\hs\lhs\269606\Documents\GitHub\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_Sprinter\obj\x86\Debug\</IntermediateDirectory>
-      <OutputDirectory>\\Fisd-student1\hs\lhs\269606\Documents\GitHub\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_Sprinter\bin\x86\Debug\Content\</OutputDirectory>
+      <RootDirectory>C:\Users\169281\Desktop\github\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_SprinterContent\</RootDirectory>
+      <LoggerRootDirectory>C:\Users\169281\Desktop\github\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_Sprinter\</LoggerRootDirectory>
+      <IntermediateDirectory>C:\Users\169281\Desktop\github\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_Sprinter\obj\x86\Debug\</IntermediateDirectory>
+      <OutputDirectory>C:\Users\169281\Desktop\github\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_Sprinter\bin\x86\Debug\Content\</OutputDirectory>
     </Settings>
     <Assemblies>
       <Assembly>
@@ -58,7 +67,7 @@
       </Assembly>
       <Assembly>
         <Key>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Content.Pipeline\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Content.Pipeline.dll</Key>
-        <Value>2022-08-12T11:55:55.0701574-05:00</Value>
+        <Value>2022-08-12T11:55:56.3227481-05:00</Value>
       </Assembly>
     </Assemblies>
   </Asset>
