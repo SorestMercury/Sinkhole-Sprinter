@@ -50,7 +50,7 @@ namespace Sinkhole_Sprinter
             jump = 30;
             timer = 0;
             timer2 = 0;
-            gravity = 4;
+            gravity = 7;
         }
 
         public void Update()
