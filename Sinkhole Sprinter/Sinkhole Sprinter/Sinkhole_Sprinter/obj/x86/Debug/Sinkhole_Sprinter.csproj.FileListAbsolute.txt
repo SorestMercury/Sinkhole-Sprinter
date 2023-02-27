@@ -58,3 +58,6 @@ C:\Users\178956\Desktop\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Si
 C:\Users\169281\Desktop\github\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_Sprinter\bin\x86\Debug\Content\blank.xnb
 C:\Users\169281\Desktop\github\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_Sprinter\bin\x86\Debug\Content\Spreadsheet.xnb
 C:\Users\169281\Desktop\github\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_Sprinter\bin\x86\Debug\Content\player_running_spritesheet_25.xnb
+C:\Users\178956\Desktop\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_Sprinter\bin\x86\Debug\blank.xnb
+C:\Users\178956\Desktop\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_Sprinter\bin\x86\Debug\Spreadsheet.xnb
+C:\Users\178956\Desktop\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_Sprinter\bin\x86\Debug\player_running_spritesheet_25.xnb

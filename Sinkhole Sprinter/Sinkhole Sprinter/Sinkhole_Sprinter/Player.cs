@@ -11,21 +11,31 @@ using System.Linq;
 
 namespace Sinkhole_Sprinter
 {
-    class Player
+    class Player : Sprite
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        private Texture2D spreadsheet;
+        const int MAX_SPEED = 7, JUMP = 20, MAX_FALL_SPEED = 20;
+        const float ACCELERATION = .8f, GRAVITY = 1, DRAG_FACTOR = .8f;
+
+        // Source rects
         private List<Rectangle> running, jumping;
+        // Current source rectangle
         public Rectangle currentsource;
-        public Rectangle currentdest;
+        // Standing animation
         private Rectangle standing;
+        // If player is moving
+        public movement playerState;
+        // Frame of animation
         private int currentInt;
+        // Timer for animation
+        int timer;
+        // If player is off ground
         private bool isJumping;
-        int speed, jump;
-        int timer, timer2;
-        KeyboardState oldkb = Keyboard.GetState();
-        int gravity;
+        // For keyboard debounce
+        KeyboardState oldkb;
+
+        // Physics
+        Vector2 velocity;
+        Vector2 acceleration;
 
         public enum movement
         {
@@ -34,88 +44,100 @@ namespace Sinkhole_Sprinter
             right
         }
 
-        public movement playerState = movement.idle;
-        public Player(Texture2D s, List<Rectangle> r, List<Rectangle> j, Rectangle st)
+        
+        public Player(Texture2D s, List<Rectangle> r, List<Rectangle> j, Rectangle st) : base(new Rectangle(640, 360, 75, 75), s)
         {
-
-            spreadsheet = s;
+            oldkb = Keyboard.GetState();
             running = r;
             jumping = j;
             currentsource = st;
             standing = st;
-            currentdest = new Rectangle(100, 100, 75,75);
+            playerState = movement.idle;
             currentInt = 0;
             isJumping = false;
-            speed = 7;
-            jump = 30;
             timer = 0;
-            timer2 = 0;
-            gravity = 7;
+            velocity = new Vector2(0, 0);
+            acceleration = new Vector2(0, GRAVITY);
+        }
+
+        // Increment one frame in running animation
+        public void ChangeRunningFrame()
+        {
+            currentInt = (currentInt + 1) % running.Count;
         }
 
         public void Update()
         {
-            timer++;
-            timer2++;
+            
             KeyboardState kb = Keyboard.GetState();
-            if (timer % 8 == 0)
-                currentsource = standing;
 
-            playerState = movement.idle;
-
+            // Movement
             if (kb.IsKeyDown(Keys.A) || kb.IsKeyDown(Keys.Left))
             {
-                currentdest.X -= speed;
+                acceleration.X = -ACCELERATION;
                 if (timer % 8 == 0)
                 {
-                    currentInt++;
-                    if (currentInt == running.Count)
-                    {
-                        currentInt = 0;
-                    }
+                    ChangeRunningFrame();
 
                     currentsource = running[currentInt];
                     playerState = movement.left;
                 }
 
             }
-            if (kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.Right))
+            else if (kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.Right))
             {
-                currentdest.X += speed;
+                acceleration.X = ACCELERATION;
                 if (timer % 8 == 0)
                 {
-                    currentInt++;
-                    if (currentInt == running.Count)
-                    {
-                        currentInt = 0;
-                    }
+                    ChangeRunningFrame();
 
                     currentsource = running[currentInt];
                     playerState = movement.right;
                 }
             }
+            else
+            {
+                if (timer % 8 == 0)
+                {
+                    currentsource = standing;
+                    // Uncomment when 
+                    //playerState = movement.idle;
+                }
+                acceleration.X = 0;
+                velocity.X *= DRAG_FACTOR;
+                if (Math.Abs(velocity.X) < MAX_SPEED / 20f)
+                    velocity.X = 0;
+            }
+
             if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Up) || kb.IsKeyDown(Keys.Space))
             {
-                if (timer2 > 25)
+                if (!isJumping)
                 {
                     isJumping = true;
-                    timer2 = 0;
+                    velocity.Y = -JUMP;
+                    currentsource = jumping[0];
                 }
             }
-            if (timer2 > 5)
+
+            velocity.X += acceleration.X;
+            velocity.Y += acceleration.Y;
+
+            // Keep velocity in bounds
+            velocity.X = Math.Min(Math.Max(-MAX_SPEED, velocity.X), MAX_SPEED);
+            velocity.Y = Math.Min(MAX_FALL_SPEED, velocity.Y);
+
+            position.X += velocity.X;
+            position.Y += velocity.Y;
+
+            if (Bottom > 720)
             {
                 isJumping = false;
+                position.Y = 720 - rect.Height / 2;
+                velocity.Y = 0;
+            }
 
-            }
-            if (isJumping)
-            {
-                currentdest.Y -= jump;
-                currentsource = jumping[0];
-            }
+            timer++;
             oldkb = kb;
-
-            if (currentdest.Bottom <= 720)
-                currentdest.Y += gravity;
         }
 
     }
