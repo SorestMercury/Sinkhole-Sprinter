@@ -22,7 +22,6 @@ namespace Sinkhole_Sprinter
         private List<Rectangle> running, jumping;
         Player player;
         Camera camera;
-        SpriteEffects flip = SpriteEffects.None;
 
         public Game1()
         {
@@ -90,6 +89,7 @@ namespace Sinkhole_Sprinter
 
             // TODO: Add your update logic here
             player.Update();
+            camera.position.X = player.position.X;
             base.Update(gameTime);
         }
 
@@ -103,14 +103,7 @@ namespace Sinkhole_Sprinter
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
-
-            if (player.playerState == Player.movement.left)
-                flip = SpriteEffects.None;
-
-            else if(player.playerState==Player.movement.right)
-                flip = SpriteEffects.FlipHorizontally;
-
-            spriteBatch.Draw(spreadsheet, player.currentdest, player.currentsource, Color.White, 0, new Vector2(200,200), flip, 0);
+            camera.DrawPlayer(gameTime, spriteBatch, player);
             spriteBatch.End();
             base.Draw(gameTime);
         }
