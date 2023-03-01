@@ -29,7 +29,7 @@ namespace Sinkhole_Sprinter
         // Timer for animation
         int timer;
         // If player is off ground
-        private bool isJumping;
+        private bool canJump;
         // For keyboard debounce
         KeyboardState oldkb;
 
@@ -45,7 +45,7 @@ namespace Sinkhole_Sprinter
         }
 
         
-        public Player(Texture2D s, List<Rectangle> r, List<Rectangle> j, Rectangle st) : base(new Rectangle(640, 360, 75, 75), s)
+        public Player(Texture2D s, List<Rectangle> r, List<Rectangle> j, Rectangle st) : base(new Rectangle(50, 360, 75, 75), s)
         {
             oldkb = Keyboard.GetState();
             running = r;
@@ -54,7 +54,7 @@ namespace Sinkhole_Sprinter
             standing = st;
             playerState = movement.idle;
             currentInt = 0;
-            isJumping = false;
+            canJump = true;
             timer = 0;
             velocity = new Vector2(0, 0);
             acceleration = new Vector2(0, GRAVITY);
@@ -64,6 +64,11 @@ namespace Sinkhole_Sprinter
         public void ChangeRunningFrame()
         {
             currentInt = (currentInt + 1) % running.Count;
+        }
+
+        public float GetMaxJumpDistance(float dHeight)
+        {
+            return MAX_SPEED * (20 + (float)Math.Sqrt(400 - 2 * dHeight));
         }
 
         public void Update()
@@ -111,13 +116,16 @@ namespace Sinkhole_Sprinter
 
             if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Up) || kb.IsKeyDown(Keys.Space))
             {
-                if (!isJumping)
+                if (canJump)
                 {
-                    isJumping = true;
+                    canJump = false;
                     velocity.Y = -JUMP;
                     currentsource = jumping[0];
                 }
             }
+
+            if (velocity.Y > 0)
+                canJump = false;
 
             velocity.X += acceleration.X;
             velocity.Y += acceleration.Y;
@@ -131,13 +139,26 @@ namespace Sinkhole_Sprinter
 
             if (Bottom > 720)
             {
-                isJumping = false;
+                canJump = true;
                 position.Y = 720 - rect.Height / 2;
                 velocity.Y = 0;
             }
 
             timer++;
             oldkb = kb;
+        }
+
+
+        // Check if the player is on top of a platform and make functionality
+        public void CheckCollisions(Platform platform)
+        {
+            // DEBUG THIS
+            if (Bottom - MAX_FALL_SPEED < platform.Top)
+            {
+                canJump = true;
+                position.Y = platform.Top - rect.Height / 2;
+                velocity.Y = 0;
+            }
         }
 
     }

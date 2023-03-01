@@ -23,8 +23,13 @@ namespace Sinkhole_Sprinter
         Player player;
         Camera camera;
 
-        int platformSpeed;
+        //const int PLATFORM_SPEED = 3;
         List<Platform> platforms;
+        Platform LastPlatform
+        {
+            get => platforms[platforms.Count - 1];
+        }
+
         Texture2D placeholder;
         int timer = 0;
         Random r = new Random();
@@ -56,8 +61,6 @@ namespace Sinkhole_Sprinter
             running.Add(new Rectangle(1200, 0, 400, 400));
             jumping.Add(new Rectangle(0, 0, 400, 400));
 
-
-            platformSpeed = 3;
             platforms = new List<Platform>();
             
 
@@ -78,7 +81,7 @@ namespace Sinkhole_Sprinter
             player = new Player(spreadsheet, running, jumping, new Rectangle(0, 0, 400, 400));
 
             placeholder = this.Content.Load<Texture2D>("white");
-            platforms.Add(new Platform(new Rectangle(640, 360, 70, 10), placeholder));
+            createPlatform(new Vector2(Platform.WIDTH / 2, camera.boundingRectangle.Height * .7f));
         }
 
         /// <summary>
@@ -104,22 +107,51 @@ namespace Sinkhole_Sprinter
             // TODO: Add your update logic here
             timer++;
             player.Update();
+            camera.Update();
 
             for (int x = 0; x < platforms.Count; x++)
             {
-                platforms[x].update(platformSpeed);
+                //platforms[x].update(PLATFORM_SPEED);
 
-                if(platforms[x].offScreen)
+                if (platforms[x].offScreen)
+                {
                     platforms.Remove(platforms[x]);
+                    x--;
+                    continue;
+                }
+
+                if (platforms[x].rect.Intersects(player.rect))
+                    player.CheckCollisions(platforms[x]);
             }
 
-            if (timer % 60 == 0)
+            //if (timer % 60 == 0)
+            //{
+            //    platforms.Add(new Platform(new Rectangle(1280, platforms[platforms.Count-1].rect.Y+r.Next(-150,50), 70, 10), placeholder));
+            //}
+
+            if (LastPlatform.position.X < camera.boundingRectangle.Right)
             {
-                platforms.Add(new Platform(new Rectangle(1280, platforms[platforms.Count-1].rect.Y+r.Next(-150,50), 70, 10), placeholder));
+                createPlatform();
             }
 
-            camera.position.X = player.position.X;
+            camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
             base.Update(gameTime);
+        }
+
+        // Create a new platform in calculated position
+        private void createPlatform()
+        {
+            int dHeight = r.Next(-150, 50);
+            Vector2 position = new Vector2();
+            // Make reasonable X and Y
+            position.Y = LastPlatform.position.Y + dHeight;
+            position.X = Math.Max(LastPlatform.position.X + (float)(r.NextDouble() * .5 + .3) * player.GetMaxJumpDistance(dHeight), LastPlatform.position.X + Platform.WIDTH * 2);
+
+            createPlatform(position);
+        }
+        private void createPlatform(Vector2 position)
+        {
+            platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, Platform.WIDTH, Platform.HEIGHT), placeholder));
         }
 
         /// <summary>
