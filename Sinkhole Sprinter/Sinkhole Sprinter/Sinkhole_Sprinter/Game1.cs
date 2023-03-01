@@ -23,6 +23,12 @@ namespace Sinkhole_Sprinter
         Player player;
         Camera camera;
 
+        int platformSpeed;
+        List<Platform> platforms;
+        Texture2D placeholder;
+        int timer = 0;
+        Random r = new Random();
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -50,6 +56,11 @@ namespace Sinkhole_Sprinter
             running.Add(new Rectangle(1200, 0, 400, 400));
             jumping.Add(new Rectangle(0, 0, 400, 400));
 
+
+            platformSpeed = 3;
+            platforms = new List<Platform>();
+            
+
             base.Initialize();
         }
 
@@ -65,6 +76,9 @@ namespace Sinkhole_Sprinter
             // TODO: use this.Content to load your game content here
             spreadsheet = this.Content.Load<Texture2D>("player_running_spritesheet_25");
             player = new Player(spreadsheet, running, jumping, new Rectangle(0, 0, 400, 400));
+
+            placeholder = this.Content.Load<Texture2D>("white");
+            platforms.Add(new Platform(new Rectangle(640, 360, 70, 10), placeholder));
         }
 
         /// <summary>
@@ -88,7 +102,22 @@ namespace Sinkhole_Sprinter
                 this.Exit();
 
             // TODO: Add your update logic here
+            timer++;
             player.Update();
+
+            for (int x = 0; x < platforms.Count; x++)
+            {
+                platforms[x].update(platformSpeed);
+
+                if(platforms[x].offScreen)
+                    platforms.Remove(platforms[x]);
+            }
+
+            if (timer % 60 == 0)
+            {
+                platforms.Add(new Platform(new Rectangle(1280, platforms[platforms.Count-1].rect.Y+r.Next(-150,50), 70, 10), placeholder));
+            }
+
             camera.position.X = player.position.X;
             base.Update(gameTime);
         }
@@ -103,6 +132,12 @@ namespace Sinkhole_Sprinter
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
+
+            foreach (Platform platform in platforms)
+            {
+                camera.Draw(gameTime, spriteBatch, platform);
+            }
+
             camera.DrawPlayer(gameTime, spriteBatch, player);
             spriteBatch.End();
             base.Draw(gameTime);

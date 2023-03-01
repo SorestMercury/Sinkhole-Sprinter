@@ -26,7 +26,16 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\169281\Desktop\github\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_Sprinter\bin\x86\Debug\Content\player_running_spritesheet_25.xnb</Output>
-      <Time>2023-02-23T15:21:27.6522485-06:00</Time>
+      <Time>2023-02-27T15:15:13.2835585-06:00</Time>
+    </Item>
+    <Item>
+      <Source>white.jpg</Source>
+      <Name>white</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\169281\Desktop\github\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_Sprinter\bin\x86\Debug\Content\white.xnb</Output>
+      <Time>2023-03-01T14:55:28.2996041-06:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
