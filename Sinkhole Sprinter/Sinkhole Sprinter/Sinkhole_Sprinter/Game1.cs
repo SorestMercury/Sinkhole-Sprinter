@@ -22,6 +22,17 @@ namespace Sinkhole_Sprinter
         private List<Rectangle> running, jumping;
         Player player;
         Camera camera;
+        enum Gamestate
+        {
+            title, play, gameover
+        }
+        Gamestate currentState;
+        SpriteFont titleFont, titleTextFont;
+        public Color titleColor = Color.Black;
+        Rectangle titleRect, multiplayerTextRect;
+        MouseState mouse, oldMouse;
+        Color[] titleScreenColors = { Color.Black, Color.Black, Color.Black };
+        String[] titleScreenText = { "single player", "multiplayer" };
 
         public Game1()
         {
@@ -50,6 +61,9 @@ namespace Sinkhole_Sprinter
             running.Add(new Rectangle(1200, 0, 400, 400));
             jumping.Add(new Rectangle(0, 0, 400, 400));
 
+            IsMouseVisible = true;
+            
+
             base.Initialize();
         }
 
@@ -64,7 +78,14 @@ namespace Sinkhole_Sprinter
 
             // TODO: use this.Content to load your game content here
             spreadsheet = this.Content.Load<Texture2D>("player_running_spritesheet_25");
+
+            titleTextFont = Content.Load<SpriteFont>("SpriteFont2");
             player = new Player(spreadsheet, running, jumping, new Rectangle(0, 0, 400, 400));
+            titleFont = Content.Load<SpriteFont>("SpriteFont1");
+            titleRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[0]).Length() / 2)), 200, 30, 30);
+            multiplayerTextRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[1]).Length() / 2)), 300, 30, 30);
+
+
         }
 
         /// <summary>
@@ -83,6 +104,7 @@ namespace Sinkhole_Sprinter
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+             mouse = Mouse.GetState();
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
@@ -90,6 +112,29 @@ namespace Sinkhole_Sprinter
             // TODO: Add your update logic here
             player.Update();
             camera.position.X = player.position.X;
+
+            if (mouse.X > titleRect.X && mouse.X < titleRect.X + (("singleplayer".Length-1) * 20) && mouse.Y > titleRect.Y + 10 && mouse.Y < titleRect.Y + titleRect.Height)       
+            {
+                titleScreenColors[0] = Color.Gold;
+                if (mouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released)
+                {
+                    currentState = Gamestate.play;
+                }
+            }
+            else
+                titleScreenColors[0] = Color.Black;
+            if (mouse.X > multiplayerTextRect.X && mouse.X < multiplayerTextRect.X + (("multiplayer".Length-1) * 20)&& mouse.Y > multiplayerTextRect.Y + 10 && mouse.Y < multiplayerTextRect.Y + multiplayerTextRect.Height)
+            {
+                titleScreenColors[1] = Color.Gold;
+                if (mouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released)
+                {
+                    currentState = Gamestate.play;
+                }
+            }
+            else
+                titleScreenColors[1] = Color.Black;
+
+            oldMouse = mouse;
             base.Update(gameTime);
         }
 
@@ -103,7 +148,23 @@ namespace Sinkhole_Sprinter
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
-            camera.DrawPlayer(gameTime, spriteBatch, player);
+            switch (currentState)
+            {
+                case Gamestate.title:
+                    spriteBatch.DrawString(titleTextFont, "SINKHOLE SPRINTER", new Vector2(GraphicsDevice.Viewport.Width / 2  - (titleTextFont.MeasureString("SINKHOLE SPRINTER").Length() / 2), 50), Color.Black);
+                    spriteBatch.DrawString(titleFont, "single player", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("single player").Length() / 2), 200), titleScreenColors[0]);
+                    spriteBatch.DrawString(titleFont, "multiplayer", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("multiplayer").Length() / 2), 300), titleScreenColors[1]);
+                    spriteBatch.DrawString(titleFont, "high scores", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("high scores").Length() / 2), 400), titleScreenColors[2]);
+
+
+
+
+                    break;
+                case Gamestate.play:
+                    camera.DrawPlayer(gameTime, spriteBatch, player);
+                    break;
+
+            }
             spriteBatch.End();
             base.Draw(gameTime);
         }
