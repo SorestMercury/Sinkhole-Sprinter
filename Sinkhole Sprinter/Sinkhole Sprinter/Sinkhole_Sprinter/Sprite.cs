@@ -16,6 +16,22 @@ namespace Sinkhole_Sprinter
         // Texture of the sprite
         public Texture2D texture;
 
+        public int Top
+        {
+            get => (int)(position.Y - rect.Height / 2);
+        }
+        public int Left
+        {
+            get => (int)(position.X - rect.Width / 2);
+        }
+        public int Bottom
+        {
+            get => (int)(position.Y + rect.Height / 2);
+        }
+        public int Right
+        {
+            get => (int)(position.X + rect.Width / 2);
+        }
 
         /// <summary>
         /// Create a new Sprite object
@@ -28,5 +44,6 @@ namespace Sinkhole_Sprinter
             this.position = new Vector2(rect.X, rect.Y);
             this.texture = texture;
         }
+
     }
 }

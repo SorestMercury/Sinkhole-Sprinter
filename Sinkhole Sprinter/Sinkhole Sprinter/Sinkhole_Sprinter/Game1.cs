@@ -22,7 +22,7 @@ namespace Sinkhole_Sprinter
         private List<Rectangle> running, jumping;
         Player player;
         Camera camera;
-        SpriteEffects flip = SpriteEffects.None;
+
         int platformSpeed;
         List<Platform> platforms;
         Texture2D placeholder;
@@ -118,6 +118,7 @@ namespace Sinkhole_Sprinter
                 platforms.Add(new Platform(new Rectangle(1280, platforms[platforms.Count-1].rect.Y+r.Next(-150,50), 70, 10), placeholder));
             }
 
+            camera.position.X = player.position.X;
             base.Update(gameTime);
         }
 
@@ -132,19 +133,12 @@ namespace Sinkhole_Sprinter
             // TODO: Add your drawing code here
             spriteBatch.Begin();
 
-            if (player.playerState == Player.movement.left)
-                flip = SpriteEffects.None;
-
-            else if(player.playerState==Player.movement.right)
-                flip = SpriteEffects.FlipHorizontally;
-
-            spriteBatch.Draw(spreadsheet, player.currentdest, player.currentsource, Color.White, 0, new Vector2(200,200), flip, 0);
-
             foreach (Platform platform in platforms)
             {
                 camera.Draw(gameTime, spriteBatch, platform);
             }
 
+            camera.DrawPlayer(gameTime, spriteBatch, player);
             spriteBatch.End();
             base.Draw(gameTime);
         }
