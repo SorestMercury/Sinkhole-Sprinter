@@ -31,7 +31,7 @@ namespace Sinkhole_Sprinter
                 offScreen = true;
 
             else
-                rect.X -= speed;
+                position.X -= speed;
         }
 
     }

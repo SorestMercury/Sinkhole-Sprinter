@@ -115,7 +115,7 @@ namespace Sinkhole_Sprinter
 
             if (timer % 60 == 0)
             {
-                platforms.Add(new Platform(new Rectangle(1280, r.Next(20, 700), 70, 10), placeholder));
+                platforms.Add(new Platform(new Rectangle(1280, platforms[platforms.Count-1].rect.Y+r.Next(-150,50), 70, 10), placeholder));
             }
 
             base.Update(gameTime);
@@ -141,7 +141,9 @@ namespace Sinkhole_Sprinter
             spriteBatch.Draw(spreadsheet, player.currentdest, player.currentsource, Color.White, 0, new Vector2(200,200), flip, 0);
 
             foreach (Platform platform in platforms)
-                spriteBatch.Draw(platform.texture, platform.rect, Color.Red);
+            {
+                camera.Draw(gameTime, spriteBatch, platform);
+            }
 
             spriteBatch.End();
             base.Draw(gameTime);
