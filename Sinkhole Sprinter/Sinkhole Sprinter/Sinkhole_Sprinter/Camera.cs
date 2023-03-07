@@ -29,7 +29,7 @@ namespace Sinkhole_Sprinter
         /// <summary>
         /// Update the camera
         /// </summary>
-        public void Update(GameTime gameTime)
+        public void Update()
         {
             UpdateBoundingRectangle();
         }

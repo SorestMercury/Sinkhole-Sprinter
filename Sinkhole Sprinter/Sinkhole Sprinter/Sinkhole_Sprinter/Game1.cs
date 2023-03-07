@@ -34,6 +34,17 @@ namespace Sinkhole_Sprinter
         Color[] titleScreenColors = { Color.Black, Color.Black, Color.Black };
         String[] titleScreenText = { "single player", "multiplayer" };
 
+        //const int PLATFORM_SPEED = 3;
+        List<Platform> platforms;
+        Platform LastPlatform
+        {
+            get => platforms[platforms.Count - 1];
+        }
+
+        Texture2D placeholder;
+        int timer = 0;
+        Random r = new Random();
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -60,9 +71,8 @@ namespace Sinkhole_Sprinter
             running.Add(new Rectangle(800, 0, 400, 400));
             running.Add(new Rectangle(1200, 0, 400, 400));
             jumping.Add(new Rectangle(0, 0, 400, 400));
-
             IsMouseVisible = true;
-            
+            platforms = new List<Platform>();
 
             base.Initialize();
         }
@@ -80,12 +90,13 @@ namespace Sinkhole_Sprinter
             spreadsheet = this.Content.Load<Texture2D>("player_running_spritesheet_25");
 
             titleTextFont = Content.Load<SpriteFont>("SpriteFont2");
-            player = new Player(spreadsheet, running, jumping, new Rectangle(0, 0, 400, 400));
             titleFont = Content.Load<SpriteFont>("SpriteFont1");
             titleRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[0]).Length() / 2)), 200, 30, 30);
             multiplayerTextRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[1]).Length() / 2)), 300, 30, 30);
+            player = new Player(new Rectangle(50, 0, 75, 75), spreadsheet, running, jumping, new Rectangle(0, 0, 400, 400));
 
-
+            placeholder = this.Content.Load<Texture2D>("white");
+            createPlatform(new Vector2(Platform.WIDTH / 2, camera.boundingRectangle.Height * .7f));
         }
 
         /// <summary>
@@ -110,8 +121,29 @@ namespace Sinkhole_Sprinter
                 this.Exit();
 
             // TODO: Add your update logic here
+            
+
+            for (int x = 0; x < platforms.Count; x++)
+            {
+                //platforms[x].update(PLATFORM_SPEED);
+
+                if (platforms[x].offScreen)
+                {
+                    platforms.Remove(platforms[x]);
+                    x--;
+                    continue;
+                }
+
+                if (platforms[x].rect.Intersects(player.rect))
+                    player.CheckCollisions(platforms[x]);
+            }
+
+            //if (timer % 60 == 0)
+            //{
+            //    platforms.Add(new Platform(new Rectangle(1280, platforms[platforms.Count-1].rect.Y+r.Next(-150,50), 70, 10), placeholder));
+            //}
+
             player.Update();
-            camera.position.X = player.position.X;
 
             if (mouse.X > titleRect.X && mouse.X < titleRect.X + (("singleplayer".Length-1) * 20) && mouse.Y > titleRect.Y + 10 && mouse.Y < titleRect.Y + titleRect.Height)       
             {
@@ -135,7 +167,32 @@ namespace Sinkhole_Sprinter
                 titleScreenColors[1] = Color.Black;
 
             oldMouse = mouse;
+            camera.Update();
+            if (LastPlatform.position.X < camera.boundingRectangle.Right)
+            {
+                createPlatform();
+            }
+            camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
+            camera.position.Y = Math.Min(player.position.Y, camera.boundingRectangle.Height / 2);
+
+            timer++;
             base.Update(gameTime);
+        }
+
+        // Create a new platform in calculated position
+        private void createPlatform()
+        {
+            int dHeight = r.Next(-150, 50);
+            Vector2 position = new Vector2();
+            // Make reasonable X and Y
+            position.Y = LastPlatform.position.Y + dHeight;
+            position.X = Math.Max(LastPlatform.position.X + (float)(r.NextDouble() * .5 + .3) * player.GetMaxJumpDistance(dHeight), LastPlatform.position.X + Platform.WIDTH * 2);
+
+            createPlatform(position);
+        }
+        private void createPlatform(Vector2 position)
+        {
+            platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, Platform.WIDTH, Platform.HEIGHT), placeholder));
         }
 
         /// <summary>
@@ -161,10 +218,14 @@ namespace Sinkhole_Sprinter
 
                     break;
                 case Gamestate.play:
+                    foreach (Platform platform in platforms)
+                    {
+                        camera.Draw(gameTime, spriteBatch, platform);
+                    }
                     camera.DrawPlayer(gameTime, spriteBatch, player);
                     break;
-
             }
+            
             spriteBatch.End();
             base.Draw(gameTime);
         }

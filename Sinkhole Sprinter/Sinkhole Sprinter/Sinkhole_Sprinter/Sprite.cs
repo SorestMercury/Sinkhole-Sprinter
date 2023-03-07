@@ -9,7 +9,7 @@ namespace Sinkhole_Sprinter
 {
     abstract class Sprite
     {
-        // Actual position of the sprite
+        // Actual position of the sprite, centered
         public Vector2 position;
         // Rectangle for size, X and Y updated by camera to draw
         public Rectangle rect;
