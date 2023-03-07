@@ -93,7 +93,7 @@ namespace Sinkhole_Sprinter
             titleFont = Content.Load<SpriteFont>("SpriteFont1");
             titleRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[0]).Length() / 2)), 200, 30, 30);
             multiplayerTextRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[1]).Length() / 2)), 300, 30, 30);
-            player = new Player(new Rectangle(50, 0, 75, 75), spreadsheet, running, jumping, new Rectangle(0, 0, 400, 400));
+            player = new Player(new Rectangle(50, 360, 75, 75), spreadsheet, running, jumping, new Rectangle(0, 0, 400, 400));
 
             placeholder = this.Content.Load<Texture2D>("white");
             createPlatform(new Vector2(Platform.WIDTH / 2, camera.boundingRectangle.Height * .7f));
@@ -121,60 +121,63 @@ namespace Sinkhole_Sprinter
                 this.Exit();
 
             // TODO: Add your update logic here
-            
-
-            for (int x = 0; x < platforms.Count; x++)
+            switch (currentState)
             {
-                //platforms[x].update(PLATFORM_SPEED);
+                case Gamestate.title:
+                    if (mouse.X > titleRect.X && mouse.X < titleRect.X + (("singleplayer".Length - 1) * 20) && mouse.Y > titleRect.Y + 10 && mouse.Y < titleRect.Y + titleRect.Height)
+                    {
+                        titleScreenColors[0] = Color.Gold;
+                        if (mouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released)
+                        {
+                            currentState = Gamestate.play;
+                        }
+                    }
+                    else
+                        titleScreenColors[0] = Color.Black;
+                    if (mouse.X > multiplayerTextRect.X && mouse.X < multiplayerTextRect.X + (("multiplayer".Length - 1) * 20) && mouse.Y > multiplayerTextRect.Y + 10 && mouse.Y < multiplayerTextRect.Y + multiplayerTextRect.Height)
+                    {
+                        titleScreenColors[1] = Color.Gold;
+                        if (mouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released)
+                        {
+                            currentState = Gamestate.play;
+                        }
+                    }
+                    else
+                        titleScreenColors[1] = Color.Black;
+                    break;
+                case Gamestate.play:
+                    for (int x = 0; x < platforms.Count; x++)
+                    {
+                        //platforms[x].update(PLATFORM_SPEED);
 
-                if (platforms[x].offScreen)
-                {
-                    platforms.Remove(platforms[x]);
-                    x--;
-                    continue;
-                }
+                        if (platforms[x].offScreen)
+                        {
+                            platforms.Remove(platforms[x]);
+                            x--;
+                            continue;
+                        }
 
-                if (platforms[x].rect.Intersects(player.rect))
-                    player.CheckCollisions(platforms[x]);
+                        if (platforms[x].rect.Intersects(player.rect))
+                            player.CheckCollisions(platforms[x]);
+                    }
+
+                    //if (timer % 60 == 0)
+                    //{
+                    //    platforms.Add(new Platform(new Rectangle(1280, platforms[platforms.Count-1].rect.Y+r.Next(-150,50), 70, 10), placeholder));
+                    //}
+
+                    player.Update();
+                    camera.Update();
+                    if (LastPlatform.position.X < camera.boundingRectangle.Right)
+                    {
+                        createPlatform();
+                    }
+                    camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
+                    camera.position.Y = Math.Min(player.position.Y, camera.boundingRectangle.Height / 2);
+                    break;
             }
-
-            //if (timer % 60 == 0)
-            //{
-            //    platforms.Add(new Platform(new Rectangle(1280, platforms[platforms.Count-1].rect.Y+r.Next(-150,50), 70, 10), placeholder));
-            //}
-
-            player.Update();
-
-            if (mouse.X > titleRect.X && mouse.X < titleRect.X + (("singleplayer".Length-1) * 20) && mouse.Y > titleRect.Y + 10 && mouse.Y < titleRect.Y + titleRect.Height)       
-            {
-                titleScreenColors[0] = Color.Gold;
-                if (mouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released)
-                {
-                    currentState = Gamestate.play;
-                }
-            }
-            else
-                titleScreenColors[0] = Color.Black;
-            if (mouse.X > multiplayerTextRect.X && mouse.X < multiplayerTextRect.X + (("multiplayer".Length-1) * 20)&& mouse.Y > multiplayerTextRect.Y + 10 && mouse.Y < multiplayerTextRect.Y + multiplayerTextRect.Height)
-            {
-                titleScreenColors[1] = Color.Gold;
-                if (mouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released)
-                {
-                    currentState = Gamestate.play;
-                }
-            }
-            else
-                titleScreenColors[1] = Color.Black;
 
             oldMouse = mouse;
-            camera.Update();
-            if (LastPlatform.position.X < camera.boundingRectangle.Right)
-            {
-                createPlatform();
-            }
-            camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
-            camera.position.Y = Math.Min(player.position.Y, camera.boundingRectangle.Height / 2);
-
             timer++;
             base.Update(gameTime);
         }
