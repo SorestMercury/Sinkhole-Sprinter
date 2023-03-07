@@ -29,7 +29,7 @@ namespace Sinkhole_Sprinter
         /// <summary>
         /// Update the camera
         /// </summary>
-        public void Update(GameTime gameTime)
+        public void Update()
         {
             UpdateBoundingRectangle();
         }
@@ -63,6 +63,19 @@ namespace Sinkhole_Sprinter
             {
                 Draw(gameTime, spriteBatch, sprite);
             }
+        }
+
+        public void DrawPlayer(GameTime gameTime, SpriteBatch spriteBatch, Player player)
+        {
+            SpriteEffects flip = SpriteEffects.None;
+
+            if (player.playerState == Player.movement.right)
+                flip = SpriteEffects.FlipHorizontally;
+
+            player.rect.X = (int)(player.position.X - player.rect.Width / 2 - position.X + boundingRectangle.Width / 2);
+            player.rect.Y = (int)(player.position.Y - player.rect.Height / 2 - position.Y + boundingRectangle.Height / 2);
+
+            spriteBatch.Draw(player.texture, player.rect, player.currentsource, Color.White, 0, new Vector2(0, 0), flip, 0);
         }
     }
 }

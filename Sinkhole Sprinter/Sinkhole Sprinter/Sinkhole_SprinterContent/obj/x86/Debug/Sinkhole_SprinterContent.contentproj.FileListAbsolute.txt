@@ -1,6 +1,0 @@
-C:\Users\169281\Desktop\github\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_SprinterContent\obj\x86\Debug\Sinkhole_SprinterContent.contentproj.AssemblyReference.cache
-C:\Users\169281\Desktop\github\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_SprinterContent\obj\x86\Debug\Sinkhole_SprinterContent.contentproj.CoreCompileInputs.cache
-C:\Users\178956\Desktop\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_SprinterContent\obj\x86\Debug\Sinkhole_SprinterContent.contentproj.AssemblyReference.cache
-C:\Users\178956\Desktop\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_SprinterContent\obj\x86\Debug\Sinkhole_SprinterContent.contentproj.CoreCompileInputs.cache
-\\Fisd-student1\hs\lhs\269606\Documents\GitHub\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_SprinterContent\obj\x86\Debug\Sinkhole_SprinterContent.contentproj.AssemblyReference.cache
-\\Fisd-student1\hs\lhs\269606\Documents\GitHub\Sinkhole-Sprinter\Sinkhole Sprinter\Sinkhole Sprinter\Sinkhole_SprinterContent\obj\x86\Debug\Sinkhole_SprinterContent.contentproj.CoreCompileInputs.cache
