@@ -9,6 +9,8 @@ namespace Sinkhole_Sprinter
 {
     class Platform : Sprite
     {
+        public const int HEIGHT = 20, WIDTH = 150;
+
         // Does the platform break on touch
         public bool isBreaking;
         public bool offScreen;

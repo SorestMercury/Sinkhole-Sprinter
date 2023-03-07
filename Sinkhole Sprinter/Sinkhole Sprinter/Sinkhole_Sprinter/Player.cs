@@ -13,7 +13,7 @@ namespace Sinkhole_Sprinter
 {
     class Player : Sprite
     {
-        const int MAX_SPEED = 7, JUMP = 20, MAX_FALL_SPEED = 20;
+        const int MAX_SPEED = 7, JUMP = 20, MAX_FALL_SPEED = 25;
         const float ACCELERATION = .8f, GRAVITY = 1, DRAG_FACTOR = .8f;
 
         // Source rects
@@ -29,7 +29,7 @@ namespace Sinkhole_Sprinter
         // Timer for animation
         int timer;
         // If player is off ground
-        private bool isJumping;
+        private bool canJump;
         // For keyboard debounce
         KeyboardState oldkb;
 
@@ -45,7 +45,7 @@ namespace Sinkhole_Sprinter
         }
 
         
-        public Player(Texture2D s, List<Rectangle> r, List<Rectangle> j, Rectangle st) : base(new Rectangle(640, 360, 75, 75), s)
+        public Player(Rectangle rect, Texture2D s, List<Rectangle> r, List<Rectangle> j, Rectangle st) : base(rect, s)
         {
             oldkb = Keyboard.GetState();
             running = r;
@@ -54,7 +54,7 @@ namespace Sinkhole_Sprinter
             standing = st;
             playerState = movement.idle;
             currentInt = 0;
-            isJumping = false;
+            canJump = true;
             timer = 0;
             velocity = new Vector2(0, 0);
             acceleration = new Vector2(0, GRAVITY);
@@ -64,6 +64,11 @@ namespace Sinkhole_Sprinter
         public void ChangeRunningFrame()
         {
             currentInt = (currentInt + 1) % running.Count;
+        }
+
+        public float GetMaxJumpDistance(float dHeight)
+        {
+            return MAX_SPEED * (20 + (float)Math.Sqrt(400 - 2 * dHeight));
         }
 
         public void Update()
@@ -111,13 +116,16 @@ namespace Sinkhole_Sprinter
 
             if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Up) || kb.IsKeyDown(Keys.Space))
             {
-                if (!isJumping)
+                if (canJump)
                 {
-                    isJumping = true;
+                    canJump = false;
                     velocity.Y = -JUMP;
                     currentsource = jumping[0];
                 }
             }
+
+            if (velocity.Y > 0)
+                canJump = false;
 
             velocity.X += acceleration.X;
             velocity.Y += acceleration.Y;
@@ -131,13 +139,26 @@ namespace Sinkhole_Sprinter
 
             if (Bottom > 720)
             {
-                isJumping = false;
+                canJump = true;
                 position.Y = 720 - rect.Height / 2;
                 velocity.Y = 0;
             }
 
             timer++;
             oldkb = kb;
+        }
+
+
+        // Check if the player is on top of a platform and make functionality
+        public void CheckCollisions(Platform platform)
+        {
+            // DEBUG THIS
+            if (Bottom - MAX_FALL_SPEED < platform.Top)
+            {
+                canJump = true;
+                position.Y = platform.Top - rect.Height / 2;
+                velocity.Y = 0;
+            }
         }
 
     }
