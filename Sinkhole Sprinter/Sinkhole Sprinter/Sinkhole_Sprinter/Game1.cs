@@ -22,6 +22,17 @@ namespace Sinkhole_Sprinter
         private List<Rectangle> running, jumping;
         Player player;
         Camera camera;
+        enum Gamestate
+        {
+            title, play, gameover
+        }
+        Gamestate currentState;
+        SpriteFont titleFont, titleTextFont;
+        public Color titleColor = Color.Black;
+        Rectangle titleRect, multiplayerTextRect;
+        MouseState mouse, oldMouse;
+        Color[] titleScreenColors = { Color.Black, Color.Black, Color.Black };
+        String[] titleScreenText = { "single player", "multiplayer" };
 
         //const int PLATFORM_SPEED = 3;
         List<Platform> platforms;
@@ -60,9 +71,8 @@ namespace Sinkhole_Sprinter
             running.Add(new Rectangle(800, 0, 400, 400));
             running.Add(new Rectangle(1200, 0, 400, 400));
             jumping.Add(new Rectangle(0, 0, 400, 400));
-
+            IsMouseVisible = true;
             platforms = new List<Platform>();
-            
 
             base.Initialize();
         }
@@ -78,7 +88,12 @@ namespace Sinkhole_Sprinter
 
             // TODO: use this.Content to load your game content here
             spreadsheet = this.Content.Load<Texture2D>("player_running_spritesheet_25");
-            player = new Player(new Rectangle(50, 0, 75, 75), spreadsheet, running, jumping, new Rectangle(0, 0, 400, 400));
+
+            titleTextFont = Content.Load<SpriteFont>("SpriteFont2");
+            titleFont = Content.Load<SpriteFont>("SpriteFont1");
+            titleRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[0]).Length() / 2)), 200, 30, 30);
+            multiplayerTextRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[1]).Length() / 2)), 300, 30, 30);
+            player = new Player(new Rectangle(50, 360, 75, 75), spreadsheet, running, jumping, new Rectangle(0, 0, 400, 400));
 
             placeholder = this.Content.Load<Texture2D>("white");
             createPlatform(new Vector2(Platform.WIDTH / 2, camera.boundingRectangle.Height * .7f));
@@ -100,42 +115,69 @@ namespace Sinkhole_Sprinter
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+             mouse = Mouse.GetState();
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
             // TODO: Add your update logic here
-            
-
-            for (int x = 0; x < platforms.Count; x++)
+            switch (currentState)
             {
-                //platforms[x].update(PLATFORM_SPEED);
+                case Gamestate.title:
+                    if (mouse.X > titleRect.X && mouse.X < titleRect.X + (("singleplayer".Length - 1) * 20) && mouse.Y > titleRect.Y + 10 && mouse.Y < titleRect.Y + titleRect.Height)
+                    {
+                        titleScreenColors[0] = Color.Gold;
+                        if (mouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released)
+                        {
+                            currentState = Gamestate.play;
+                        }
+                    }
+                    else
+                        titleScreenColors[0] = Color.Black;
+                    if (mouse.X > multiplayerTextRect.X && mouse.X < multiplayerTextRect.X + (("multiplayer".Length - 1) * 20) && mouse.Y > multiplayerTextRect.Y + 10 && mouse.Y < multiplayerTextRect.Y + multiplayerTextRect.Height)
+                    {
+                        titleScreenColors[1] = Color.Gold;
+                        if (mouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released)
+                        {
+                            currentState = Gamestate.play;
+                        }
+                    }
+                    else
+                        titleScreenColors[1] = Color.Black;
+                    break;
+                case Gamestate.play:
+                    for (int x = 0; x < platforms.Count; x++)
+                    {
+                        //platforms[x].update(PLATFORM_SPEED);
 
-                if (platforms[x].offScreen)
-                {
-                    platforms.Remove(platforms[x]);
-                    x--;
-                    continue;
-                }
+                        if (platforms[x].offScreen)
+                        {
+                            platforms.Remove(platforms[x]);
+                            x--;
+                            continue;
+                        }
 
-                if (platforms[x].rect.Intersects(player.rect))
-                    player.CheckCollisions(platforms[x]);
+                        if (platforms[x].rect.Intersects(player.rect))
+                            player.CheckCollisions(platforms[x]);
+                    }
+
+                    //if (timer % 60 == 0)
+                    //{
+                    //    platforms.Add(new Platform(new Rectangle(1280, platforms[platforms.Count-1].rect.Y+r.Next(-150,50), 70, 10), placeholder));
+                    //}
+
+                    player.Update();
+                    camera.Update();
+                    if (LastPlatform.position.X < camera.boundingRectangle.Right)
+                    {
+                        createPlatform();
+                    }
+                    camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
+                    camera.position.Y = Math.Min(player.position.Y, camera.boundingRectangle.Height / 2);
+                    break;
             }
 
-            //if (timer % 60 == 0)
-            //{
-            //    platforms.Add(new Platform(new Rectangle(1280, platforms[platforms.Count-1].rect.Y+r.Next(-150,50), 70, 10), placeholder));
-            //}
-
-            player.Update();
-            camera.Update();
-            if (LastPlatform.position.X < camera.boundingRectangle.Right)
-            {
-                createPlatform();
-            }
-            camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
-            camera.position.Y = Math.Min(player.position.Y, camera.boundingRectangle.Height / 2);
-
+            oldMouse = mouse;
             timer++;
             base.Update(gameTime);
         }
@@ -166,13 +208,27 @@ namespace Sinkhole_Sprinter
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
-
-            foreach (Platform platform in platforms)
+            switch (currentState)
             {
-                camera.Draw(gameTime, spriteBatch, platform);
-            }
+                case Gamestate.title:
+                    spriteBatch.DrawString(titleTextFont, "SINKHOLE SPRINTER", new Vector2(GraphicsDevice.Viewport.Width / 2  - (titleTextFont.MeasureString("SINKHOLE SPRINTER").Length() / 2), 50), Color.Black);
+                    spriteBatch.DrawString(titleFont, "single player", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("single player").Length() / 2), 200), titleScreenColors[0]);
+                    spriteBatch.DrawString(titleFont, "multiplayer", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("multiplayer").Length() / 2), 300), titleScreenColors[1]);
+                    spriteBatch.DrawString(titleFont, "high scores", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("high scores").Length() / 2), 400), titleScreenColors[2]);
 
-            camera.DrawPlayer(gameTime, spriteBatch, player);
+
+
+
+                    break;
+                case Gamestate.play:
+                    foreach (Platform platform in platforms)
+                    {
+                        camera.Draw(gameTime, spriteBatch, platform);
+                    }
+                    camera.DrawPlayer(gameTime, spriteBatch, player);
+                    break;
+            }
+            
             spriteBatch.End();
             base.Draw(gameTime);
         }
