@@ -13,7 +13,7 @@ namespace Sinkhole_Sprinter
 {
     class Player : Sprite
     {
-        const int MAX_SPEED = 7, JUMP = 20, MAX_FALL_SPEED = 20;
+        const int MAX_SPEED = 7, JUMP = 20, MAX_FALL_SPEED = 25;
         const float ACCELERATION = .8f, GRAVITY = 1, DRAG_FACTOR = .8f;
 
         // Source rects
@@ -45,7 +45,7 @@ namespace Sinkhole_Sprinter
         }
 
         
-        public Player(Texture2D s, List<Rectangle> r, List<Rectangle> j, Rectangle st) : base(new Rectangle(50, 360, 75, 75), s)
+        public Player(Rectangle rect, Texture2D s, List<Rectangle> r, List<Rectangle> j, Rectangle st) : base(rect, s)
         {
             oldkb = Keyboard.GetState();
             running = r;

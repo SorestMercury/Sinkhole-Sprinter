@@ -78,7 +78,7 @@ namespace Sinkhole_Sprinter
 
             // TODO: use this.Content to load your game content here
             spreadsheet = this.Content.Load<Texture2D>("player_running_spritesheet_25");
-            player = new Player(spreadsheet, running, jumping, new Rectangle(0, 0, 400, 400));
+            player = new Player(new Rectangle(50, 0, 75, 75), spreadsheet, running, jumping, new Rectangle(0, 0, 400, 400));
 
             placeholder = this.Content.Load<Texture2D>("white");
             createPlatform(new Vector2(Platform.WIDTH / 2, camera.boundingRectangle.Height * .7f));
@@ -105,9 +105,7 @@ namespace Sinkhole_Sprinter
                 this.Exit();
 
             // TODO: Add your update logic here
-            timer++;
-            player.Update();
-            camera.Update();
+            
 
             for (int x = 0; x < platforms.Count; x++)
             {
@@ -129,12 +127,16 @@ namespace Sinkhole_Sprinter
             //    platforms.Add(new Platform(new Rectangle(1280, platforms[platforms.Count-1].rect.Y+r.Next(-150,50), 70, 10), placeholder));
             //}
 
+            player.Update();
+            camera.Update();
             if (LastPlatform.position.X < camera.boundingRectangle.Right)
             {
                 createPlatform();
             }
-
             camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
+            camera.position.Y = Math.Min(player.position.Y, camera.boundingRectangle.Height / 2);
+
+            timer++;
             base.Update(gameTime);
         }
 
