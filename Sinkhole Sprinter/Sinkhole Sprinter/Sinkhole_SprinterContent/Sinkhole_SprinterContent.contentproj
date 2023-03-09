@@ -43,6 +43,27 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Fire.png">
+      <Name>Fire</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="exclamation.png">
+      <Name>exclamation</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Lava.png">
+      <Name>Lava</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="player_running_spritesheet_25.png">
       <Name>player_running_spritesheet_25</Name>
       <Importer>TextureImporter</Importer>
@@ -62,6 +83,8 @@
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="white.jpg">
       <Name>white</Name>
       <Importer>TextureImporter</Importer>
