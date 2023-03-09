@@ -145,6 +145,7 @@ namespace Sinkhole_Sprinter
                     else
                         titleScreenColors[1] = Color.Black;
                     break;
+
                 case Gamestate.play:
                     for (int x = 0; x < platforms.Count; x++)
                     {
@@ -189,8 +190,7 @@ namespace Sinkhole_Sprinter
             Vector2 position = new Vector2();
             // Make reasonable X and Y
             position.Y = LastPlatform.position.Y + dHeight;
-            position.X = Math.Max(LastPlatform.position.X + (float)(r.NextDouble() * .5 + .3) * player.GetMaxJumpDistance(dHeight), LastPlatform.position.X + Platform.WIDTH * 2);
-
+            position.X = Math.Max(LastPlatform.position.X + (float)(r.NextDouble() * .4 + .5) * player.GetMaxJumpDistance(dHeight), LastPlatform.position.X + Platform.WIDTH * 2);
             createPlatform(position);
         }
         private void createPlatform(Vector2 position)
