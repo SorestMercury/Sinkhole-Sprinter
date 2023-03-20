@@ -13,7 +13,7 @@ namespace Sinkhole_Sprinter
 {
     class Player : Sprite
     {
-        const int MAX_SPEED = 7, JUMP = 20, MAX_FALL_SPEED = 25;
+        const int MAX_SPEED = 8, JUMP = 20, MAX_FALL_SPEED = 25;
         const float ACCELERATION = .8f, GRAVITY = 1, DRAG_FACTOR = .8f;
 
         // Source rects
@@ -137,6 +137,8 @@ namespace Sinkhole_Sprinter
 
             position.X += velocity.X;
             position.Y += velocity.Y;
+
+            position.X = Math.Max(position.X, rect.Width / 2);
 
             if (Bottom > 720)
             {

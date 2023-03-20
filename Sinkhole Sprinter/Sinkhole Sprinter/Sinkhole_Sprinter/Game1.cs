@@ -35,6 +35,20 @@ namespace Sinkhole_Sprinter
         string[] titleScreenText = { "single player", "multiplayer" };
 
         //const int PLATFORM_SPEED = 3;
+        // How much the platform can spawn up or down
+        const int PLATFORM_HEIGHT_VARIANCE = 100;
+        // Minimum average increase in height
+        const int PLATFORM_HEIGHT_GAIN = 10;
+        // Bonus height increase that lowers with increasing difficulty
+        const int PLATFORM_EXTRA_HEIGHT_GAIN = 40;
+        // How far to travel to half the bonus height gain and jump wiggle room
+        const int PLATFORM_DIFFICULTY_DISTANCE = 20000;
+        // The minimum height the platform can spawn at above the lava
+        const int PLATFORM_MIN_HEIGHT = 30;
+        // The portion of max jump distance not required
+        const float PLATFORM_MIN_WIGGLE_ROOM = .1f;
+        // Less portion of max jump distance required, decreases with difficulty
+        const float PLATFORM_BONUS_WIGGLE_ROOM = .4f;
         List<Platform> platforms;
         Platform LastPlatform
         {
@@ -214,11 +228,18 @@ namespace Sinkhole_Sprinter
         // Create a new platform in calculated position
         private void createPlatform()
         {
-            int dHeight = r.Next(-150, 50);
+            // Average height gain based on difficulty (max distance)
+            int avgGain = PLATFORM_HEIGHT_GAIN + (int)(PLATFORM_EXTRA_HEIGHT_GAIN * Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
+            int dHeight = r.Next(-(avgGain + PLATFORM_HEIGHT_VARIANCE), -(avgGain - PLATFORM_HEIGHT_VARIANCE));
             Vector2 position = new Vector2();
-            // Make reasonable X and Y
-            position.Y = LastPlatform.position.Y + dHeight;
-            position.X = Math.Max(LastPlatform.position.X + (float)(r.NextDouble() * .4 + .4) * player.GetMaxJumpDistance(dHeight), LastPlatform.position.X + Platform.WIDTH * 2);
+            // TODO: Change viewport height to max lava height + PLATFORM_MIN_HEIGHT
+            position.Y = Math.Min(LastPlatform.position.Y + dHeight, graphics.GraphicsDevice.Viewport.Height);
+
+            // Fraction of the max jump distance based on difficulty (max distance)
+            float reverseDistanceModifier = (float)(PLATFORM_MIN_WIGGLE_ROOM + PLATFORM_BONUS_WIGGLE_ROOM * Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
+            float distanceModifier = 1 - (float)(r.NextDouble() * reverseDistanceModifier / 2 + reverseDistanceModifier);
+            position.X = Math.Max(LastPlatform.position.X + distanceModifier * player.GetMaxJumpDistance(dHeight), LastPlatform.position.X + Platform.WIDTH * 2);
+            Console.WriteLine(avgGain + ", " + (1- reverseDistanceModifier));
             createPlatform(position);
         }
         private void createPlatform(Vector2 position)
