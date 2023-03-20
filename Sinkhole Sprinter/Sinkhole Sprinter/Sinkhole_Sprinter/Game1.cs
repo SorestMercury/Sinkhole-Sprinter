@@ -32,7 +32,7 @@ namespace Sinkhole_Sprinter
         Rectangle titleRect, multiplayerTextRect;
         MouseState mouse, oldMouse;
         Color[] titleScreenColors = { Color.Black, Color.Black, Color.Black };
-        String[] titleScreenText = { "single player", "multiplayer" };
+        string[] titleScreenText = { "single player", "multiplayer" };
 
         //const int PLATFORM_SPEED = 3;
         List<Platform> platforms;
@@ -41,7 +41,14 @@ namespace Sinkhole_Sprinter
             get => platforms[platforms.Count - 1];
         }
 
+        // Stats
+        int maxHeight; // Highest height (flipped to positive, greater is higher)
+        int points; // Gained based on time, used to by items
+        int distance; // Furthest distance
+        int score; // Calculated based on previous stats
+
         Texture2D placeholder;
+        // Time survived
         int timer = 0;
         Random r = new Random();
 
@@ -73,6 +80,9 @@ namespace Sinkhole_Sprinter
             jumping.Add(new Rectangle(0, 0, 400, 400));
             IsMouseVisible = true;
             platforms = new List<Platform>();
+            maxHeight = 0;
+            points = 0;
+            distance = 0;
 
             base.Initialize();
         }
@@ -129,7 +139,7 @@ namespace Sinkhole_Sprinter
                         titleScreenColors[0] = Color.Gold;
                         if (mouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released)
                         {
-                            currentState = Gamestate.play;
+                            startGame();
                         }
                     }
                     else
@@ -139,7 +149,7 @@ namespace Sinkhole_Sprinter
                         titleScreenColors[1] = Color.Gold;
                         if (mouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released)
                         {
-                            currentState = Gamestate.play;
+                            startGame();
                         }
                     }
                     else
@@ -174,13 +184,31 @@ namespace Sinkhole_Sprinter
                         createPlatform();
                     }
                     camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
-                    camera.position.Y = Math.Min(player.position.Y, camera.boundingRectangle.Height / 2);
+                    camera.position.Y = Math.Min(player.position.Y, camera.boundingRectangle.Height / 2); // Add lava to minimum
+
+                    maxHeight = Math.Max((int)(800 - player.position.Y), maxHeight);
+                    distance = Math.Max((int)player.position.X, distance);
+                    if (timer % 60 == 0)
+                        points += 10 + timer / 600;
+                    // TODO: Add score
+
+                    timer++;
                     break;
             }
 
             oldMouse = mouse;
-            timer++;
+            
             base.Update(gameTime);
+        }
+
+        // Resets stats and starts the game (multiplayer parameter in future)
+        private void startGame()
+        {
+            currentState = Gamestate.play;
+            maxHeight = 0;
+            distance = 0;
+            points = 0;
+            timer = 0;
         }
 
         // Create a new platform in calculated position
@@ -190,7 +218,7 @@ namespace Sinkhole_Sprinter
             Vector2 position = new Vector2();
             // Make reasonable X and Y
             position.Y = LastPlatform.position.Y + dHeight;
-            position.X = Math.Max(LastPlatform.position.X + (float)(r.NextDouble() * .4 + .5) * player.GetMaxJumpDistance(dHeight), LastPlatform.position.X + Platform.WIDTH * 2);
+            position.X = Math.Max(LastPlatform.position.X + (float)(r.NextDouble() * .4 + .4) * player.GetMaxJumpDistance(dHeight), LastPlatform.position.X + Platform.WIDTH * 2);
             createPlatform(position);
         }
         private void createPlatform(Vector2 position)
