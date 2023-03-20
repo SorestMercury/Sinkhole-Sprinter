@@ -101,25 +101,24 @@ namespace Sinkhole_Sprinter
             if (kb.IsKeyDown(Keys.A) || kb.IsKeyDown(Keys.Left))
             {
                 acceleration.X = -ACCELERATION;
-                if (timer % 8 == 0)
+                if (timer % 8 == 0 && canJump)
                 {
                     ChangeRunningFrame();
 
                     currentsource = running[currentInt];
-                    playerState = movement.left;
                 }
-
+                playerState = movement.left;
             }
             else if (kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.Right))
             {
                 acceleration.X = ACCELERATION;
-                if (timer % 8 == 0)
+                if (timer % 8 == 0 && canJump)
                 {
                     ChangeRunningFrame();
 
                     currentsource = running[currentInt];
-                    playerState = movement.right;
                 }
+                playerState = movement.right;
             }
             else
             {
@@ -141,8 +140,6 @@ namespace Sinkhole_Sprinter
                 {
                     canJump = false;
                     velocity.Y = -JUMP;
-                    currentsource = jumping[0];
-                    currentInt = 0;
                 }
             }
 
