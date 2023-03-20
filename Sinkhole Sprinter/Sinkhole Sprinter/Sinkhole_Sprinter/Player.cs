@@ -16,6 +16,9 @@ namespace Sinkhole_Sprinter
         const int MAX_SPEED = 7, JUMP = 20, MAX_FALL_SPEED = 25;
         const float ACCELERATION = .8f, GRAVITY = 1, DRAG_FACTOR = .8f;
 
+        //in the instance that multiple sprite sheets are necessary
+        List<Texture2D> textures;
+
         // Source rects
         private List<Rectangle> running, jumping;
         // Current source rectangle
@@ -47,6 +50,23 @@ namespace Sinkhole_Sprinter
         
         public Player(Rectangle rect, Texture2D s, List<Rectangle> r, List<Rectangle> j, Rectangle st) : base(rect, s)
         {
+            oldkb = Keyboard.GetState();
+            running = r;
+            jumping = j;
+            currentsource = st;
+            standing = st;
+            playerState = movement.idle;
+            currentInt = 0;
+            canJump = true;
+            timer = 0;
+            velocity = new Vector2(0, 0);
+            acceleration = new Vector2(0, GRAVITY);
+        }
+
+        public Player(Rectangle rect, List<Texture2D> s, List<Rectangle> r, List<Rectangle> j, Rectangle st) : base(rect, s[0])
+        {
+            texture = s[0];
+            textures = s;
             oldkb = Keyboard.GetState();
             running = r;
             jumping = j;
@@ -122,11 +142,31 @@ namespace Sinkhole_Sprinter
                     canJump = false;
                     velocity.Y = -JUMP;
                     currentsource = jumping[0];
+                    currentInt = 0;
                 }
             }
 
             if (velocity.Y > 0)
+            {
                 canJump = false;
+            }
+
+            //check if player is in the air, if they are, switch to jumping spritesheet and animate accordingly
+            if (!canJump)
+            {
+                if (timer % 8 == 0)
+                {
+                    texture = textures[1];
+                    currentInt = (currentInt + 1) % jumping.Count;
+                    currentsource = jumping[currentInt];
+                }
+            }
+
+            else
+            {
+                if(timer%8==0)
+                    texture = textures[0];
+            }
 
             velocity.X += acceleration.X;
             velocity.Y += acceleration.Y;
