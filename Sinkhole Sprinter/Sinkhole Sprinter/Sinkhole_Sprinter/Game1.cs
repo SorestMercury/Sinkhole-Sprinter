@@ -26,16 +26,17 @@ namespace Sinkhole_Sprinter
         {
             title, play, gameover
         }
-        Gamestate currentState = Gamestate.play;
+        Gamestate currentState;
         SpriteFont titleFont, titleTextFont, testFont;
         public Color titleColor = Color.Black;
         Rectangle titleRect, multiplayerTextRect;
         MouseState mouse, oldMouse;
+        KeyboardState oldKb;
         Color[] titleScreenColors = { Color.Black, Color.Black, Color.Black };
         Color[] deathScreenColors = { Color.Black, Color.Black, Color.Black };
 
-        String[] titleScreenText = { "single player", "multiplayer" };
-        String[] gameoverScreenText = { "play again", "main menu" };
+        string[] titleScreenText = { "single player", "multiplayer" };
+        string[] gameoverScreenText = { "play again", "main menu" };
         Rectangle[] deathScreenText;
 
         //const int PLATFORM_SPEED = 3;
@@ -98,10 +99,9 @@ namespace Sinkhole_Sprinter
             running.Add(new Rectangle(1200, 0, 400, 400));
             jumping.Add(new Rectangle(0, 0, 400, 400));
             IsMouseVisible = true;
+            currentState = Gamestate.title;
             platforms = new List<Platform>();
-            maxHeight = 0;
-            points = 0;
-            distance = 0;
+            oldKb = Keyboard.GetState();
 
             deathScreenText = new Rectangle[5];
             base.Initialize();
@@ -127,10 +127,8 @@ namespace Sinkhole_Sprinter
             deathScreenText[1] = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("main menu").Length() / 2)), 350, 30, 30);
 
             testFont = Content.Load<SpriteFont>("SpriteFont3");
-            player = new Player(new Rectangle(50, STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - 38, 75, 75), spreadsheet, running, jumping, new Rectangle(0, 0, 400, 400));
 
             placeholder = this.Content.Load<Texture2D>("white");
-            createPlatform(new Vector2(Platform.WIDTH / 2, STARTING_PLATFORM_HEIGHT));
         }
 
         /// <summary>
@@ -149,7 +147,8 @@ namespace Sinkhole_Sprinter
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-             mouse = Mouse.GetState();
+            mouse = Mouse.GetState();
+            KeyboardState kb = Keyboard.GetState();
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
@@ -211,7 +210,7 @@ namespace Sinkhole_Sprinter
                     camera.position.Y = Math.Min(player.position.Y, camera.boundingRectangle.Height / 2);
                     if (player.position.Y >= 683 ) // checks if player is dead
                     {
-                        currentState = Gamestate.gameover;
+                        onDeath();
                     }
                     camera.position.Y = Math.Min(player.position.Y, camera.boundingRectangle.Height / 2); // Add lava to minimum
 
@@ -226,14 +225,10 @@ namespace Sinkhole_Sprinter
                     break;
                     
                 case Gamestate.gameover:
-                    KeyboardState kb = Keyboard.GetState();
-                    KeyboardState oldKb = Keyboard.GetState();
-
                     if (kb.IsKeyDown(Keys.R) && !oldKb.IsKeyDown(Keys.R))
                     {
                         currentState = Gamestate.play;
-                        player.position.Y = 400;
-                        player.position.X = 100;
+                        startGame();
                     }
                     if (mouse.X > deathScreenText[0].X &&
                         mouse.X < deathScreenText[0].X + (("play again".Length - 1) * 20) && mouse.Y > deathScreenText[0].Y + 10 &&    mouse.Y < deathScreenText[0].Y + deathScreenText[0].Height)
@@ -242,10 +237,6 @@ namespace Sinkhole_Sprinter
                         if (mouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released)
                         {
                             currentState = Gamestate.title;
-                            player.position.Y = 400;
-                            player.position.X = 100;
-
-
                         }
                     }
                     else
@@ -256,9 +247,6 @@ namespace Sinkhole_Sprinter
                         if (mouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released)
                         {
                             currentState = Gamestate.title;
-                            player.position.Y = 400;
-                            player.position.X = 100;
-
                         }
                     }
                     else
@@ -276,10 +264,19 @@ namespace Sinkhole_Sprinter
         private void startGame()
         {
             currentState = Gamestate.play;
+            createPlatform(new Vector2(Platform.WIDTH / 2, STARTING_PLATFORM_HEIGHT));
+            player = new Player(new Rectangle(50, STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - 38, 75, 75), spreadsheet, running, jumping, new Rectangle(0, 0, 400, 400));
             maxHeight = 0;
             distance = 0;
             points = 0;
             timer = 0;
+        }
+
+        // Ran when the player dies
+        private void onDeath()
+        {
+            currentState = Gamestate.gameover;
+            platforms.Clear();
         }
 
         // Create a new platform in calculated position

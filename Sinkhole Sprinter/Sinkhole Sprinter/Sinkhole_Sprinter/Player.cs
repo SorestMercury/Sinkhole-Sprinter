@@ -52,7 +52,8 @@ namespace Sinkhole_Sprinter
             jumping = j;
             currentsource = st;
             standing = st;
-            playerState = movement.idle;
+            // playerState = movement.idle;
+            playerState = movement.right;
             currentInt = 0;
             canJump = true;
             timer = 0;
