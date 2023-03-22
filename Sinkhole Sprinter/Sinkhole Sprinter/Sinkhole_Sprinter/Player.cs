@@ -16,12 +16,13 @@ namespace Sinkhole_Sprinter
         const int MAX_SPEED = 8, JUMP = 20, MAX_FALL_SPEED = 25;
         const float ACCELERATION = .8f, GRAVITY = 1, DRAG_FACTOR = .8f, AIR_RESISTANCE = .95f;
 
+        //in the instance that multiple sprite sheets are necessary
+        List<Texture2D> textures;
+
         // Source rects
-        private List<Rectangle> running, jumping;
+        private List<Rectangle> running, jumping, standing;
         // Current source rectangle
         public Rectangle currentsource;
-        // Standing animation
-        private Rectangle standing;
         // If player is moving
         public movement playerState;
         // Frame of animation
@@ -45,12 +46,29 @@ namespace Sinkhole_Sprinter
         }
 
         
-        public Player(Rectangle rect, Texture2D s, List<Rectangle> r, List<Rectangle> j, Rectangle st) : base(rect, s)
+        public Player(Rectangle rect, Texture2D s, List<Rectangle> r, List<Rectangle> j, List<Rectangle> st) : base(rect, s)
         {
             oldkb = Keyboard.GetState();
             running = r;
             jumping = j;
-            currentsource = st;
+            currentsource = st[0];
+            standing = st;
+            playerState = movement.idle;
+            currentInt = 0;
+            canJump = true;
+            timer = 0;
+            velocity = new Vector2(0, 0);
+            acceleration = new Vector2(0, GRAVITY);
+        }
+
+        public Player(Rectangle rect, List<Texture2D> s, List<Rectangle> r, List<Rectangle> j, List<Rectangle> st) : base(rect, s[0])
+        {
+            texture = s[0];
+            textures = s;
+            oldkb = Keyboard.GetState();
+            running = r;
+            jumping = j;
+            currentsource = st[0];
             standing = st;
             // playerState = movement.idle;
             playerState = movement.right;
@@ -82,28 +100,34 @@ namespace Sinkhole_Sprinter
             if (kb.IsKeyDown(Keys.A) || kb.IsKeyDown(Keys.Left))
             {
                 acceleration.X = -ACCELERATION;
-                if (timer % 8 == 0)
+                if (timer % 8 == 0 && canJump)
                 {
                     ChangeRunningFrame();
 
                     currentsource = running[currentInt];
-                    playerState = movement.left;
                 }
-
+                playerState = movement.left;
             }
             else if (kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.Right))
             {
                 acceleration.X = ACCELERATION;
-                if (timer % 8 == 0)
+                if (timer % 8 == 0 && canJump)
                 {
                     ChangeRunningFrame();
 
                     currentsource = running[currentInt];
-                    playerState = movement.right;
                 }
+                playerState = movement.right;
             }
             else
             {
+                if (timer % 8 == 0)
+                {
+                    currentsource = standing[0];
+                    playerState = movement.idle;
+                }
+                acceleration.X = 0;
+                velocity.X *= DRAG_FACTOR;
                 acceleration.X = 0;
                 if (canJump)
                 {
@@ -130,12 +154,41 @@ namespace Sinkhole_Sprinter
                 {
                     canJump = false;
                     velocity.Y = -JUMP;
-                    currentsource = jumping[0];
                 }
             }
 
             if (velocity.Y > 0)
+            {
                 canJump = false;
+            }
+
+            //check if player is in the air, if they are, switch to jumping spritesheet and animate accordingly
+            if (!canJump)
+            {
+                if (timer % 8 == 0)
+                {
+                    texture = textures[1];
+                    currentInt = (currentInt + 1) % jumping.Count;
+                    currentsource = jumping[currentInt];
+                }
+            }
+
+            //check if player is standing still, if so, switch to idle spritesheet
+            else if (playerState == movement.idle)
+            {
+                if(timer%8==0)
+                {
+                    texture = textures[2];
+                    currentInt = (currentInt + 1) % standing.Count;
+                    currentsource = standing[currentInt];
+                }
+            }
+
+            else
+            {
+                if(timer%8==0)
+                    texture = textures[0];
+            }
 
             velocity.X += acceleration.X;
             velocity.Y += acceleration.Y;
