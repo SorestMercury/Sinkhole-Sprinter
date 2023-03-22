@@ -35,6 +35,7 @@ namespace Sinkhole_Sprinter
         string[] titleScreenText = { "single player", "multiplayer" };
 
         //const int PLATFORM_SPEED = 3;
+        const int STARTING_PLATFORM_HEIGHT = 500;
         // How much the platform can spawn up or down
         const int PLATFORM_HEIGHT_VARIANCE = 100;
         // Minimum average increase in height
@@ -117,10 +118,10 @@ namespace Sinkhole_Sprinter
             titleFont = Content.Load<SpriteFont>("SpriteFont1");
             titleRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[0]).Length() / 2)), 200, 30, 30);
             multiplayerTextRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[1]).Length() / 2)), 300, 30, 30);
-            player = new Player(new Rectangle(50, 360, 75, 75), spreadsheet, running, jumping, new Rectangle(0, 0, 400, 400));
+            player = new Player(new Rectangle(50, STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - 38, 75, 75), spreadsheet, running, jumping, new Rectangle(0, 0, 400, 400));
 
             placeholder = this.Content.Load<Texture2D>("white");
-            createPlatform(new Vector2(Platform.WIDTH / 2, camera.boundingRectangle.Height * .7f));
+            createPlatform(new Vector2(Platform.WIDTH / 2, STARTING_PLATFORM_HEIGHT));
         }
 
         /// <summary>
@@ -200,11 +201,12 @@ namespace Sinkhole_Sprinter
                     camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
                     camera.position.Y = Math.Min(player.position.Y, camera.boundingRectangle.Height / 2); // Add lava to minimum
 
-                    maxHeight = Math.Max((int)(800 - player.position.Y), maxHeight);
+                    // Update stats
+                    maxHeight = Math.Max(STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - player.Bottom, maxHeight);
                     distance = Math.Max((int)player.position.X, distance);
                     if (timer % 60 == 0)
-                        points += 10 + timer / 600;
-                    // TODO: Add score
+                        points += Math.Min(10 + timer / 600, 100);
+                    score = points + timer / 12 + maxHeight + distance / 20;
 
                     timer++;
                     break;
@@ -233,13 +235,12 @@ namespace Sinkhole_Sprinter
             int dHeight = r.Next(-(avgGain + PLATFORM_HEIGHT_VARIANCE), -(avgGain - PLATFORM_HEIGHT_VARIANCE));
             Vector2 position = new Vector2();
             // TODO: Change viewport height to max lava height + PLATFORM_MIN_HEIGHT
-            position.Y = Math.Min(LastPlatform.position.Y + dHeight, graphics.GraphicsDevice.Viewport.Height);
+            position.Y = Math.Min(LastPlatform.position.Y + dHeight, STARTING_PLATFORM_HEIGHT);
 
             // Fraction of the max jump distance based on difficulty (max distance)
             float reverseDistanceModifier = (float)(PLATFORM_MIN_WIGGLE_ROOM + PLATFORM_BONUS_WIGGLE_ROOM * Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
             float distanceModifier = 1 - (float)(r.NextDouble() * reverseDistanceModifier / 2 + reverseDistanceModifier);
             position.X = Math.Max(LastPlatform.position.X + distanceModifier * player.GetMaxJumpDistance(dHeight), LastPlatform.position.X + Platform.WIDTH * 2);
-            Console.WriteLine(avgGain + ", " + (1- reverseDistanceModifier));
             createPlatform(position);
         }
         private void createPlatform(Vector2 position)
@@ -277,7 +278,6 @@ namespace Sinkhole_Sprinter
                     camera.DrawPlayer(gameTime, spriteBatch, player);
                     break;
             }
-            
             spriteBatch.End();
             base.Draw(gameTime);
         }
