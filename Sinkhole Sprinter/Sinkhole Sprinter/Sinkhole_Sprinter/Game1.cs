@@ -66,6 +66,7 @@ namespace Sinkhole_Sprinter
         int points; // Gained based on time, used to by items
         int distance; // Furthest distance
         int score; // Calculated based on previous stats
+        List<int> highScores;
 
         Texture2D placeholder;
         // Time survived
@@ -102,6 +103,7 @@ namespace Sinkhole_Sprinter
             currentState = Gamestate.title;
             platforms = new List<Platform>();
             oldKb = Keyboard.GetState();
+            highScores = new List<int>();
 
             deathScreenText = new Rectangle[5];
             base.Initialize();
@@ -276,6 +278,9 @@ namespace Sinkhole_Sprinter
         private void onDeath()
         {
             currentState = Gamestate.gameover;
+            highScores.Add(score);
+            highScores.Sort();
+            highScores.Reverse();
             platforms.Clear();
         }
 
