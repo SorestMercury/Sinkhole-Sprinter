@@ -13,7 +13,7 @@ namespace Sinkhole_Sprinter
 {
     class Player : Sprite
     {
-        const int MAX_SPEED = 7, JUMP = 20, MAX_FALL_SPEED = 25;
+        const int MAX_SPEED = 8, JUMP = 20, MAX_FALL_SPEED = 25;
         const float ACCELERATION = .8f, GRAVITY = 1, DRAG_FACTOR = .8f;
 
         // Source rects
@@ -66,9 +66,10 @@ namespace Sinkhole_Sprinter
             currentInt = (currentInt + 1) % running.Count;
         }
 
+        // Get the maximum distance the player can jump, factoring in player and platform width
         public float GetMaxJumpDistance(float dHeight)
         {
-            return MAX_SPEED * (20 + (float)Math.Sqrt(400 - 2 * dHeight));
+            return MAX_SPEED * (JUMP + (float)Math.Sqrt(Math.Pow(JUMP, 2) + 2 * dHeight)) + Platform.WIDTH + rect.Width;
         }
 
         public void Update()
@@ -136,6 +137,8 @@ namespace Sinkhole_Sprinter
 
             position.X += velocity.X;
             position.Y += velocity.Y;
+
+            position.X = Math.Max(position.X, rect.Width / 2);
 
             if (Bottom > 720)
             {
