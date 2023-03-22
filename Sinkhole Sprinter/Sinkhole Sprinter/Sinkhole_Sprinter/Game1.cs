@@ -29,7 +29,7 @@ namespace Sinkhole_Sprinter
             title, play, gameover
         }
         Gamestate currentState;
-        SpriteFont titleFont, titleTextFont, testFont;
+        SpriteFont titleFont, titleTextFont, scoreFont, testFont;
         public Color titleColor = Color.Black;
         Rectangle titleRect, multiplayerTextRect;
         MouseState mouse, oldMouse;
@@ -141,6 +141,7 @@ namespace Sinkhole_Sprinter
 
             titleTextFont = Content.Load<SpriteFont>("SpriteFont2");
             titleFont = Content.Load<SpriteFont>("SpriteFont1");
+            scoreFont = Content.Load<SpriteFont>("ScoreFont");
             titleRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[0]).Length() / 2)), 200, 30, 30);
             multiplayerTextRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[1]).Length() / 2)), 300, 30, 30);
             player = new Player(new Rectangle(50, 360, 75, 75), sheets, running, jumping, standing);
@@ -351,6 +352,15 @@ namespace Sinkhole_Sprinter
                         camera.Draw(gameTime, spriteBatch, platform);
                     }
                     camera.DrawPlayer(gameTime, spriteBatch, player);
+                    spriteBatch.Draw(placeholder, new Rectangle(00, 0, GraphicsDevice.Viewport.Width, 25), Color.Black);
+                    spriteBatch.DrawString(scoreFont, "score: " + score, new Vector2(0, 00), Color.White); // points distance max height
+                    spriteBatch.DrawString(scoreFont, "points: " + points, new Vector2(GraphicsDevice.Viewport.Width / 2 -  (scoreFont.MeasureString("points: " + points).Length() / 2), 00), Color.White);
+                    spriteBatch.DrawString(scoreFont, "height: " + maxHeight, new Vector2(1280 - (scoreFont.MeasureString("height: " + maxHeight).Length()), 00), Color.White);
+
+
+
+
+
                     break;
                 case Gamestate.gameover:
                     spriteBatch.DrawString(titleTextFont, "you died", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleTextFont.MeasureString("you died").Length() / 2), 50), Color.DarkRed);
