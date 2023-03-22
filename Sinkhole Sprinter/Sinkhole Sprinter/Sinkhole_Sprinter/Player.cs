@@ -20,11 +20,9 @@ namespace Sinkhole_Sprinter
         List<Texture2D> textures;
 
         // Source rects
-        private List<Rectangle> running, jumping;
+        private List<Rectangle> running, jumping, standing;
         // Current source rectangle
         public Rectangle currentsource;
-        // Standing animation
-        private Rectangle standing;
         // If player is moving
         public movement playerState;
         // Frame of animation
@@ -48,12 +46,12 @@ namespace Sinkhole_Sprinter
         }
 
         
-        public Player(Rectangle rect, Texture2D s, List<Rectangle> r, List<Rectangle> j, Rectangle st) : base(rect, s)
+        public Player(Rectangle rect, Texture2D s, List<Rectangle> r, List<Rectangle> j, List<Rectangle> st) : base(rect, s)
         {
             oldkb = Keyboard.GetState();
             running = r;
             jumping = j;
-            currentsource = st;
+            currentsource = st[0];
             standing = st;
             playerState = movement.idle;
             currentInt = 0;
@@ -63,14 +61,14 @@ namespace Sinkhole_Sprinter
             acceleration = new Vector2(0, GRAVITY);
         }
 
-        public Player(Rectangle rect, List<Texture2D> s, List<Rectangle> r, List<Rectangle> j, Rectangle st) : base(rect, s[0])
+        public Player(Rectangle rect, List<Texture2D> s, List<Rectangle> r, List<Rectangle> j, List<Rectangle> st) : base(rect, s[0])
         {
             texture = s[0];
             textures = s;
             oldkb = Keyboard.GetState();
             running = r;
             jumping = j;
-            currentsource = st;
+            currentsource = st[0];
             standing = st;
             playerState = movement.idle;
             currentInt = 0;
@@ -124,9 +122,8 @@ namespace Sinkhole_Sprinter
             {
                 if (timer % 8 == 0)
                 {
-                    currentsource = standing;
-                    // Uncomment when 
-                    //playerState = movement.idle;
+                    currentsource = standing[0];
+                    playerState = movement.idle;
                 }
                 acceleration.X = 0;
                 velocity.X *= DRAG_FACTOR;
@@ -156,6 +153,17 @@ namespace Sinkhole_Sprinter
                     texture = textures[1];
                     currentInt = (currentInt + 1) % jumping.Count;
                     currentsource = jumping[currentInt];
+                }
+            }
+
+            //check if player is standing still, if so, switch to idle spritesheet
+            else if (playerState == movement.idle)
+            {
+                if(timer%8==0)
+                {
+                    texture = textures[2];
+                    currentInt = (currentInt + 1) % standing.Count;
+                    currentsource = standing[currentInt];
                 }
             }
 

@@ -20,7 +20,8 @@ namespace Sinkhole_Sprinter
         SpriteBatch spriteBatch;
         Texture2D spreadsheet;
         Texture2D jump;
-        private List<Rectangle> running, jumping;
+        Texture2D idle;
+        private List<Rectangle> running, jumping, standing;
         Player player;
         Camera camera;
         enum Gamestate
@@ -67,16 +68,21 @@ namespace Sinkhole_Sprinter
             camera = new Camera(new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
             running = new List<Rectangle>();
             jumping = new List<Rectangle>();
+            standing= new List<Rectangle>();
             running.Add(new Rectangle(0, 0, 400, 400));
             running.Add(new Rectangle(400, 0, 400, 400));
             running.Add(new Rectangle(800, 0, 400, 400));
             running.Add(new Rectangle(1200, 0, 400, 400));
-            jumping.Add(new Rectangle(0, 0, 300, 300));
-            jumping.Add(new Rectangle(300, 0, 300, 300));
-            jumping.Add(new Rectangle(600, 0, 300, 300));
-            jumping.Add(new Rectangle(900, 0, 300, 300));
-            jumping.Add(new Rectangle(1200, 0, 300, 300));
-            jumping.Add(new Rectangle(1500, 0, 300, 300));
+            jumping.Add(new Rectangle(0, 300, 300, 300));
+            jumping.Add(new Rectangle(300, 300, 300, 300));
+            jumping.Add(new Rectangle(600, 300, 300, 300));
+            jumping.Add(new Rectangle(900, 300, 300, 300));
+            jumping.Add(new Rectangle(1200, 200, 300, 400));
+            jumping.Add(new Rectangle(1500, 200, 300, 400));
+            standing.Add(new Rectangle(0, 0, 300, 300));
+            standing.Add(new Rectangle(300, 0, 300, 300));
+            standing.Add(new Rectangle(600, 0, 300, 300));
+            standing.Add(new Rectangle(900, 0, 300, 300));
             IsMouseVisible = true;
             platforms = new List<Platform>();
 
@@ -94,16 +100,18 @@ namespace Sinkhole_Sprinter
 
             // TODO: use this.Content to load your game content here
             spreadsheet = this.Content.Load<Texture2D>("player_running_spritesheet_25");
-            jump = this.Content.Load<Texture2D>("jumping spritesheet");
+            jump = this.Content.Load<Texture2D>("jumping spritesheet 2");
+            idle = this.Content.Load<Texture2D>("idle spritesheet");
             List<Texture2D> sheets = new List<Texture2D>();
             sheets.Add(spreadsheet);
             sheets.Add(jump);
+            sheets.Add(idle);
 
             titleTextFont = Content.Load<SpriteFont>("SpriteFont2");
             titleFont = Content.Load<SpriteFont>("SpriteFont1");
             titleRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[0]).Length() / 2)), 200, 30, 30);
             multiplayerTextRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[1]).Length() / 2)), 300, 30, 30);
-            player = new Player(new Rectangle(50, 360, 75, 75), sheets, running, jumping, new Rectangle(0, 0, 400, 400));
+            player = new Player(new Rectangle(50, 360, 75, 75), sheets, running, jumping, standing);
 
             placeholder = this.Content.Load<Texture2D>("white");
             createPlatform(new Vector2(Platform.WIDTH / 2, camera.boundingRectangle.Height * .7f));
