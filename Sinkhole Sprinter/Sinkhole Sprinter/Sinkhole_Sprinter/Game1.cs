@@ -52,6 +52,9 @@ namespace Sinkhole_Sprinter
         int timer = 0;
         Random r = new Random();
 
+        // lava and fire
+        Texture2D Lava, firesheet, exclamation;
+        Lava lava;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -83,7 +86,7 @@ namespace Sinkhole_Sprinter
             maxHeight = 0;
             points = 0;
             distance = 0;
-
+            
             base.Initialize();
         }
 
@@ -107,6 +110,13 @@ namespace Sinkhole_Sprinter
 
             placeholder = this.Content.Load<Texture2D>("white");
             createPlatform(new Vector2(Platform.WIDTH / 2, camera.boundingRectangle.Height * .7f));
+
+            firesheet = this.Content.Load<Texture2D>("Fire");
+            Lava = this.Content.Load<Texture2D>("Lava");
+            lava = new Lava(new Rectangle(600, 700, 1500, 300), Lava, camera); 
+            exclamation = this.Content.Load<Texture2D>("exclamation");
+
+
         }
 
         /// <summary>
@@ -179,6 +189,7 @@ namespace Sinkhole_Sprinter
 
                     player.Update();
                     camera.Update();
+                    lava.Update(camera);
                     if (LastPlatform.position.X < camera.boundingRectangle.Right)
                     {
                         createPlatform();
@@ -254,6 +265,9 @@ namespace Sinkhole_Sprinter
                         camera.Draw(gameTime, spriteBatch, platform);
                     }
                     camera.DrawPlayer(gameTime, spriteBatch, player);
+                    spriteBatch.Draw(placeholder, new Rectangle(0, lava.rect.Bottom - 5, 1500, Math.Max(GraphicsDevice.Viewport.Height - lava.rect.Bottom + 5, 0)), new Color(255, 79, 9));
+                    camera.Draw(gameTime,spriteBatch,lava);
+                    
                     break;
             }
             

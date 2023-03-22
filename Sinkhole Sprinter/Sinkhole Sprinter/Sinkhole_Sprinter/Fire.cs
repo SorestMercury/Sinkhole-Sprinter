@@ -11,21 +11,21 @@ using System.Linq;
 
 namespace Sinkhole_Sprinter
 {
-    class Fire
+    class Fire : Sprite
     {
-        private Texture spreadsheet;
+        private Texture2D spreadsheet;
         public List<Rectangle> fireAnim;
         public int currentRectangle = 0;
         private int timer = 0, speed, timer2 = 0;
         public Rectangle destRectangle, exclaimRectangle;
         private bool exclaim = false, start = false;
-        public Fire(Texture s, int sp)
+        public Fire(Texture2D f, Texture2D e, int sp)
         {
-            spreadsheet = s;
+            spreadsheet = f;
             speed = sp;
             fireAnim = new List<Rectangle>();
             fireAnim.Add(new Rectangle(70, 70, 80, 314));
-            fireAnim.Add(new Rectangle(160,50, 80, 314));
+            fireAnim.Add(new Rectangle(160, 50, 80, 314));
             fireAnim.Add(new Rectangle(255, 65, 80, 314));
             fireAnim.Add(new Rectangle(355, 70, 80, 314));
             fireAnim.Add(new Rectangle(455, 65, 80, 314));
@@ -66,8 +66,8 @@ namespace Sinkhole_Sprinter
                     timer2 = 0;
                     destRectangle = new Rectangle(exclaimRectangle.X, exclaimRectangle.Y - 35, 50, 150);
                 }
-            }    
-            
+            }
+
         }
     }
 }
