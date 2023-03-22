@@ -75,6 +75,9 @@ namespace Sinkhole_Sprinter
         int timer = 0;
         Random r = new Random();
 
+        // lava and fire
+        Texture2D Lava, firesheet, exclamation;
+        Lava lava;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -151,6 +154,13 @@ namespace Sinkhole_Sprinter
             testFont = Content.Load<SpriteFont>("SpriteFont3");
 
             placeholder = this.Content.Load<Texture2D>("white");
+            createPlatform(new Vector2(Platform.WIDTH / 2, camera.boundingRectangle.Height * .7f));
+
+            firesheet = this.Content.Load<Texture2D>("Fire");
+            Lava = this.Content.Load<Texture2D>("Lava");
+            lava = new Lava(new Rectangle(600, 700, 1500, 300), Lava, camera); 
+            exclamation = this.Content.Load<Texture2D>("exclamation");
+
         }
 
         /// <summary>
@@ -224,6 +234,7 @@ namespace Sinkhole_Sprinter
 
                     player.Update();
                     camera.Update();
+                    lava.Update(camera);
                     if (LastPlatform.position.X < camera.boundingRectangle.Right)
                     {
                         createPlatform();
@@ -347,6 +358,8 @@ namespace Sinkhole_Sprinter
 
                     break;
                 case Gamestate.play:
+                    spriteBatch.Draw(placeholder, new Rectangle(0, lava.rect.Bottom - 5, 1500, Math.Max(GraphicsDevice.Viewport.Height - lava.rect.Bottom + 5, 0)), new Color(255, 79, 9));
+                    camera.Draw(gameTime,spriteBatch,lava);
                     foreach (Platform platform in platforms)
                     {
                         camera.Draw(gameTime, spriteBatch, platform);
@@ -356,18 +369,13 @@ namespace Sinkhole_Sprinter
                     spriteBatch.DrawString(scoreFont, "score: " + score, new Vector2(0, 00), Color.White); // points distance max height
                     spriteBatch.DrawString(scoreFont, "points: " + points, new Vector2(GraphicsDevice.Viewport.Width / 2 -  (scoreFont.MeasureString("points: " + points).Length() / 2), 00), Color.White);
                     spriteBatch.DrawString(scoreFont, "height: " + maxHeight, new Vector2(1280 - (scoreFont.MeasureString("height: " + maxHeight).Length()), 00), Color.White);
-
-
-
-
-
                     break;
+                    
                 case Gamestate.gameover:
                     spriteBatch.DrawString(titleTextFont, "you died", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleTextFont.MeasureString("you died").Length() / 2), 50), Color.DarkRed);
                     spriteBatch.DrawString(titleFont, "play again", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("play again").Length() / 2), 250), deathScreenColors[0]);
                     spriteBatch.DrawString(titleFont, "main menu", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("main menu").Length() / 2), 350), deathScreenColors[1]);
                     spriteBatch.DrawString(titleFont, "press r to play again", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("press r to play again").Length() / 2), 450), Color.Gold);
-
                     break;
             }
             spriteBatch.End();
