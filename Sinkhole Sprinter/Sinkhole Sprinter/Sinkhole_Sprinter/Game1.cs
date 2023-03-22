@@ -19,7 +19,9 @@ namespace Sinkhole_Sprinter
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D spreadsheet;
-        private List<Rectangle> running, jumping;
+        Texture2D jump;
+        Texture2D idle;
+        private List<Rectangle> running, jumping, standing;
         Player player;
         Camera camera;
         enum Gamestate
@@ -27,12 +29,17 @@ namespace Sinkhole_Sprinter
             title, play, gameover
         }
         Gamestate currentState;
-        SpriteFont titleFont, titleTextFont, scoreFont;
+        SpriteFont titleFont, titleTextFont, scoreFont, testFont;
         public Color titleColor = Color.Black;
         Rectangle titleRect, multiplayerTextRect;
         MouseState mouse, oldMouse;
+        KeyboardState oldKb;
         Color[] titleScreenColors = { Color.Black, Color.Black, Color.Black };
+        Color[] deathScreenColors = { Color.Black, Color.Black, Color.Black };
+
         string[] titleScreenText = { "single player", "multiplayer" };
+        string[] gameoverScreenText = { "play again", "main menu" };
+        Rectangle[] deathScreenText;
 
         //const int PLATFORM_SPEED = 3;
         const int STARTING_PLATFORM_HEIGHT = 500;
@@ -61,6 +68,7 @@ namespace Sinkhole_Sprinter
         int points; // Gained based on time, used to by items
         int distance; // Furthest distance
         int score; // Calculated based on previous stats
+        List<int> highScores;
 
         Texture2D placeholder;
         // Time survived
@@ -88,17 +96,28 @@ namespace Sinkhole_Sprinter
             camera = new Camera(new Vector2(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
             running = new List<Rectangle>();
             jumping = new List<Rectangle>();
+            standing= new List<Rectangle>();
             running.Add(new Rectangle(0, 0, 400, 400));
             running.Add(new Rectangle(400, 0, 400, 400));
             running.Add(new Rectangle(800, 0, 400, 400));
             running.Add(new Rectangle(1200, 0, 400, 400));
-            jumping.Add(new Rectangle(0, 0, 400, 400));
+            jumping.Add(new Rectangle(0, 300, 300, 300));
+            jumping.Add(new Rectangle(300, 300, 300, 300));
+            jumping.Add(new Rectangle(600, 300, 300, 300));
+            jumping.Add(new Rectangle(900, 300, 300, 300));
+            jumping.Add(new Rectangle(1200, 200, 300, 400));
+            jumping.Add(new Rectangle(1500, 200, 300, 400));
+            standing.Add(new Rectangle(0, 0, 300, 300));
+            standing.Add(new Rectangle(300, 0, 300, 300));
+            standing.Add(new Rectangle(600, 0, 300, 300));
+            standing.Add(new Rectangle(900, 0, 300, 300));
             IsMouseVisible = true;
+            currentState = Gamestate.title;
             platforms = new List<Platform>();
-            maxHeight = 0;
-            points = 0;
-            distance = 0;
+            oldKb = Keyboard.GetState();
+            highScores = new List<int>();
 
+            deathScreenText = new Rectangle[5];
             base.Initialize();
         }
 
@@ -113,16 +132,25 @@ namespace Sinkhole_Sprinter
 
             // TODO: use this.Content to load your game content here
             spreadsheet = this.Content.Load<Texture2D>("player_running_spritesheet_25");
+            jump = this.Content.Load<Texture2D>("jumping spritesheet 2");
+            idle = this.Content.Load<Texture2D>("idle spritesheet");
+            List<Texture2D> sheets = new List<Texture2D>();
+            sheets.Add(spreadsheet);
+            sheets.Add(jump);
+            sheets.Add(idle);
 
             titleTextFont = Content.Load<SpriteFont>("SpriteFont2");
             titleFont = Content.Load<SpriteFont>("SpriteFont1");
             scoreFont = Content.Load<SpriteFont>("ScoreFont");
             titleRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[0]).Length() / 2)), 200, 30, 30);
             multiplayerTextRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[1]).Length() / 2)), 300, 30, 30);
-            player = new Player(new Rectangle(50, STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - 38, 75, 75), spreadsheet, running, jumping, new Rectangle(0, 0, 400, 400));
+            player = new Player(new Rectangle(50, 360, 75, 75), sheets, running, jumping, standing);
+            deathScreenText[0] = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("play again").Length() / 2)), 250, 30, 30);
+            deathScreenText[1] = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("main menu").Length() / 2)), 350, 30, 30);
+
+            testFont = Content.Load<SpriteFont>("SpriteFont3");
 
             placeholder = this.Content.Load<Texture2D>("white");
-            createPlatform(new Vector2(Platform.WIDTH / 2, STARTING_PLATFORM_HEIGHT));
         }
 
         /// <summary>
@@ -141,7 +169,8 @@ namespace Sinkhole_Sprinter
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-             mouse = Mouse.GetState();
+            mouse = Mouse.GetState();
+            KeyboardState kb = Keyboard.GetState();
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
@@ -200,6 +229,11 @@ namespace Sinkhole_Sprinter
                         createPlatform();
                     }
                     camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
+                    camera.position.Y = Math.Min(player.position.Y, camera.boundingRectangle.Height / 2);
+                    if (player.position.Y >= 683 ) // checks if player is dead
+                    {
+                        onDeath();
+                    }
                     camera.position.Y = Math.Min(player.position.Y, camera.boundingRectangle.Height / 2); // Add lava to minimum
 
                     // Update stats
@@ -211,10 +245,40 @@ namespace Sinkhole_Sprinter
 
                     timer++;
                     break;
+                    
+                case Gamestate.gameover:
+                    if (kb.IsKeyDown(Keys.R) && !oldKb.IsKeyDown(Keys.R))
+                    {
+                        currentState = Gamestate.play;
+                        startGame();
+                    }
+                    if (mouse.X > deathScreenText[0].X &&
+                        mouse.X < deathScreenText[0].X + (("play again".Length - 1) * 20) && mouse.Y > deathScreenText[0].Y + 10 &&    mouse.Y < deathScreenText[0].Y + deathScreenText[0].Height)
+                    {
+                        deathScreenColors[0] = Color.Gold;
+                        if (mouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released)
+                        {
+                            currentState = Gamestate.title;
+                        }
+                    }
+                    else
+                        deathScreenColors[0] = Color.Black;
+                    if (mouse.X > deathScreenText[1].X && mouse.X < deathScreenText[1].X + (("main menu".Length - 1) * 20) && mouse.Y > deathScreenText[1].Y + 10 && mouse.Y < deathScreenText[1].Y + deathScreenText[1].Height)
+                    {
+                        deathScreenColors[1] = Color.Gold;
+                        if (mouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released)
+                        {
+                            currentState = Gamestate.title;
+                        }
+                    }
+                    else
+                        deathScreenColors[1] = Color.Black;
+                    
+                    break;
             }
 
             oldMouse = mouse;
-            
+            oldKb = kb;
             base.Update(gameTime);
         }
 
@@ -222,10 +286,22 @@ namespace Sinkhole_Sprinter
         private void startGame()
         {
             currentState = Gamestate.play;
+            createPlatform(new Vector2(Platform.WIDTH / 2, STARTING_PLATFORM_HEIGHT));
+            player = new Player(new Rectangle(50, STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - 38, 75, 75), spreadsheet, running, jumping, new Rectangle(0, 0, 400, 400));
             maxHeight = 0;
             distance = 0;
             points = 0;
             timer = 0;
+        }
+
+        // Ran when the player dies
+        private void onDeath()
+        {
+            currentState = Gamestate.gameover;
+            highScores.Add(score);
+            highScores.Sort();
+            highScores.Reverse();
+            platforms.Clear();
         }
 
         // Create a new platform in calculated position
@@ -248,7 +324,6 @@ namespace Sinkhole_Sprinter
         {
             platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, Platform.WIDTH, Platform.HEIGHT), placeholder));
         }
-
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
@@ -287,9 +362,17 @@ namespace Sinkhole_Sprinter
 
 
                     break;
+                case Gamestate.gameover:
+                    spriteBatch.DrawString(titleTextFont, "you died", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleTextFont.MeasureString("you died").Length() / 2), 50), Color.DarkRed);
+                    spriteBatch.DrawString(titleFont, "play again", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("play again").Length() / 2), 250), deathScreenColors[0]);
+                    spriteBatch.DrawString(titleFont, "main menu", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("main menu").Length() / 2), 350), deathScreenColors[1]);
+                    spriteBatch.DrawString(titleFont, "press r to play again", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("press r to play again").Length() / 2), 450), Color.Gold);
+
+                    break;
             }
             spriteBatch.End();
             base.Draw(gameTime);
         }
     }
 }
+
