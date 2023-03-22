@@ -14,7 +14,7 @@ namespace Sinkhole_Sprinter
     class Player : Sprite
     {
         const int MAX_SPEED = 8, JUMP = 20, MAX_FALL_SPEED = 25;
-        const float ACCELERATION = .8f, GRAVITY = 1, DRAG_FACTOR = .8f;
+        const float ACCELERATION = .8f, GRAVITY = 1, DRAG_FACTOR = .8f, AIR_RESISTANCE = .95f;
 
         // Source rects
         private List<Rectangle> running, jumping;
@@ -104,14 +104,22 @@ namespace Sinkhole_Sprinter
             }
             else
             {
-                if (timer % 8 == 0)
-                {
-                    currentsource = standing;
-                    // Uncomment when 
-                    //playerState = movement.idle;
-                }
                 acceleration.X = 0;
-                velocity.X *= DRAG_FACTOR;
+                if (canJump)
+                {
+                    if (timer % 8 == 0)
+                    {
+                        currentsource = standing;
+                        // Uncomment when 
+                        //playerState = movement.idle;
+                    }
+                    velocity.X *= DRAG_FACTOR;
+                }
+                else
+                {
+                    velocity.X *= AIR_RESISTANCE;
+                    
+                }
                 if (Math.Abs(velocity.X) < MAX_SPEED / 20f)
                     velocity.X = 0;
             }
