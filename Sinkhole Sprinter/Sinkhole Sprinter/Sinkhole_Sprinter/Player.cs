@@ -164,8 +164,7 @@ namespace Sinkhole_Sprinter
         // Check if the player is on top of a platform and make functionality
         public void CheckCollisions(Platform platform)
         {
-            // DEBUG THIS
-            if (Bottom - MAX_FALL_SPEED < platform.Top)
+            if (Bottom - MAX_FALL_SPEED < platform.Top && velocity.Y > 0)
             {
                 canJump = true;
                 position.Y = platform.Top - rect.Height / 2;
