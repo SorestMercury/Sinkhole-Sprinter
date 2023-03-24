@@ -81,7 +81,9 @@ namespace Sinkhole_Sprinter
         Texture2D Lava, firesheet, exclamation;
         Lava lava;
 
-
+        // rockWall
+        Texture2D RockWall;
+        RockWall rockWall;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -165,6 +167,9 @@ namespace Sinkhole_Sprinter
             Lava = this.Content.Load<Texture2D>("Lava");
             lava = new Lava(new Rectangle(600, 700, 1500, 300), Lava);
             exclamation = this.Content.Load<Texture2D>("exclamation");
+
+            RockWall = this.Content.Load<Texture2D>("white");
+            rockWall = new RockWall(new Rectangle(-350, 360, 700, 720),RockWall);
         }
 
         /// <summary>
@@ -239,6 +244,7 @@ namespace Sinkhole_Sprinter
                     player.Update();
                     camera.Update();
                     lava.Update();
+                    rockWall.Update();
                     if (LastPlatform.position.X < camera.boundingRectangle.Right)
                     {
                         createPlatform();
@@ -254,6 +260,13 @@ namespace Sinkhole_Sprinter
                     // TODO: Change to tiling system
                     lava.position.X = camera.position.X;
 
+
+                    //rockWall 
+                    rockWall.position.Y = camera.position.Y;
+                    if (player.position.X <= rockWall.Right) // checks if player is dead
+                    {
+                        onDeath();
+                    }
                     // Update stats
                     maxHeight = Math.Max(STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - player.Bottom, maxHeight);
                     distance = Math.Max((int)player.position.X, distance);
@@ -365,6 +378,7 @@ namespace Sinkhole_Sprinter
                     break;
                 case Gamestate.play:
                     spriteBatch.Draw(placeholder, new Rectangle(0, lava.rect.Bottom - 5, 1500, Math.Max(GraphicsDevice.Viewport.Height - lava.rect.Bottom + 5, 0)), new Color(255, 79, 9));
+                    camera.Draw(gameTime, spriteBatch, rockWall);
                     camera.Draw(gameTime,spriteBatch,lava);
                     foreach (Platform platform in platforms)
                     {
