@@ -13,15 +13,13 @@ namespace Sinkhole_Sprinter
 {
     class Fire : Sprite
     {
-        private Texture2D spreadsheet;
         public List<Rectangle> fireAnim;
         public int currentRectangle = 0;
         private int timer = 0, speed, timer2 = 0;
         public Rectangle destRectangle, exclaimRectangle;
         private bool exclaim = false, start = false;
-        public Fire(Texture2D f, Texture2D e, int sp)
+        public Fire(Texture2D f, Texture2D e, int sp) : base(new Rectangle(2000, 1000, 50, 150), f)
         {
-            spreadsheet = f;
             speed = sp;
             fireAnim = new List<Rectangle>();
             fireAnim.Add(new Rectangle(70, 70, 80, 314));

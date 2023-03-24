@@ -121,11 +121,6 @@ namespace Sinkhole_Sprinter
             }
             else
             {
-                if (timer % 8 == 0)
-                {
-                    currentsource = standing[0];
-                    playerState = movement.idle;
-                }
                 acceleration.X = 0;
                 velocity.X *= DRAG_FACTOR;
                 acceleration.X = 0;
@@ -133,9 +128,8 @@ namespace Sinkhole_Sprinter
                 {
                     if (timer % 8 == 0)
                     {
-                        currentsource = standing;
-                        // Uncomment when 
-                        //playerState = movement.idle;
+                        currentsource = standing[0];
+                        playerState = movement.idle;
                     }
                     velocity.X *= DRAG_FACTOR;
                 }
