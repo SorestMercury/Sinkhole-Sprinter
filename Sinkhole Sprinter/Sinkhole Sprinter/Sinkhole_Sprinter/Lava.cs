@@ -13,19 +13,17 @@ namespace Sinkhole_Sprinter
     class Lava : Sprite
     {
         int timer = 0;
-        public Lava(Rectangle rect, Texture2D texture, Camera c) : base(rect, texture)
+        public Lava(Rectangle rect, Texture2D texture) : base(rect, texture)
         {
 
         }
-        public void Update(Camera camera)
+        public void Update()
         {
             timer++;
             if (timer % 5 == 0)
             {
                 position.Y--;
             }
-            position.X = camera.position.X;
-            
         }
     }
 }
