@@ -88,6 +88,7 @@ namespace Sinkhole_Sprinter
         // rockWall
         Texture2D RockWall;
         RockWall rockWall;
+        Rectangle rockWallRect;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -132,6 +133,7 @@ namespace Sinkhole_Sprinter
             lavaSize = new Rectangle(0, 0, 1500, 300);
             oldKb = Keyboard.GetState();
             highScores = new List<int>();
+            rockWallRect = new Rectangle(-1000, 360, 700, 720);
 
 
             deathScreenText = new Rectangle[5];
@@ -176,7 +178,6 @@ namespace Sinkhole_Sprinter
             exclamation = this.Content.Load<Texture2D>("exclamation");
 
             RockWall = this.Content.Load<Texture2D>("white");
-            rockWall = new RockWall(new Rectangle(-350, 360, 700, 720),RockWall);
         }
 
         /// <summary>
@@ -335,6 +336,7 @@ namespace Sinkhole_Sprinter
             lavas.Clear();
             lavaHeight = GraphicsDevice.Viewport.Height;
             lavas.Add(new Lava(new Rectangle(lavaSize.Width / 2, (int)lavaHeight + 150, lavaSize.Width, lavaSize.Height), Lava));
+            rockWall = new RockWall(rockWallRect, RockWall);
             maxHeight = 0;
             distance = 0;
             points = 0;
