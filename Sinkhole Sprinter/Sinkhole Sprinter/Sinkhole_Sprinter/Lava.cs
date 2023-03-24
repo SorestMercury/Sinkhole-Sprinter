@@ -12,19 +12,20 @@ namespace Sinkhole_Sprinter
 {
     class Lava : Sprite
     {
-        int timer = 0;
+        // const int RISE_DELAY = 3;
+        // int timer = 0;
         public Lava(Rectangle rect, Texture2D texture) : base(rect, texture)
         {
 
         }
-        public void Update()
-        {
-            timer++;
-            if (timer % 5 == 0)
-            {
-                position.Y--;
-            }
-        }
+        //public void Update()
+        //{
+        //    timer++;
+        //    if (timer % RISE_DELAY == 0)
+        //    {
+        //        position.Y--;
+        //    }
+        //}
     }
 }
 
