@@ -79,7 +79,11 @@ namespace Sinkhole_Sprinter
 
         // lava and fire
         Texture2D Lava, firesheet, exclamation;
-        Lava lava;
+        Rectangle lavaSize;
+        float lavaHeight;
+        const float LAVA_RISE_SPEED = .4f;
+        List<Lava> lavas;
+        const int LAVA_HEIGHT_SHOWN = 200;
 
 
         public Game1()
@@ -122,8 +126,11 @@ namespace Sinkhole_Sprinter
             IsMouseVisible = true;
             currentState = Gamestate.title;
             platforms = new List<Platform>();
+            lavas = new List<Lava>();
+            lavaSize = new Rectangle(0, 0, 1500, 300);
             oldKb = Keyboard.GetState();
             highScores = new List<int>();
+
 
             deathScreenText = new Rectangle[5];
             base.Initialize();
@@ -163,7 +170,7 @@ namespace Sinkhole_Sprinter
 
             firesheet = this.Content.Load<Texture2D>("Fire");
             Lava = this.Content.Load<Texture2D>("Lava");
-            lava = new Lava(new Rectangle(600, 700, 1500, 300), Lava);
+            
             exclamation = this.Content.Load<Texture2D>("exclamation");
         }
 
@@ -238,21 +245,29 @@ namespace Sinkhole_Sprinter
 
                     player.Update();
                     camera.Update();
-                    lava.Update();
+                    lavaHeight -= LAVA_RISE_SPEED;
+                    tileLava();
+                    foreach (Lava lava in lavas)
+                    {
+                        lava.position.Y = lavaHeight + lavaSize.Height / 2;
+                    }
+                    
                     if (LastPlatform.position.X < camera.boundingRectangle.Right)
                     {
                         createPlatform();
                     }
+                    if (platforms[0].Top - PLATFORM_MIN_HEIGHT > lavaHeight)
+                        platforms.RemoveAt(0);
+
                     camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
-                    camera.position.Y = Math.Min(player.position.Y, camera.boundingRectangle.Height / 2);
-                    if (player.position.Y >= lava.Top) // checks if player is dead
+                    camera.position.Y = Math.Min(Math.Min(player.position.Y, camera.boundingRectangle.Height / 2), lavas[0].Top + LAVA_HEIGHT_SHOWN - camera.boundingRectangle.Height / 2);
+                    if (player.position.Y >= lavas[0].Top) // checks if player is dead
                     {
                         onDeath();
                     }
-                    camera.position.Y = Math.Min(player.position.Y, camera.boundingRectangle.Height / 2); // Add lava to minimum
 
                     // TODO: Change to tiling system
-                    lava.position.X = camera.position.X;
+                    //lava.position.X = camera.position.X;
 
                     // Update stats
                     maxHeight = Math.Max(STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - player.Bottom, maxHeight);
@@ -270,7 +285,7 @@ namespace Sinkhole_Sprinter
                         startGame();
                     }
                     if (mouse.X > deathScreenText[0].X &&
-                        mouse.X < deathScreenText[0].X + (("play again".Length - 1) * 20) && mouse.Y > deathScreenText[0].Y + 10 &&    mouse.Y < deathScreenText[0].Y + deathScreenText[0].Height)
+                        mouse.X < deathScreenText[0].X + ((gameoverScreenText[0].Length - 1) * 20) && mouse.Y > deathScreenText[0].Y + 10 &&    mouse.Y < deathScreenText[0].Y + deathScreenText[0].Height)
                     {
                         deathScreenColors[0] = Color.Gold;
                         if (mouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released)
@@ -280,7 +295,7 @@ namespace Sinkhole_Sprinter
                     }
                     else
                         deathScreenColors[0] = Color.Black;
-                    if (mouse.X > deathScreenText[1].X && mouse.X < deathScreenText[1].X + (("main menu".Length - 1) * 20) && mouse.Y > deathScreenText[1].Y + 10 && mouse.Y < deathScreenText[1].Y + deathScreenText[1].Height)
+                    if (mouse.X > deathScreenText[1].X && mouse.X < deathScreenText[1].X + ((gameoverScreenText[1].Length - 1) * 20) && mouse.Y > deathScreenText[1].Y + 10 && mouse.Y < deathScreenText[1].Y + deathScreenText[1].Height)
                     {
                         deathScreenColors[1] = Color.Gold;
                         if (mouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released)
@@ -305,11 +320,26 @@ namespace Sinkhole_Sprinter
             currentState = Gamestate.play;
             createPlatform(new Vector2(Platform.WIDTH / 2, STARTING_PLATFORM_HEIGHT));
             player = new Player(new Rectangle(50, STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - 38, 75, 75), textures, running, jumping, standing);
-            lava = new Lava(new Rectangle(600, 700, 1500, 300), Lava);
+            lavas.Clear();
+            lavaHeight = GraphicsDevice.Viewport.Height;
+            lavas.Add(new Lava(new Rectangle(lavaSize.Width / 2, (int)lavaHeight + 150, lavaSize.Width, lavaSize.Height), Lava));
             maxHeight = 0;
             distance = 0;
             points = 0;
             timer = 0;
+        }
+
+        private void tileLava()
+        {
+            if (lavas[0].Right + lavaSize.Width < camera.boundingRectangle.Left)
+                lavas.RemoveAt(0);
+            else
+                lavas.Insert(0, new Lava(new Rectangle((int)lavas[0].position.X + lavaSize.Width, (int)lavas[0].position.Y, lavaSize.Width, lavaSize.Height), Lava));
+
+            if (lavas[lavas.Count - 1].Left - lavaSize.Width > camera.boundingRectangle.Right)
+                lavas.RemoveAt(lavas.Count - 1);
+            else
+                lavas.Add(new Lava(new Rectangle((int)lavas[0].position.X + lavaSize.Width, (int)lavas[0].position.Y, lavaSize.Width, lavaSize.Height), Lava));
         }
 
         // Ran when the player dies
@@ -329,7 +359,7 @@ namespace Sinkhole_Sprinter
             int avgGain = PLATFORM_HEIGHT_GAIN + (int)(PLATFORM_EXTRA_HEIGHT_GAIN * Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
             int dHeight = r.Next(-(avgGain + PLATFORM_HEIGHT_VARIANCE), -(avgGain - PLATFORM_HEIGHT_VARIANCE));
             Vector2 position = new Vector2();
-            position.Y = Math.Min(LastPlatform.position.Y + dHeight, lava.Top - PLATFORM_MIN_HEIGHT);
+            position.Y = Math.Min(LastPlatform.position.Y + dHeight, lavas[0].Top - PLATFORM_MIN_HEIGHT);
 
             // Fraction of the max jump distance based on difficulty (max distance)
             float reverseDistanceModifier = (float)(PLATFORM_MIN_WIGGLE_ROOM + PLATFORM_BONUS_WIGGLE_ROOM * Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
@@ -355,8 +385,8 @@ namespace Sinkhole_Sprinter
             {
                 case Gamestate.title:
                     spriteBatch.DrawString(titleTextFont, "SINKHOLE SPRINTER", new Vector2(GraphicsDevice.Viewport.Width / 2  - (titleTextFont.MeasureString("SINKHOLE SPRINTER").Length() / 2), 50), Color.Black);
-                    spriteBatch.DrawString(titleFont, "single player", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("single player").Length() / 2), 200), titleScreenColors[0]);
-                    spriteBatch.DrawString(titleFont, "multiplayer", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("multiplayer").Length() / 2), 300), titleScreenColors[1]);
+                    spriteBatch.DrawString(titleFont, titleScreenText[0], new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[0]).Length() / 2), 200), titleScreenColors[0]);
+                    spriteBatch.DrawString(titleFont, titleScreenText[1], new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[1]).Length() / 2), 300), titleScreenColors[1]);
                     spriteBatch.DrawString(titleFont, "high scores", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("high scores").Length() / 2), 400), titleScreenColors[2]);
 
 
@@ -364,13 +394,14 @@ namespace Sinkhole_Sprinter
 
                     break;
                 case Gamestate.play:
-                    spriteBatch.Draw(placeholder, new Rectangle(0, lava.rect.Bottom - 5, 1500, Math.Max(GraphicsDevice.Viewport.Height - lava.rect.Bottom + 5, 0)), new Color(255, 79, 9));
-                    camera.Draw(gameTime,spriteBatch,lava);
+                    // spriteBatch.Draw(placeholder, new Rectangle(0, lavas[0].rect.Bottom - 5, 1500, Math.Max(GraphicsDevice.Viewport.Height - lavas[0].rect.Bottom + 5, 0)), new Color(255, 79, 9));
                     foreach (Platform platform in platforms)
                     {
                         camera.Draw(gameTime, spriteBatch, platform);
                     }
                     camera.DrawPlayer(gameTime, spriteBatch, player);
+                    foreach (Lava lava in lavas)
+                        camera.Draw(gameTime, spriteBatch, lava);
                     spriteBatch.Draw(placeholder, new Rectangle(00, 0, GraphicsDevice.Viewport.Width, 25), Color.Black);
                     spriteBatch.DrawString(scoreFont, "score: " + score, new Vector2(0, 00), Color.White); // points distance max height
                     spriteBatch.DrawString(scoreFont, "points: " + points, new Vector2(GraphicsDevice.Viewport.Width / 2 -  (scoreFont.MeasureString("points: " + points).Length() / 2), 00), Color.White);
@@ -391,8 +422,6 @@ namespace Sinkhole_Sprinter
                     spriteBatch.DrawString(scoreFont, "final score: " + score, new Vector2(GraphicsDevice.Viewport.Width / 2 - (scoreFont.MeasureString("final score: " + score).Length() /2), 150), Color.Black);
                     spriteBatch.DrawString(scoreFont, "final distance: " + distance, new Vector2(GraphicsDevice.Viewport.Width / 2 - (scoreFont.MeasureString("final distance: " + distance).Length() / 2), 200), Color.Black);
                     spriteBatch.DrawString(scoreFont, "final height: " + maxHeight, new Vector2(GraphicsDevice.Viewport.Width / 2 - (scoreFont.MeasureString("final height: " + maxHeight).Length() / 2), 250), Color.Black);
-
-
                     break;
             }
             spriteBatch.End();

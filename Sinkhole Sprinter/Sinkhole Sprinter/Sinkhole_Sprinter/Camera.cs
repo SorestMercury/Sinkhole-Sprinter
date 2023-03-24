@@ -69,8 +69,14 @@ namespace Sinkhole_Sprinter
         {
             SpriteEffects flip = SpriteEffects.None;
 
-            if (player.playerState == Player.movement.right)
+            if (player.moveDirection == Player.direction.right && player.playerState != Player.movement.idle)
+            {
                 flip = SpriteEffects.FlipHorizontally;
+            }
+            else if (player.moveDirection == Player.direction.left && player.playerState == Player.movement.idle)
+            {
+                flip = SpriteEffects.FlipHorizontally;
+            }
 
             player.rect.X = (int)(player.position.X - player.rect.Width / 2 - position.X + boundingRectangle.Width / 2);
             player.rect.Y = (int)(player.position.Y - player.rect.Height / 2 - position.Y + boundingRectangle.Height / 2);
