@@ -69,6 +69,7 @@ namespace Sinkhole_Sprinter
         List<int> highScores;
 
         Texture2D placeholder;
+        Texture2D platform;
         // Time survived
         int timer = 0;
         Random r = new Random();
@@ -131,6 +132,7 @@ namespace Sinkhole_Sprinter
             testFont = Content.Load<SpriteFont>("SpriteFont3");
 
             placeholder = this.Content.Load<Texture2D>("white");
+            platform = this.Content.Load<Texture2D>("platform");
         }
 
         /// <summary>
@@ -302,7 +304,7 @@ namespace Sinkhole_Sprinter
         }
         private void createPlatform(Vector2 position)
         {
-            platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, Platform.WIDTH, Platform.HEIGHT), placeholder));
+            platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, Platform.WIDTH, Platform.HEIGHT), platform));
         }
         /// <summary>
         /// This is called when the game should draw itself.
