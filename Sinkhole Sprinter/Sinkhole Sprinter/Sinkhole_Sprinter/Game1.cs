@@ -151,9 +151,9 @@ namespace Sinkhole_Sprinter
             titleFont = Content.Load<SpriteFont>("SpriteFont1");
             scoreFont = Content.Load<SpriteFont>("ScoreFont");
             titleRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[0]).Length() / 2)), 200, 30, 30);
-            multiplayerTextRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[1]).Length() / 2)), 300, 30, 30);
-            deathScreenText[0] = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("play again").Length() / 2)), 250, 30, 30);
-            deathScreenText[1] = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("main menu").Length() / 2)), 350, 30, 30);
+            multiplayerTextRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(titleScreenText[1]).Length() / 2)), 300, 30, 30); // rectangle to highlight text "multiplayer"
+            deathScreenText[0] = new Rectangle((int)(GraphicsDevice.Viewport.Width / 4 - (titleFont.MeasureString(gameoverScreenText[0]).Length() / 2)), 350, 30, 30); // rectangle to highlight text "play again"
+            deathScreenText[1] = new Rectangle((int)(GraphicsDevice.Viewport.Width / 4 + (GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString(gameoverScreenText[1]).Length() / 2))), 350, 30, 30); // rectangle to highlight text "main menu"
 
             testFont = Content.Load<SpriteFont>("SpriteFont3");
 
@@ -375,13 +375,24 @@ namespace Sinkhole_Sprinter
                     spriteBatch.DrawString(scoreFont, "score: " + score, new Vector2(0, 00), Color.White); // points distance max height
                     spriteBatch.DrawString(scoreFont, "points: " + points, new Vector2(GraphicsDevice.Viewport.Width / 2 -  (scoreFont.MeasureString("points: " + points).Length() / 2), 00), Color.White);
                     spriteBatch.DrawString(scoreFont, "height: " + maxHeight, new Vector2(1280 - (scoreFont.MeasureString("height: " + maxHeight).Length()), 00), Color.White);
+                    float heightTextX = 1280 - (scoreFont.MeasureString("height: " + maxHeight).Length());
+                    float pointsTextX = (GraphicsDevice.Viewport.Width / 2 - (scoreFont.MeasureString("points: " + points).Length() / 2)); // get avg distance between both
+
+                    spriteBatch.DrawString(scoreFont, "distance: " + distance, new Vector2((1280 - (scoreFont.MeasureString("height: " + maxHeight).Length()) + GraphicsDevice.Viewport.Width / 2 - (scoreFont.MeasureString("points: " + points).Length() / 2)) / 2,0), Color.White);
+
                     break;
                     
                 case Gamestate.gameover:
                     spriteBatch.DrawString(titleTextFont, "you died", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleTextFont.MeasureString("you died").Length() / 2), 50), Color.DarkRed);
-                    spriteBatch.DrawString(titleFont, "play again", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("play again").Length() / 2), 250), deathScreenColors[0]);
-                    spriteBatch.DrawString(titleFont, "main menu", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("main menu").Length() / 2), 350), deathScreenColors[1]);
-                    spriteBatch.DrawString(titleFont, "press r to play again", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("press r to play again").Length() / 2), 450), Color.Gold);
+                    spriteBatch.DrawString(titleFont, "play again", new Vector2(GraphicsDevice.Viewport.Width / 4 - (titleFont.MeasureString("play again").Length() / 2), 350), deathScreenColors[0]); //1280
+                    spriteBatch.DrawString(titleFont, "main menu", new Vector2(GraphicsDevice.Viewport.Width / 2 + GraphicsDevice.Viewport.Width / 4 - (titleFont.MeasureString("main menu").Length() / 2), 350), deathScreenColors[1]);
+                    spriteBatch.DrawString(titleFont, "press r to play again", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("press r to play again").Length() / 2), 400), Color.Gold);
+
+                    spriteBatch.DrawString(scoreFont, "final score: " + score, new Vector2(GraphicsDevice.Viewport.Width / 2 - (scoreFont.MeasureString("final score: " + score).Length() /2), 150), Color.Black);
+                    spriteBatch.DrawString(scoreFont, "final distance: " + distance, new Vector2(GraphicsDevice.Viewport.Width / 2 - (scoreFont.MeasureString("final distance: " + distance).Length() / 2), 200), Color.Black);
+                    spriteBatch.DrawString(scoreFont, "final height: " + maxHeight, new Vector2(GraphicsDevice.Viewport.Width / 2 - (scoreFont.MeasureString("final height: " + maxHeight).Length() / 2), 250), Color.Black);
+
+
                     break;
             }
             spriteBatch.End();
