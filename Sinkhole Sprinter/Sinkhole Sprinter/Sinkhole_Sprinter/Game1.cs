@@ -283,7 +283,7 @@ namespace Sinkhole_Sprinter
                     distance = Math.Max((int)player.position.X, distance);
                     if (timer % 60 == 0)
                         points += Math.Min(10 + timer / 600, 100);
-                    score = points + timer / 12 + maxHeight + distance / 20;
+                    score = points + maxHeight + distance / 10;
 
                     timer++;
                     break;
