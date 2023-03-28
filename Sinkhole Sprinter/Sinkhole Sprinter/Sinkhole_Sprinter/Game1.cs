@@ -267,11 +267,13 @@ namespace Sinkhole_Sprinter
                     camera.Update();
                     rockWall.Update();
 
+                    //ensures rockwall maintains minimum distance from player
                     if (rockWall.position.X<player.position.X-950 && timer>300)
                         rockWall.position.X= MathHelper.Lerp(rockWall.position.X, player.position.X - 950,0.3f);
 
                     lavaHeight -= LAVA_RISE_SPEED;
 
+                    //ensures lava maintains minimum distance from player
                     if (lavaHeight > player.position.Y + 375 && timer>300)
                         lavaHeight = MathHelper.Lerp(lavaHeight, player.position.Y + 375, 0.3f);
 
