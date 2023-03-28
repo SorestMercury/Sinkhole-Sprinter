@@ -96,7 +96,7 @@ namespace Sinkhole_Sprinter
         // Get the maximum distance the player can jump, factoring in player and platform width
         public float GetMaxJumpDistance(float dHeight)
         {
-            return MAX_SPEED * (JUMP + (float)Math.Sqrt(Math.Pow(JUMP, 2) + 2 * dHeight)) + Platform.WIDTH + rect.Width;
+            return MAX_SPEED * (JUMP + (float)Math.Sqrt(Math.Pow(JUMP, 2) + 2 * dHeight)) + rect.Width;
         }
 
         public void Update()
