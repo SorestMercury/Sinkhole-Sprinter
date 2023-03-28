@@ -65,6 +65,9 @@ namespace Sinkhole_Sprinter
             }
         }
 
+        /// <summary>
+        /// Draw the player, flipping horizontally as necessary
+        /// </summary>
         public void DrawPlayer(GameTime gameTime, SpriteBatch spriteBatch, Player player)
         {
             SpriteEffects flip = SpriteEffects.None;

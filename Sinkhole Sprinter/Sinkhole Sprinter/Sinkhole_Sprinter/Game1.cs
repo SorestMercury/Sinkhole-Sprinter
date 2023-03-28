@@ -268,12 +268,12 @@ namespace Sinkhole_Sprinter
                     rockWall.Update();
 
                     if (rockWall.position.X<player.position.X-950 && timer>300)
-                        rockWall.position.X= MathHelper.Lerp(rockWall.position.X, player.position.X - 950,0.3f);
+                        rockWall.position.X= MathHelper.Lerp(rockWall.position.X, player.position.X - 950, .02f);
 
                     lavaHeight -= LAVA_RISE_SPEED;
 
                     if (lavaHeight > player.position.Y + 375 && timer>300)
-                        lavaHeight = MathHelper.Lerp(lavaHeight, player.position.Y + 375, 0.3f);
+                        lavaHeight = Math.Max(MathHelper.Lerp(lavaHeight, player.position.Y + 375, 0.02f), lavaHeight - LAVA_RISE_SPEED * 4); // Capped at additional 4x lava speed
 
                     tileLava();
                     foreach (Lava lava in lavas)
@@ -501,12 +501,12 @@ namespace Sinkhole_Sprinter
             spriteBatch.End();
             base.Draw(gameTime);
         }
-        private Boolean changeColors(MouseState mouse, String text, Rectangle txtRect) //change colors of text when the mouse hovers over it
+        private bool changeColors(MouseState mouse, string text, Rectangle txtRect) //change colors of text when the mouse hovers over it
         {
             if (mouse.X > txtRect.X &&
-        mouse.X < txtRect.X + ((text.Length - 1) * 20) &&
-        mouse.Y > txtRect.Y + 10 &&
-        mouse.Y < txtRect.Y + txtRect.Height)
+                mouse.X < txtRect.X + ((text.Length - 1) * 20) &&
+                mouse.Y > txtRect.Y + 10 &&
+                mouse.Y < txtRect.Y + txtRect.Height)
             {
                 return true;
             }
