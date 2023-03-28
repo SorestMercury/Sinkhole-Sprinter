@@ -57,7 +57,7 @@ namespace Sinkhole_Sprinter
         // The portion of max jump distance not required
         const float PLATFORM_MIN_WIGGLE_ROOM = .1f;
         // Less portion of max jump distance required, decreases with difficulty
-        const float PLATFORM_BONUS_WIGGLE_ROOM = .4f;
+        const float PLATFORM_BONUS_WIGGLE_ROOM = .2f;
         List<Platform> platforms;
         Platform LastPlatform
         {
@@ -336,6 +336,8 @@ namespace Sinkhole_Sprinter
             lavas.Clear();
             lavaHeight = GraphicsDevice.Viewport.Height;
             lavas.Add(new Lava(new Rectangle(lavaSize.Width / 2, (int)lavaHeight + 150, lavaSize.Width, lavaSize.Height), Lava));
+            camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
+            camera.position.Y = Math.Min(Math.Min(player.position.Y, camera.boundingRectangle.Height / 2), lavas[0].Top + LAVA_HEIGHT_SHOWN - camera.boundingRectangle.Height / 2);
             rockWall = new RockWall(rockWallRect, RockWall);
             maxHeight = 0;
             distance = 0;
@@ -377,8 +379,9 @@ namespace Sinkhole_Sprinter
 
             // Fraction of the max jump distance based on difficulty (max distance)
             float reverseDistanceModifier = (float)(PLATFORM_MIN_WIGGLE_ROOM + PLATFORM_BONUS_WIGGLE_ROOM * Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
-            float distanceModifier = 1 - (float)(r.NextDouble() * reverseDistanceModifier / 2 + reverseDistanceModifier);
+            float distanceModifier = 1 - (float)(r.NextDouble() * reverseDistanceModifier + reverseDistanceModifier);
             position.X = Math.Max(LastPlatform.position.X + distanceModifier * player.GetMaxJumpDistance(dHeight), LastPlatform.position.X + Platform.WIDTH * 2);
+            Console.WriteLine(distanceModifier * player.GetMaxJumpDistance(dHeight));
             createPlatform(position);
         }
         private void createPlatform(Vector2 position)
