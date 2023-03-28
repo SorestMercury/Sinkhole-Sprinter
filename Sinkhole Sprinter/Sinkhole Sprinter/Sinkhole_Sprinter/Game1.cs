@@ -251,7 +251,15 @@ namespace Sinkhole_Sprinter
                     player.Update();
                     camera.Update();
                     rockWall.Update();
+
+                    if (rockWall.position.X<player.position.X-950 && timer>300)
+                        rockWall.position.X= MathHelper.Lerp(rockWall.position.X, player.position.X - 950,0.3f);
+
                     lavaHeight -= LAVA_RISE_SPEED;
+
+                    if (lavaHeight > player.position.Y + 375 && timer>300)
+                        lavaHeight = MathHelper.Lerp(lavaHeight, player.position.Y + 375, 0.3f);
+
                     tileLava();
                     foreach (Lava lava in lavas)
                     {
