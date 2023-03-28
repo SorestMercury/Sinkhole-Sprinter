@@ -170,7 +170,6 @@ namespace Sinkhole_Sprinter
 
             placeholder = this.Content.Load<Texture2D>("white");
             platform = this.Content.Load<Texture2D>("platform");
-            createPlatform(new Vector2(Platform.WIDTH / 2, camera.boundingRectangle.Height * .7f));
 
             firesheet = this.Content.Load<Texture2D>("Fire");
             Lava = this.Content.Load<Texture2D>("Lava");
@@ -267,13 +266,10 @@ namespace Sinkhole_Sprinter
 
                     camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
                     camera.position.Y = Math.Min(Math.Min(player.position.Y, camera.boundingRectangle.Height / 2), lavas[0].Top + LAVA_HEIGHT_SHOWN - camera.boundingRectangle.Height / 2);
-                    if (player.position.Y >= lavas[0].Top) // checks if player is dead
+                    if (player.Bottom >= lavas[0].Top) // checks if player is dead
                     {
                         onDeath();
                     }
-
-                    // TODO: Change to tiling system
-                    //lava.position.X = camera.position.X;
 
 
                     //rockWall 
@@ -331,11 +327,11 @@ namespace Sinkhole_Sprinter
         private void startGame()
         {
             currentState = Gamestate.play;
-            createPlatform(new Vector2(Platform.WIDTH / 2, STARTING_PLATFORM_HEIGHT));
+            createPlatform(new Vector2(Platform.MAX_WIDTH / 2, camera.boundingRectangle.Height * .7f), Platform.MAX_WIDTH);
             player = new Player(new Rectangle(50, STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - 38, 75, 75), textures, running, jumping, standing);
             lavas.Clear();
             lavaHeight = GraphicsDevice.Viewport.Height;
-            lavas.Add(new Lava(new Rectangle(lavaSize.Width / 2, (int)lavaHeight + 150, lavaSize.Width, lavaSize.Height), Lava));
+            lavas.Add(new Lava(new Rectangle(lavaSize.Width / 2, (int)lavaHeight + lavaSize.Height / 2, lavaSize.Width, lavaSize.Height), Lava));
             camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
             camera.position.Y = Math.Min(Math.Min(player.position.Y, camera.boundingRectangle.Height / 2), lavas[0].Top + LAVA_HEIGHT_SHOWN - camera.boundingRectangle.Height / 2);
             rockWall = new RockWall(rockWallRect, RockWall);
@@ -377,16 +373,20 @@ namespace Sinkhole_Sprinter
             Vector2 position = new Vector2();
             position.Y = Math.Min(LastPlatform.position.Y + dHeight, lavas[0].Top - PLATFORM_MIN_HEIGHT);
 
+            // Platform width calculations
+            int width = (int)(Platform.MIN_WIDTH + (Platform.MAX_WIDTH - Platform.MIN_WIDTH) * Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
+
             // Fraction of the max jump distance based on difficulty (max distance)
             float reverseDistanceModifier = (float)(PLATFORM_MIN_WIGGLE_ROOM + PLATFORM_BONUS_WIGGLE_ROOM * Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
             float distanceModifier = 1 - (float)(r.NextDouble() * reverseDistanceModifier + reverseDistanceModifier);
-            position.X = Math.Max(LastPlatform.position.X + distanceModifier * player.GetMaxJumpDistance(dHeight), LastPlatform.position.X + Platform.WIDTH * 2);
-            Console.WriteLine(distanceModifier * player.GetMaxJumpDistance(dHeight));
-            createPlatform(position);
+            float dDistance = distanceModifier * (player.GetMaxJumpDistance(dHeight) + width);
+            position.X = Math.Max(LastPlatform.position.X + dDistance, LastPlatform.position.X + width * 2);
+
+            createPlatform(position, width);
         }
-        private void createPlatform(Vector2 position)
+        private void createPlatform(Vector2 position, int width)
         {
-            platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, Platform.WIDTH, Platform.HEIGHT), platform));
+            platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), platform));
         }
         /// <summary>
         /// This is called when the game should draw itself.
