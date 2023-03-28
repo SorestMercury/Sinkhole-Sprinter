@@ -25,6 +25,7 @@ namespace Sinkhole_Sprinter
         public Rectangle currentsource;
         // If player is moving
         public movement playerState;
+        public direction moveDirection;
         // Frame of animation
         private int currentInt;
         // Timer for animation
@@ -41,8 +42,13 @@ namespace Sinkhole_Sprinter
         public enum movement
         {
             idle,
-            left,
-            right
+            running,
+            jumping
+        }
+
+        public enum direction
+        {
+            left, right
         }
 
         
@@ -54,6 +60,7 @@ namespace Sinkhole_Sprinter
             currentsource = st[0];
             standing = st;
             playerState = movement.idle;
+            moveDirection = direction.right;
             currentInt = 0;
             canJump = true;
             timer = 0;
@@ -71,7 +78,8 @@ namespace Sinkhole_Sprinter
             currentsource = st[0];
             standing = st;
             // playerState = movement.idle;
-            playerState = movement.right;
+            playerState = movement.idle;
+            moveDirection = direction.right;
             currentInt = 0;
             canJump = true;
             timer = 0;
@@ -88,7 +96,7 @@ namespace Sinkhole_Sprinter
         // Get the maximum distance the player can jump, factoring in player and platform width
         public float GetMaxJumpDistance(float dHeight)
         {
-            return MAX_SPEED * (JUMP + (float)Math.Sqrt(Math.Pow(JUMP, 2) + 2 * dHeight)) + Platform.WIDTH + rect.Width;
+            return MAX_SPEED * (JUMP + (float)Math.Sqrt(Math.Pow(JUMP, 2) + 2 * dHeight)) + rect.Width;
         }
 
         public void Update()
@@ -106,7 +114,8 @@ namespace Sinkhole_Sprinter
 
                     currentsource = running[currentInt];
                 }
-                playerState = movement.left;
+                playerState = movement.running;
+                moveDirection = direction.left;
             }
             else if (kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.Right))
             {
@@ -117,7 +126,8 @@ namespace Sinkhole_Sprinter
 
                     currentsource = running[currentInt];
                 }
-                playerState = movement.right;
+                playerState = movement.running;
+                moveDirection = direction.right;
             }
             else
             {

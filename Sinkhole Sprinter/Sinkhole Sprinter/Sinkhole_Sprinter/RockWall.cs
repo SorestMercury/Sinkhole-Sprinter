@@ -10,22 +10,20 @@ using System.Collections.Generic;
 using System.Linq;
 namespace Sinkhole_Sprinter
 {
-    class Lava : Sprite
+    class RockWall : Sprite
     {
-        // const int RISE_DELAY = 3;
-        // int timer = 0;
-        public Lava(Rectangle rect, Texture2D texture) : base(rect, texture)
+        double SPEED = 2;
+        public RockWall(Rectangle rect, Texture2D texture) : base(rect, texture)
         {
 
         }
-        //public void Update()
-        //{
-        //    timer++;
-        //    if (timer % RISE_DELAY == 0)
-        //    {
-        //        position.Y--;
-        //    }
-        //}
+        public void Update()
+        {
+            if(SPEED<7)
+                SPEED += .002;
+
+            position.X += (int)SPEED;
+        }
     }
 }
 
