@@ -46,20 +46,14 @@ namespace Sinkhole_Sprinter
 
         //const int PLATFORM_SPEED = 3;
         const int STARTING_PLATFORM_HEIGHT = 500;
-        // How much the platform can spawn up or down
         const int PLATFORM_HEIGHT_VARIANCE = 100;
-        // Minimum average increase in height
         const int PLATFORM_HEIGHT_GAIN = 10;
-        // Bonus height increase that lowers with increasing difficulty
         const int PLATFORM_EXTRA_HEIGHT_GAIN = 40;
-        // How far to travel to half the bonus height gain and jump wiggle room
         const int PLATFORM_DIFFICULTY_DISTANCE = 20000;
-        // The minimum height the platform can spawn at above the lava
         const int PLATFORM_MIN_HEIGHT = 100;
-        // The portion of max jump distance not required
         const float PLATFORM_MIN_WIGGLE_ROOM = .1f;
-        // Less portion of max jump distance required, decreases with difficulty
         const float PLATFORM_BONUS_WIGGLE_ROOM = .2f;
+        const int PLATFORM_WIDTH_VARIANCE = 50;
         const double PLATFORM_BREAKING_CHANCE = .3;
         List<Platform> platforms;
         Platform LastPlatform
@@ -136,7 +130,7 @@ namespace Sinkhole_Sprinter
             lavaSize = new Rectangle(0, 0, 1500, 300);
             oldKb = Keyboard.GetState();
             highScores = new List<int>();
-            rockWallRect = new Rectangle(-1000, 360, 700, 720);
+            rockWallRect = new Rectangle(-800, 360, 700, 720);
 
 
             highScoreTxtRect= mainScreenText = deathScreenText = new Rectangle[5];
@@ -425,6 +419,7 @@ namespace Sinkhole_Sprinter
 
             // Platform width calculations
             int width = (int)(Platform.MIN_WIDTH + (Platform.MAX_WIDTH - Platform.MIN_WIDTH) * Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
+            width = r.Next(Math.Max(Platform.MIN_WIDTH, width - PLATFORM_WIDTH_VARIANCE), Math.Min(Platform.MAX_WIDTH, width + PLATFORM_WIDTH_VARIANCE));
 
             // Fraction of the max jump distance based on difficulty (max distance)
             float reverseDistanceModifier = (float)(PLATFORM_MIN_WIGGLE_ROOM + PLATFORM_BONUS_WIGGLE_ROOM * Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
