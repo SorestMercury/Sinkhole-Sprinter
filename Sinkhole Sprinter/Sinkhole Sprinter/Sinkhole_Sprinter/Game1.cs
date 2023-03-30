@@ -55,11 +55,12 @@ namespace Sinkhole_Sprinter
         // How far to travel to half the bonus height gain and jump wiggle room
         const int PLATFORM_DIFFICULTY_DISTANCE = 20000;
         // The minimum height the platform can spawn at above the lava
-        const int PLATFORM_MIN_HEIGHT = 50;
+        const int PLATFORM_MIN_HEIGHT = 100;
         // The portion of max jump distance not required
         const float PLATFORM_MIN_WIGGLE_ROOM = .1f;
         // Less portion of max jump distance required, decreases with difficulty
         const float PLATFORM_BONUS_WIGGLE_ROOM = .2f;
+        const double PLATFORM_BREAKING_CHANCE = .3;
         List<Platform> platforms;
         Platform LastPlatform
         {
@@ -246,10 +247,10 @@ namespace Sinkhole_Sprinter
                     for (int x = 0; x < platforms.Count; x++)
                     {
                         //platforms[x].update(PLATFORM_SPEED);
-
-                        if (platforms[x].offScreen)
+                        platforms[x].Update();
+                        if (platforms[x].touchedTimer == 0)
                         {
-                            platforms.Remove(platforms[x]);
+                            platforms.RemoveAt(x);
                             x--;
                             continue;
                         }
@@ -376,7 +377,7 @@ namespace Sinkhole_Sprinter
         private void startGame()
         {
             currentState = Gamestate.play;
-            createPlatform(new Vector2(Platform.MAX_WIDTH / 2, camera.boundingRectangle.Height * .7f), Platform.MAX_WIDTH);
+            createPlatform(new Vector2(Platform.MAX_WIDTH / 2, camera.boundingRectangle.Height * .7f), Platform.MAX_WIDTH, false);
             player = new Player(new Rectangle(50, STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - 38, 75, 75), textures, running, jumping, standing);
             lavas.Clear();
             lavaHeight = GraphicsDevice.Viewport.Height;
@@ -431,11 +432,13 @@ namespace Sinkhole_Sprinter
             float dDistance = distanceModifier * (player.GetMaxJumpDistance(dHeight) + width);
             position.X = Math.Max(LastPlatform.position.X + dDistance, LastPlatform.position.X + width * 2);
 
-            createPlatform(position, width);
+            bool isBreaking = r.NextDouble() < PLATFORM_BREAKING_CHANCE;
+
+            createPlatform(position, width, isBreaking);
         }
-        private void createPlatform(Vector2 position, int width)
+        private void createPlatform(Vector2 position, int width, bool isBreaking)
         {
-            platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), platform));
+            platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), platform, isBreaking));
         }
         /// <summary>
         /// This is called when the game should draw itself.
