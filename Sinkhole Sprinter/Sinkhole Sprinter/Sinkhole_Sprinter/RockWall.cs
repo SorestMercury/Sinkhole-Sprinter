@@ -12,14 +12,19 @@ namespace Sinkhole_Sprinter
 {
     class RockWall : Sprite
     {
-        public const float SPEED = 2;
+
+        double SPEED = 2;
+
         public RockWall(Rectangle rect, Texture2D texture) : base(rect, texture)
         {
 
         }
         public void Update()
         {
-            position.X += SPEED;
+            if(SPEED<7)
+                SPEED += .002;
+
+            position.X += (int)SPEED;
         }
     }
 }

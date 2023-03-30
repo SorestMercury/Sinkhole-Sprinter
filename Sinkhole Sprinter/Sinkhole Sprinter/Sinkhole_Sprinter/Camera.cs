@@ -51,7 +51,19 @@ namespace Sinkhole_Sprinter
             // Set the rectangle to the correct relative position
             sprite.rect.X = (int)(sprite.position.X - sprite.rect.Width / 2 - position.X + boundingRectangle.Width / 2);
             sprite.rect.Y = (int)(sprite.position.Y - sprite.rect.Height / 2 - position.Y + boundingRectangle.Height / 2);
-            spriteBatch.Draw(sprite.texture, sprite.rect, null, Color.White);
+            Color color = Color.White;
+
+            if (sprite is Platform)
+            {
+                Platform platform = (Platform)sprite;
+                if (platform.isBreaking)
+                {
+                    byte value = (byte)(255 * platform.touchedTimer / Platform.BREAKING_TIME);
+                    color = new Color(value, value, value, value);
+                }
+            }
+
+            spriteBatch.Draw(sprite.texture, sprite.rect, null, color);
         }
 
         /// <summary>
@@ -65,6 +77,9 @@ namespace Sinkhole_Sprinter
             }
         }
 
+        /// <summary>
+        /// Draw the player, flipping horizontally as necessary
+        /// </summary>
         public void DrawPlayer(GameTime gameTime, SpriteBatch spriteBatch, Player player)
         {
             SpriteEffects flip = SpriteEffects.None;
