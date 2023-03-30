@@ -10,21 +10,16 @@ using System.Collections.Generic;
 using System.Linq;
 namespace Sinkhole_Sprinter
 {
-    class RockWall : Sprite
+    class Rock : Sprite
     {
-
-        double SPEED = 2;
-
-        public RockWall(Rectangle rect, Texture2D texture) : base(rect, texture)
+        private int speed;
+        public Rock(Rectangle rect, Texture2D texture, int s) : base(rect, texture)
         {
-
+            speed = s;
         }
         public void Update()
         {
-            if(SPEED<7)
-                SPEED += .002;
-
-            position.X += (int)SPEED;
+            position.Y+=speed;
         }
     }
 }

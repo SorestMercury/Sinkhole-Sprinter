@@ -92,6 +92,12 @@ namespace Sinkhole_Sprinter
         Texture2D RockWall;
         RockWall rockWall;
         Rectangle rockWallRect;
+
+        //rocks
+        List<Texture2D> rocks;
+        Rock tempRock;
+        Rock[] rockArray = new Rock[200];
+        int rockSize = 40;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -137,7 +143,7 @@ namespace Sinkhole_Sprinter
             oldKb = Keyboard.GetState();
             highScores = new List<int>();
             rockWallRect = new Rectangle(-1000, 360, 700, 720);
-
+            rocks = new List<Texture2D>();
 
             highScoreTxtRect= mainScreenText = deathScreenText = new Rectangle[5];
             base.Initialize();
@@ -182,6 +188,17 @@ namespace Sinkhole_Sprinter
             exclamation = this.Content.Load<Texture2D>("exclamation");
 
             RockWall = this.Content.Load<Texture2D>("white");
+            rocks.Add(this.Content.Load<Texture2D>("rock1"));
+            rocks.Add(this.Content.Load<Texture2D>("rock2"));
+            rocks.Add(this.Content.Load<Texture2D>("rock3"));
+            rocks.Add(this.Content.Load<Texture2D>("rock4"));
+            Random randomGen = new Random();
+            for (int a = 0; a < rockArray.Length; a++)
+            {
+                
+                tempRock = new Rock(new Rectangle(randomGen.Next(rockWallRect.Width) + rockWallRect.Left, 0, rockSize, rockSize), rocks[randomGen.Next(rocks.Count)], randomGen.Next(20)+10);
+                rockArray[a] = tempRock;
+            }
         }
 
         /// <summary>
@@ -303,6 +320,18 @@ namespace Sinkhole_Sprinter
                     if (player.position.X <= rockWall.Right) // checks if player is dead
                     {
                         onDeath();
+                    }
+                    for (int a = 0; a < rockArray.Length; a++)
+                    {
+                        rockArray[a].Update();
+                    }
+                    
+                    for (int a = 0; a < rockArray.Length; a++)
+                    {
+                        if (rockArray[a] != null && rockArray[a].rect.Top > 720)
+                        {
+                            rockArray[a] = new Rock(new Rectangle(r.Next(rockWall.rect.Width) + rockWall.Left + 20, camera.boundingRectangle.Top, rockSize, rockSize), rocks[r.Next(rocks.Count)], r.Next(20)+10);
+                        }
                     }
                     // Update stats
                     maxHeight = Math.Max(STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - player.Bottom, maxHeight);
@@ -472,14 +501,20 @@ namespace Sinkhole_Sprinter
                     camera.Draw(gameTime, spriteBatch, rockWall);
                     foreach (Lava lava in lavas)
                         camera.Draw(gameTime, spriteBatch, lava);
+                    
+                    //rocks
+                    for (int a = 0; a < rockArray.Length; a++)
+                        camera.Draw(gameTime, spriteBatch, rockArray[a]);
+
+
                     spriteBatch.Draw(placeholder, new Rectangle(00, 0, GraphicsDevice.Viewport.Width, 25), Color.Black);
                     spriteBatch.DrawString(scoreFont, "score: " + score, new Vector2(0, 00), Color.White); // points distance max height
-                    spriteBatch.DrawString(scoreFont, "points: " + points, new Vector2(GraphicsDevice.Viewport.Width / 2 -  (scoreFont.MeasureString("points: " + points).Length() / 2), 00), Color.White);
+                    spriteBatch.DrawString(scoreFont, "points: " + points, new Vector2(GraphicsDevice.Viewport.Width / 2 - (scoreFont.MeasureString("points: " + points).Length() / 2), 00), Color.White);
                     spriteBatch.DrawString(scoreFont, "height: " + maxHeight, new Vector2(1280 - (scoreFont.MeasureString("height: " + maxHeight).Length()), 00), Color.White);
                     float heightTextX = 1280 - (scoreFont.MeasureString("height: " + maxHeight).Length());
                     float pointsTextX = (GraphicsDevice.Viewport.Width / 2 - (scoreFont.MeasureString("points: " + points).Length() / 2)); // get avg distance between both
 
-                    spriteBatch.DrawString(scoreFont, "distance: " + distance, new Vector2((1280 - (scoreFont.MeasureString("height: " + maxHeight).Length()) + GraphicsDevice.Viewport.Width / 2 - (scoreFont.MeasureString("points: " + points).Length() / 2)) / 2,0), Color.White);
+                    spriteBatch.DrawString(scoreFont, "distance: " + distance, new Vector2((1280 - (scoreFont.MeasureString("height: " + maxHeight).Length()) + GraphicsDevice.Viewport.Width / 2 - (scoreFont.MeasureString("points: " + points).Length() / 2)) / 2, 0), Color.White);
 
                     break;
                     
