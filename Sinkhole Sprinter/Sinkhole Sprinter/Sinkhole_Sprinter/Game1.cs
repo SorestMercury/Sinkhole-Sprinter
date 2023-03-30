@@ -51,8 +51,8 @@ namespace Sinkhole_Sprinter
         const int PLATFORM_EXTRA_HEIGHT_GAIN = 40;
         const int PLATFORM_DIFFICULTY_DISTANCE = 20000;
         const int PLATFORM_MIN_HEIGHT = 100;
-        const float PLATFORM_MIN_WIGGLE_ROOM = .1f;
-        const float PLATFORM_BONUS_WIGGLE_ROOM = .2f;
+        const float PLATFORM_BONUS_WIGGLE_ROOM = .3f;
+        const float PLATFORM_AVERAGE_DIFFICULTY = .6f;
         const int PLATFORM_WIDTH_VARIANCE = 50;
         const double PLATFORM_BREAKING_CHANCE = .3;
         List<Platform> platforms;
@@ -422,8 +422,9 @@ namespace Sinkhole_Sprinter
             width = r.Next(Math.Max(Platform.MIN_WIDTH, width - PLATFORM_WIDTH_VARIANCE), Math.Min(Platform.MAX_WIDTH, width + PLATFORM_WIDTH_VARIANCE));
 
             // Fraction of the max jump distance based on difficulty (max distance)
-            float reverseDistanceModifier = (float)(PLATFORM_MIN_WIGGLE_ROOM + PLATFORM_BONUS_WIGGLE_ROOM * Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
-            float distanceModifier = 1 - (float)(r.NextDouble() * reverseDistanceModifier + reverseDistanceModifier);
+            float difficultyVariance = PLATFORM_BONUS_WIGGLE_ROOM * (1 - (float)Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
+            float distanceModifier = (float)(PLATFORM_AVERAGE_DIFFICULTY + (r.NextDouble() * difficultyVariance * 2 - difficultyVariance));
+            Console.WriteLine(distanceModifier);
             float dDistance = distanceModifier * (player.GetMaxJumpDistance(dHeight) + width);
             position.X = Math.Max(LastPlatform.position.X + dDistance, LastPlatform.position.X + width * 2);
 

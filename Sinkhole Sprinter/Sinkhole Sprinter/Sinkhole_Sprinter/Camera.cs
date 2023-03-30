@@ -58,6 +58,7 @@ namespace Sinkhole_Sprinter
                 Platform platform = (Platform)sprite;
                 if (platform.isBreaking)
                 {
+                    // Fade colors if the platform is breaking
                     byte value = (byte)(255 * platform.touchedTimer / Platform.BREAKING_TIME);
                     color = new Color(value, value, value, value);
                 }
