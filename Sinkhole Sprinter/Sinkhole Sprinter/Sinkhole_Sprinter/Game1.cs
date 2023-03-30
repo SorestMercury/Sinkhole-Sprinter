@@ -454,7 +454,6 @@ namespace Sinkhole_Sprinter
             // Fraction of the max jump distance based on difficulty (max distance)
             float difficultyVariance = PLATFORM_BONUS_WIGGLE_ROOM * (1 - (float)Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
             float distanceModifier = (float)(PLATFORM_AVERAGE_DIFFICULTY + (r.NextDouble() * difficultyVariance * 2 - difficultyVariance));
-            Console.WriteLine(distanceModifier);
             float dDistance = distanceModifier * (player.GetMaxJumpDistance(dHeight) + width);
             position.X = Math.Max(LastPlatform.position.X + dDistance, LastPlatform.position.X + width * 2);
 
