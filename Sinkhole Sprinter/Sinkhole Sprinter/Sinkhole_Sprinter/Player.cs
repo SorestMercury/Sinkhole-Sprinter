@@ -158,12 +158,14 @@ namespace Sinkhole_Sprinter
                 {
                     canJump = false;
                     velocity.Y = -JUMP;
+                    playerState = movement.jumping;
                 }
             }
 
             if (velocity.Y > 0)
             {
                 canJump = false;
+                playerState = movement.jumping;
             }
 
             //check if player is in the air, if they are, switch to jumping spritesheet and animate accordingly
@@ -226,6 +228,8 @@ namespace Sinkhole_Sprinter
                 canJump = true;
                 position.Y = platform.Top - rect.Height / 2;
                 velocity.Y = 0;
+                if (platform.isBreaking && platform.touchedTimer == -1)
+                    platform.touchedTimer = Platform.BREAKING_TIME;
             }
         }
 

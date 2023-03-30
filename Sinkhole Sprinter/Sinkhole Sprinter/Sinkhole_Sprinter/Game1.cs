@@ -43,20 +43,15 @@ namespace Sinkhole_Sprinter
 
         //const int PLATFORM_SPEED = 3;
         const int STARTING_PLATFORM_HEIGHT = 500;
-        // How much the platform can spawn up or down
         const int PLATFORM_HEIGHT_VARIANCE = 100;
-        // Minimum average increase in height
         const int PLATFORM_HEIGHT_GAIN = 10;
-        // Bonus height increase that lowers with increasing difficulty
         const int PLATFORM_EXTRA_HEIGHT_GAIN = 40;
-        // How far to travel to half the bonus height gain and jump wiggle room
         const int PLATFORM_DIFFICULTY_DISTANCE = 20000;
-        // The minimum height the platform can spawn at above the lava
-        const int PLATFORM_MIN_HEIGHT = 50;
-        // The portion of max jump distance not required
-        const float PLATFORM_MIN_WIGGLE_ROOM = .1f;
-        // Less portion of max jump distance required, decreases with difficulty
-        const float PLATFORM_BONUS_WIGGLE_ROOM = .2f;
+        const int PLATFORM_MIN_HEIGHT = 100;
+        const float PLATFORM_BONUS_WIGGLE_ROOM = .3f;
+        const float PLATFORM_AVERAGE_DIFFICULTY = .6f;
+        const int PLATFORM_WIDTH_VARIANCE = 50;
+        const double PLATFORM_BREAKING_CHANCE = .3;
         List<Platform> platforms;
         Platform LastPlatform
         {
@@ -88,6 +83,12 @@ namespace Sinkhole_Sprinter
         Texture2D RockWall;
         RockWall rockWall;
         Rectangle rockWallRect;
+
+        //rocks
+        List<Texture2D> rocks;
+        Rock tempRock;
+        Rock[] rockArray = new Rock[200];
+        int rockSize = 40;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -132,8 +133,8 @@ namespace Sinkhole_Sprinter
             lavaSize = new Rectangle(0, 0, 1500, 300);
             oldKb = Keyboard.GetState();
             highScores = new List<int>();
-            rockWallRect = new Rectangle(-1000, 360, 700, 720);
-
+            rockWallRect = new Rectangle(-800, 360, 700, 720);
+            rocks = new List<Texture2D>();
 
             highScoreTxtRect = mainScreenText = deathScreenText = new Rectangle[5];
             base.Initialize();
@@ -181,6 +182,11 @@ namespace Sinkhole_Sprinter
             exclamation = this.Content.Load<Texture2D>("exclamation");
 
             RockWall = this.Content.Load<Texture2D>("white");
+            rocks.Add(this.Content.Load<Texture2D>("rock1"));
+            rocks.Add(this.Content.Load<Texture2D>("rock2"));
+            rocks.Add(this.Content.Load<Texture2D>("rock3"));
+            rocks.Add(this.Content.Load<Texture2D>("rock4"));
+            
         }
 
         /// <summary>
@@ -247,10 +253,10 @@ namespace Sinkhole_Sprinter
                     for (int x = 0; x < platforms.Count; x++)
                     {
                         //platforms[x].update(PLATFORM_SPEED);
-
-                        if (platforms[x].offScreen)
+                        platforms[x].Update();
+                        if (platforms[x].touchedTimer == 0)
                         {
-                            platforms.Remove(platforms[x]);
+                            platforms.RemoveAt(x);
                             x--;
                             continue;
                         }
@@ -303,6 +309,18 @@ namespace Sinkhole_Sprinter
                     if (player.position.X <= rockWall.Right) // checks if player is dead
                     {
                         onDeath();
+                    }
+                    for (int a = 0; a < rockArray.Length; a++)
+                    {
+                        rockArray[a].Update();
+                    }
+                    
+                    for (int a = 0; a < rockArray.Length; a++)
+                    {
+                        if (rockArray[a] != null && rockArray[a].rect.Top > 720)
+                        {
+                            rockArray[a] = new Rock(new Rectangle(r.Next(rockWall.rect.Width) + rockWall.Left + 20, camera.boundingRectangle.Top, rockSize, rockSize), rocks[r.Next(rocks.Count)], r.Next(20)+10);
+                        }
                     }
                     // Update stats
                     maxHeight = Math.Max(STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - player.Bottom, maxHeight);
@@ -370,7 +388,7 @@ namespace Sinkhole_Sprinter
         private void startGame()
         {
             currentState = Gamestate.play;
-            createPlatform(new Vector2(Platform.MAX_WIDTH / 2, camera.boundingRectangle.Height * .7f), Platform.MAX_WIDTH);
+            createPlatform(new Vector2(Platform.MAX_WIDTH / 2, camera.boundingRectangle.Height * .7f), Platform.MAX_WIDTH, false);
             player = new Player(new Rectangle(50, STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - 38, 75, 75), textures, running, jumping, standing);
             lavas.Clear();
             lavaHeight = GraphicsDevice.Viewport.Height;
@@ -378,6 +396,11 @@ namespace Sinkhole_Sprinter
             camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
             camera.position.Y = Math.Min(Math.Min(player.position.Y, camera.boundingRectangle.Height / 2), lavas[0].Top + LAVA_HEIGHT_SHOWN - camera.boundingRectangle.Height / 2);
             rockWall = new RockWall(rockWallRect, RockWall);
+            for (int a = 0; a < rockArray.Length; a++)
+            {
+                tempRock = new Rock(new Rectangle(r.Next(rockWallRect.Width) + rockWallRect.Left, 0, rockSize, rockSize), rocks[r.Next(rocks.Count)], r.Next(20) + 10);
+                rockArray[a] = tempRock;
+            }
             maxHeight = 0;
             distance = 0;
             points = 0;
@@ -418,18 +441,21 @@ namespace Sinkhole_Sprinter
 
             // Platform width calculations
             int width = (int)(Platform.MIN_WIDTH + (Platform.MAX_WIDTH - Platform.MIN_WIDTH) * Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
+            width = r.Next(Math.Max(Platform.MIN_WIDTH, width - PLATFORM_WIDTH_VARIANCE), Math.Min(Platform.MAX_WIDTH, width + PLATFORM_WIDTH_VARIANCE));
 
             // Fraction of the max jump distance based on difficulty (max distance)
-            float reverseDistanceModifier = (float)(PLATFORM_MIN_WIGGLE_ROOM + PLATFORM_BONUS_WIGGLE_ROOM * Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
-            float distanceModifier = 1 - (float)(r.NextDouble() * reverseDistanceModifier + reverseDistanceModifier);
+            float difficultyVariance = PLATFORM_BONUS_WIGGLE_ROOM * (1 - (float)Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
+            float distanceModifier = (float)(PLATFORM_AVERAGE_DIFFICULTY + (r.NextDouble() * difficultyVariance * 2 - difficultyVariance));
             float dDistance = distanceModifier * (player.GetMaxJumpDistance(dHeight) + width);
             position.X = Math.Max(LastPlatform.position.X + dDistance, LastPlatform.position.X + width * 2);
 
-            createPlatform(position, width);
+            bool isBreaking = r.NextDouble() < PLATFORM_BREAKING_CHANCE;
+
+            createPlatform(position, width, isBreaking);
         }
-        private void createPlatform(Vector2 position, int width)
+        private void createPlatform(Vector2 position, int width, bool isBreaking)
         {
-            platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), platform));
+            platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), platform, isBreaking));
         }
         /// <summary>
         /// This is called when the game should draw itself.
@@ -460,9 +486,15 @@ namespace Sinkhole_Sprinter
                         camera.Draw(gameTime, spriteBatch, platform);
                     }
                     camera.DrawPlayer(gameTime, spriteBatch, player);
-                    camera.Draw(gameTime, spriteBatch, rockWall);
+                    //camera.Draw(gameTime, spriteBatch, rockWall);
                     foreach (Lava lava in lavas)
                         camera.Draw(gameTime, spriteBatch, lava);
+                    
+                    //rocks
+                    for (int a = 0; a < rockArray.Length; a++)
+                        camera.Draw(gameTime, spriteBatch, rockArray[a]);
+
+
                     spriteBatch.Draw(placeholder, new Rectangle(00, 0, GraphicsDevice.Viewport.Width, 25), Color.Black);
                     spriteBatch.DrawString(scoreFont, "score: " + score, new Vector2(0, 00), Color.White); // points distance max height
                     spriteBatch.DrawString(scoreFont, "points: " + points, new Vector2(centerText(scoreFont, "points: " + points), 00), Color.White);
