@@ -137,10 +137,9 @@ namespace Sinkhole_Sprinter
             oldKb = Keyboard.GetState();
             highScores = new List<int>();
             rockWallRect = new Rectangle(-800, 360, 700, 720);
-
             rocks = new List<Texture2D>();
 
-            highScoreTxtRect= mainScreenText = deathScreenText = new Rectangle[5];
+            highScoreTxtRect = mainScreenText = deathScreenText = new Rectangle[5];
             base.Initialize();
         }
 
@@ -187,13 +186,7 @@ namespace Sinkhole_Sprinter
             rocks.Add(this.Content.Load<Texture2D>("rock2"));
             rocks.Add(this.Content.Load<Texture2D>("rock3"));
             rocks.Add(this.Content.Load<Texture2D>("rock4"));
-            Random randomGen = new Random();
-            for (int a = 0; a < rockArray.Length; a++)
-            {
-                
-                tempRock = new Rock(new Rectangle(randomGen.Next(rockWallRect.Width) + rockWallRect.Left, 0, rockSize, rockSize), rocks[randomGen.Next(rocks.Count)], randomGen.Next(20)+10);
-                rockArray[a] = tempRock;
-            }
+            
         }
 
         /// <summary>
@@ -409,6 +402,11 @@ namespace Sinkhole_Sprinter
             camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
             camera.position.Y = Math.Min(Math.Min(player.position.Y, camera.boundingRectangle.Height / 2), lavas[0].Top + LAVA_HEIGHT_SHOWN - camera.boundingRectangle.Height / 2);
             rockWall = new RockWall(rockWallRect, RockWall);
+            for (int a = 0; a < rockArray.Length; a++)
+            {
+                tempRock = new Rock(new Rectangle(r.Next(rockWallRect.Width) + rockWallRect.Left, 0, rockSize, rockSize), rocks[r.Next(rocks.Count)], r.Next(20) + 10);
+                rockArray[a] = tempRock;
+            }
             maxHeight = 0;
             distance = 0;
             points = 0;
@@ -494,7 +492,7 @@ namespace Sinkhole_Sprinter
                         camera.Draw(gameTime, spriteBatch, platform);
                     }
                     camera.DrawPlayer(gameTime, spriteBatch, player);
-                    camera.Draw(gameTime, spriteBatch, rockWall);
+                    //camera.Draw(gameTime, spriteBatch, rockWall);
                     foreach (Lava lava in lavas)
                         camera.Draw(gameTime, spriteBatch, lava);
                     
