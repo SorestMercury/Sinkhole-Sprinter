@@ -459,10 +459,17 @@ namespace Sinkhole_Sprinter
         // Ran when the player dies
         private void onDeath()
         {
+            // Change state
             currentState = Gamestate.gameover;
+
+            // Update highscores
             highScores.Add(score);
             highScores.Sort();
             highScores.Reverse();
+            while (highScores.Count > 10)
+                highScores.RemoveAt(10);
+
+            // Clear platforms
             platforms.Clear();
         }
 
