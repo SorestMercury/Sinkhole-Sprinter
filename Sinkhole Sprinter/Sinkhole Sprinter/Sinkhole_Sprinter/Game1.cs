@@ -37,7 +37,8 @@ namespace Sinkhole_Sprinter
         KeyboardState oldKb;
         Color[] titleScreenColors = { Color.Black, Color.Black, Color.Black };
         Color[] deathScreenColors = { Color.Black, Color.Black, Color.Black };
-        Color[] highScoreColors = { Color.Black, Color.Black, Color.Black };
+        Color[] highScoreColors = { Color.Black, Color.Black, Color.Black};
+        Color[] highScoreCols = { Color.Gold, Color.Silver, Color.Brown, Color.Black };
 
         Rectangle[] deathScreenText, mainScreenText, highScoreTxtRect;
 
@@ -518,7 +519,21 @@ namespace Sinkhole_Sprinter
                 case Gamestate.highscores:
                     spriteBatch.DrawString(titleFont, "main menu", new Vector2(GraphicsDevice.Viewport.Width / 4 - (titleFont.MeasureString("main menu").Length() / 2), GraphicsDevice.Viewport.Height / 3), highScoreColors[0]);
                     spriteBatch.DrawString(titleTextFont, "highscores", new Vector2(centerText(titleTextFont,"highscores"),0), Color.Black);
-                    drawScores(spriteBatch, gameTime, highScores.Count);
+                    float posY = 75;
+                    for (int i = 0; i < 10; i++) // Loop to draw numbers from 1-10
+                    {
+                        Color color = highScoreCols[Math.Min(i, Math.Max(highScoreCols.Length - 1, 0))];
+                        if (i < highScores.Count && highScores[i] != 0) // if available highscore, draws highscore with correlating color
+                        {
+                            spriteBatch.DrawString(scoreFont, i+1+". " + highScores[i], new Vector2(centerText(scoreFont, i+1 + highScores[i]+ ""), posY +( i * 50)), color);
+                        }
+                        else // Draws a blank number
+                        {
+                            spriteBatch.DrawString(scoreFont, i +1+ ". ", new Vector2(centerText(scoreFont, i + ". "), posY + (i * 50)), color);
+                        }
+                    }
+
+ 
 
 
 
@@ -547,68 +562,6 @@ namespace Sinkhole_Sprinter
         }
 
 
-        private void drawScores(SpriteBatch spriteBatch, GameTime gameTime, int scoreNum) // display the positions of the highscore
-        {
-            float posX = 75;
-            switch (scoreNum)
-            {
-                default:
-                    if (scoreNum >= 10)
-                    {
-                        goto case 10;
-                    }
-                    spriteBatch.DrawString(scoreFont, "1. ", new Vector2(centerText(scoreFont, "1. "), posX), Color.Gold);
-                    spriteBatch.DrawString(scoreFont, "2. ", new Vector2(centerText(scoreFont, "2. "), posX + 50), Color.Silver);
-                    spriteBatch.DrawString(scoreFont, "3. ", new Vector2(centerText(scoreFont, "3. "), posX + 100), Color.Brown);
-                    int x = (int)(posX + 150);
-                    for (int i = 4; i < 11; i++)
-                    {
-                        spriteBatch.DrawString(scoreFont, i + ". ", new Vector2(centerText(scoreFont, i + ". "), x), Color.Black);
-                        x += 50;
-
-                    }
-                    break;
-                case 1:
-                    spriteBatch.DrawString(scoreFont, "1. " + highScores[0], new Vector2(centerText(scoreFont, "1. " + highScores[0]), posX), Color.Gold);
-                    spriteBatch.DrawString(scoreFont, "2. ", new Vector2(centerText(scoreFont, "2. "), posX + 50), Color.Silver) ;
-                    spriteBatch.DrawString(scoreFont, "3. ", new Vector2(centerText(scoreFont, "3. "), posX + 100), Color.Brown);
-                    break;
-                case 2:
-                    spriteBatch.DrawString(scoreFont, "1. " + highScores[0], new Vector2(centerText(scoreFont, "1. " + highScores[0]), posX), Color.Gold);
-                    spriteBatch.DrawString(scoreFont, "2. " + highScores[1], new Vector2(centerText(scoreFont, "2. " + highScores[0]), posX + 50), Color.Silver);
-                    spriteBatch.DrawString(scoreFont, "3. ", new Vector2(centerText(scoreFont, "3. "), posX + 100), Color.Brown);
-                    break;
-                case 3:
-
-                    spriteBatch.DrawString(scoreFont, "1. " + highScores[0], new Vector2(centerText(scoreFont, "1. " + highScores[0]), posX), Color.Gold);
-                    spriteBatch.DrawString(scoreFont, "2. " + highScores[1], new Vector2(centerText(scoreFont, "2. " + highScores[1]), posX + 50), Color.Silver);
-                    spriteBatch.DrawString(scoreFont, "3. " + highScores[2], new Vector2(centerText(scoreFont, "3. " + highScores[2]), posX + 100), Color.Brown);
-                    break;
-                case 4:
-                    spriteBatch.DrawString(scoreFont, "4. " + highScores[3], new Vector2((centerText(scoreFont, "4. " + highScores[3])), posX + 150), Color.Black);
-                    goto case 3;
-                case 5:
-                    spriteBatch.DrawString(scoreFont, "5. " + highScores[4], new Vector2(centerText(scoreFont, "5. " + highScores[4]), posX + 200), Color.Black);
-                    goto case 4;
-                case 6:
-                    spriteBatch.DrawString(scoreFont, "6. " + highScores[5], new Vector2((centerText(scoreFont, "6. " + highScores[5])), posX + 250), Color.Black);
-                    goto case 5;
-                case 7:
-                    spriteBatch.DrawString(scoreFont, "7. " + highScores[6], new Vector2((centerText(scoreFont, "7. " + highScores[6])), posX + 300), Color.Black);
-                    goto case 6;
-                case 8:
-                    spriteBatch.DrawString(scoreFont, "8. " + highScores[7], new Vector2((centerText(scoreFont, "8. " + highScores[7])), posX + 350), Color.Black);
-                    goto case 7;
-                case 9:
-                    spriteBatch.DrawString(scoreFont, "9. " + highScores[8], new Vector2((centerText(scoreFont, "9. " + highScores[8])), posX + 400), Color.Black);
-                    goto case 8;
-                case 10:
-                    spriteBatch.DrawString(scoreFont, "10. " + highScores[9], new Vector2((centerText(scoreFont, "10. " + highScores[9])), posX + 450), Color.Black);
-                    goto case 9;
-
-
-            }
-        }
     }
 }
 
