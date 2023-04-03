@@ -47,7 +47,7 @@ namespace Sinkhole_Sprinter
         Rectangle[] deathScreenText, mainScreenText, highScoreTxtRect;
 
 
-        
+        // Platforms
         const int STARTING_PLATFORM_HEIGHT = 500;       // Height of first platform
         const int PLATFORM_HEIGHT_VARIANCE = 100;       // Randomness to platform height
         const int PLATFORM_HEIGHT_GAIN = 10;            // Minimum average height gain
@@ -58,8 +58,6 @@ namespace Sinkhole_Sprinter
         const float PLATFORM_AVERAGE_DIFFICULTY = .6f;  // Average difficulty, based on max jump distance
         const int PLATFORM_WIDTH_VARIANCE = 50;         // Randomness to platform width
         const double PLATFORM_BREAKING_CHANCE = .3;     // Chance for platform to be a breaking platform
-
-        // Platforms
         Texture2D platform;
         Texture2D placeholder;
         List<Platform> platforms;
@@ -79,7 +77,7 @@ namespace Sinkhole_Sprinter
         int timer = 0;
         Random r = new Random();
 
-        // lava and fire
+        // Lava and Fire
         const float LAVA_RISE_SPEED = .4f;
         const int LAVA_HEIGHT_SHOWN = 200;
         Texture2D lavaTexture, firesheet, exclamation;
@@ -87,7 +85,7 @@ namespace Sinkhole_Sprinter
         float lavaHeight;   // Top of lava sprite
         List<Lava> lavas;
 
-        // rockWall
+        // RockWall
         const int ROCK_SIZE = 40;
         RockWall rockWall;
         Rectangle rockWallRect;
