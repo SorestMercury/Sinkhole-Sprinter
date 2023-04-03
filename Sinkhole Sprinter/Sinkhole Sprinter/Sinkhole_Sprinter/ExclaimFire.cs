@@ -11,11 +11,16 @@ using System.Linq;
 
 namespace Sinkhole_Sprinter
 {
-    class Exclaim : Sprite
+    class ExclaimFire : Sprite
     {
-        public Exclaim(Rectangle rect, Texture2D texture) : base(rect,texture)
+        private Random randomGen = new Random();
+        public ExclaimFire(Rectangle rect, Texture2D texture) : base(rect,texture)
         {
 
+        }
+        public void Update(Rectangle rectangle)
+        {
+            
         }
     }
 }
