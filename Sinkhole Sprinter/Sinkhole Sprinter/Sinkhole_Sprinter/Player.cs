@@ -39,6 +39,7 @@ namespace Sinkhole_Sprinter
         Vector2 velocity;
         Vector2 acceleration;
 
+        //state of player
         public enum movement
         {
             idle,
@@ -46,6 +47,7 @@ namespace Sinkhole_Sprinter
             jumping
         }
 
+        //player direction
         public enum direction
         {
             left, right
@@ -68,6 +70,7 @@ namespace Sinkhole_Sprinter
             acceleration = new Vector2(0, GRAVITY);
         }
 
+        //constructor that allows for multiple sprite sheets to be utilized for one player
         public Player(Rectangle rect, List<Texture2D> s, List<Rectangle> r, List<Rectangle> j, List<Rectangle> st) : base(rect, s[0])
         {
             texture = s[0];
@@ -77,7 +80,6 @@ namespace Sinkhole_Sprinter
             jumping = j;
             currentsource = st[0];
             standing = st;
-            // playerState = movement.idle;
             playerState = movement.idle;
             moveDirection = direction.right;
             currentInt = 0;
@@ -104,7 +106,7 @@ namespace Sinkhole_Sprinter
             
             KeyboardState kb = Keyboard.GetState();
 
-            // Movement
+            // Movement, also update source rectangle on spritesheet
             if (kb.IsKeyDown(Keys.A) || kb.IsKeyDown(Keys.Left))
             {
                 acceleration.X = -ACCELERATION;
@@ -129,11 +131,15 @@ namespace Sinkhole_Sprinter
                 playerState = movement.running;
                 moveDirection = direction.right;
             }
+
+            //when player isnt moving
             else
             {
                 acceleration.X = 0;
                 velocity.X *= DRAG_FACTOR;
                 acceleration.X = 0;
+
+                //check if player is on ground and switch sprite sheets and velocity accordingly
                 if (canJump)
                 {
                     if (timer % 8 == 0)
@@ -152,6 +158,7 @@ namespace Sinkhole_Sprinter
                     velocity.X = 0;
             }
 
+            //check if player can jump, and if they can, make them jump and switch player state
             if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Up) || kb.IsKeyDown(Keys.Space))
             {
                 if (canJump)
