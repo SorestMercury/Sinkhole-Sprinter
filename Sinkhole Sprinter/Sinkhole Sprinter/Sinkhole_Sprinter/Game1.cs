@@ -37,21 +37,24 @@ namespace Sinkhole_Sprinter
         KeyboardState oldKb;
         Color[] titleScreenColors = { Color.Black, Color.Black, Color.Black };
         Color[] deathScreenColors = { Color.Black, Color.Black, Color.Black };
-        Color[] highScoreColors = { Color.Black, Color.Black, Color.Black };
+        Color[] highScoreColors = { Color.Black, Color.Black, Color.Black};
+        Color[] highScoreCols = { Color.Gold, Color.Silver, Color.Brown, Color.Black };
+        Rectangle[] deathScreenText, highScoreTxtRect, mainScreenText;
 
-        Rectangle[] deathScreenText, mainScreenText, highScoreTxtRect;
-
-        //const int PLATFORM_SPEED = 3;
-        const int STARTING_PLATFORM_HEIGHT = 500;
-        const int PLATFORM_HEIGHT_VARIANCE = 100;
-        const int PLATFORM_HEIGHT_GAIN = 10;
-        const int PLATFORM_EXTRA_HEIGHT_GAIN = 40;
-        const int PLATFORM_DIFFICULTY_DISTANCE = 20000;
-        const int PLATFORM_MIN_HEIGHT = 100;
-        const float PLATFORM_BONUS_WIGGLE_ROOM = .3f;
-        const float PLATFORM_AVERAGE_DIFFICULTY = .6f;
-        const int PLATFORM_WIDTH_VARIANCE = 50;
-        const double PLATFORM_BREAKING_CHANCE = .3;
+        // Platforms
+        const int STARTING_PLATFORM_HEIGHT = 500;       // Height of first platform
+        const int PLATFORM_HEIGHT_VARIANCE = 100;       // Randomness to platform height
+        const int PLATFORM_HEIGHT_GAIN = 10;            // Minimum average height gain
+        const int PLATFORM_EXTRA_HEIGHT_GAIN = 40;      // Additional height gain, lowers with time
+        const int PLATFORM_DIFFICULTY_DISTANCE = 20000; // Distance to half bonus gains
+        const int PLATFORM_MIN_HEIGHT = 100;            // Minimum height above lava
+        const float PLATFORM_BONUS_WIGGLE_ROOM = .3f;   // Randomness to platform distance at inf distance
+        const float PLATFORM_AVERAGE_DIFFICULTY = .6f;  // Average difficulty, based on max jump distance
+        const int PLATFORM_WIDTH_VARIANCE = 50;         // Randomness to platform width
+        const double PLATFORM_BREAKING_CHANCE = .3;     // Chance for platform to be a breaking platform
+        Texture2D platform;
+        Texture2D platformWeak;
+        Texture2D placeholder;
         List<Platform> platforms;
         Platform LastPlatform
         {
@@ -65,9 +68,7 @@ namespace Sinkhole_Sprinter
         int score; // Calculated based on previous stats
         List<int> highScores;
 
-        Texture2D placeholder;
-        Texture2D platform;
-        Texture2D weakPlatform;
+        
         // Time survived
         int timer = 0;
         Random r = new Random();
@@ -176,7 +177,7 @@ namespace Sinkhole_Sprinter
 
             placeholder = this.Content.Load<Texture2D>("white");
             platform = this.Content.Load<Texture2D>("platform");
-            weakPlatform = this.Content.Load<Texture2D>("platformWeak");
+            platformWeak = this.Content.Load<Texture2D>("platformWeak");
 
             firesheet = this.Content.Load<Texture2D>("Fire");
             Lava = this.Content.Load<Texture2D>("Lava");
@@ -457,10 +458,10 @@ namespace Sinkhole_Sprinter
         }
         private void createPlatform(Vector2 position, int width, bool isBreaking)
         {
+            Texture2D texture = platform;
             if (isBreaking)
-                platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), weakPlatform, isBreaking));
-            else
-                platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), platform, isBreaking));
+                texture = platformWeak;
+            platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), texture, isBreaking));
         }
         /// <summary>
         /// This is called when the game should draw itself.
