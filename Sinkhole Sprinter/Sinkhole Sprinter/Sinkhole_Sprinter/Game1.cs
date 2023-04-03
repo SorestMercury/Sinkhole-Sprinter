@@ -67,6 +67,7 @@ namespace Sinkhole_Sprinter
 
         Texture2D placeholder;
         Texture2D platform;
+        Texture2D weakPlatform;
         // Time survived
         int timer = 0;
         Random r = new Random();
@@ -175,6 +176,7 @@ namespace Sinkhole_Sprinter
 
             placeholder = this.Content.Load<Texture2D>("white");
             platform = this.Content.Load<Texture2D>("platform");
+            weakPlatform = this.Content.Load<Texture2D>("platformWeak");
 
             firesheet = this.Content.Load<Texture2D>("Fire");
             Lava = this.Content.Load<Texture2D>("Lava");
@@ -455,7 +457,10 @@ namespace Sinkhole_Sprinter
         }
         private void createPlatform(Vector2 position, int width, bool isBreaking)
         {
-            platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), platform, isBreaking));
+            if (isBreaking)
+                platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), weakPlatform, isBreaking));
+            else
+                platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), platform, isBreaking));
         }
         /// <summary>
         /// This is called when the game should draw itself.

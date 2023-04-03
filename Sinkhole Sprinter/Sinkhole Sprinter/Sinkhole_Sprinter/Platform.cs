@@ -10,7 +10,7 @@ namespace Sinkhole_Sprinter
     class Platform : Sprite
     {
         public const int HEIGHT = 20, MIN_WIDTH = 50, MAX_WIDTH = 200;
-        public const int BREAKING_TIME = 60;
+        public const int BREAKING_TIME = 40;
 
         // Does the platform break on touch
         public bool isBreaking;
