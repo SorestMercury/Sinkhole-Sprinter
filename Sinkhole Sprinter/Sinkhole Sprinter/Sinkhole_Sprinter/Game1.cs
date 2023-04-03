@@ -45,6 +45,7 @@ namespace Sinkhole_Sprinter
         Color[] deathScreenColors = { Color.Black, Color.Black, Color.Black };
         Color[] highScoreColors = { Color.Black, Color.Black, Color.Black};
         Color[] highScoreCols = { Color.Gold, Color.Silver, Color.Brown, Color.Black };
+        Rectangle[] deathScreenText, highScoreTxtRect, mainScreenText;
 
 
         // Platforms
@@ -59,6 +60,7 @@ namespace Sinkhole_Sprinter
         const int PLATFORM_WIDTH_VARIANCE = 50;         // Randomness to platform width
         const double PLATFORM_BREAKING_CHANCE = .3;     // Chance for platform to be a breaking platform
         Texture2D platform;
+        Texture2D platformWeak;
         Texture2D placeholder;
         List<Platform> platforms;
         Platform LastPlatform
@@ -185,6 +187,7 @@ namespace Sinkhole_Sprinter
             // Other sprites
             placeholder = this.Content.Load<Texture2D>("white");
             platform = this.Content.Load<Texture2D>("platform");
+            platformWeak = this.Content.Load<Texture2D>("platformWeak");
 
             firesheet = this.Content.Load<Texture2D>("Fire");
             lavaTexture = this.Content.Load<Texture2D>("Lava");
@@ -499,7 +502,10 @@ namespace Sinkhole_Sprinter
         // Spawn a platform (mainly to specify first platform position)
         private void createPlatform(Vector2 position, int width, bool isBreaking)
         {
-            platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), platform, isBreaking));
+            Texture2D texture = platform;
+            if (isBreaking)
+                texture = platformWeak;
+            platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), texture, isBreaking));
         }
 
 
