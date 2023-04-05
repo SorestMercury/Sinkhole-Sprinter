@@ -46,7 +46,7 @@ namespace Sinkhole_Sprinter
         Color[] highScoreColors = { Color.Black, Color.Black, Color.Black};
         Color[] highScoreCols = { Color.Gold, Color.Silver, Color.Brown, Color.Black };
         Rectangle[] deathScreenText, highScoreTxtRect, mainScreenText;
-
+        Vector2 leaderboardPos;
 
         // Platforms
         const int STARTING_PLATFORM_HEIGHT = 500;       // Height of first platform
@@ -148,6 +148,7 @@ namespace Sinkhole_Sprinter
             // High Score
             highScores = new List<int>();
             highScoreTxtRect = mainScreenText = deathScreenText = new Rectangle[5];
+            leaderboardPos = new Vector2(600, 100);
             base.Initialize();
         }
 
@@ -567,31 +568,24 @@ namespace Sinkhole_Sprinter
                 case Gamestate.highscores:
                     spriteBatch.DrawString(titleFont, "main menu", new Vector2(GraphicsDevice.Viewport.Width / 4 - (titleFont.MeasureString("main menu").Length() / 2), GraphicsDevice.Viewport.Height / 3), highScoreColors[0]);
                     spriteBatch.DrawString(titleTextFont, "highscores", new Vector2(centerText(titleTextFont,"highscores"),0), Color.Black);
-                    float posY = 75;
                     for (int i = 0; i < 10; i++) // Loop to draw numbers from 1-10
                     {
                         Color color = highScoreCols[Math.Min(i, Math.Max(highScoreCols.Length - 1, 0))];
                         if (i < highScores.Count && highScores[i] != 0) // if available highscore, draws highscore with correlating color
                         {
-                            spriteBatch.DrawString(scoreFont, i+1+". " + highScores[i], new Vector2(centerText(scoreFont, i+1 + highScores[i]+ ""), posY +( i * 50)), color);
+                            spriteBatch.DrawString(scoreFont, i+1+". " + highScores[i], new Vector2(leaderboardPos.X, leaderboardPos.Y +( i * 50)), color);
                         }
                         else // Draws a blank number
                         {
-                            spriteBatch.DrawString(scoreFont, i +1+ ". ", new Vector2(centerText(scoreFont, i + ". "), posY + (i * 50)), color);
+                            spriteBatch.DrawString(scoreFont, i +1+ ". ", new Vector2(leaderboardPos.X, leaderboardPos.Y + (i * 50)), color);
                         }
                     }
-
- 
-
-
-
-
                     break;
             }
             spriteBatch.End();
             base.Draw(gameTime);
         }
-        private float centerText(SpriteFont font, String txt) // calculate the x position for the text and center it 
+        private float centerText(SpriteFont font, string txt) // calculate the x position for the text and center it 
         {
             return GraphicsDevice.Viewport.Width / 2 - (font.MeasureString(txt).Length() / 2);
         }
