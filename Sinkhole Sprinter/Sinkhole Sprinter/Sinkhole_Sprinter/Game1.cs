@@ -596,8 +596,6 @@ namespace Sinkhole_Sprinter
                 mouse.Y > txtRect.Y + 10 &&
                 mouse.Y < txtRect.Y + txtRect.Height;
         }
-
-
     }
 }
 
