@@ -63,7 +63,7 @@ namespace Sinkhole_Sprinter
 
         Texture2D platform;
         Texture2D platformWeak;
-        Texture2D largePlatform;
+        Texture2D goldenPlatform;
         Texture2D placeholder;
         List<Platform> platforms;
         Platform LastPlatform
@@ -190,7 +190,7 @@ namespace Sinkhole_Sprinter
 
             // Other sprites
             placeholder = this.Content.Load<Texture2D>("white");
-            largePlatform = this.Content.Load<Texture2D>("ylwPlatform");
+            goldenPlatform = this.Content.Load<Texture2D>("ylwPlatform");
             platform = this.Content.Load<Texture2D>("platform");
             platformWeak = this.Content.Load<Texture2D>("platformWeak");
 
@@ -284,7 +284,7 @@ namespace Sinkhole_Sprinter
                         }
                         if (platforms[x].rect.Intersects(player.rect))
                         {
-                            if (platforms[x].texture.Equals(largePlatform) && platforms[x].isBreaking)
+                            if (platforms[x].texture.Equals(goldenPlatform) && platforms[x].isBreaking)
                             {
                                 platforms[x].isBreaking = false;
                                 points += 25;
@@ -519,7 +519,7 @@ namespace Sinkhole_Sprinter
             if (r.NextDouble() < PLATFORM_GOLDEN_CHANCE)
             {
                 isBreaking = true;
-                texture = largePlatform;
+                texture = goldenPlatform;
             }
 
             platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), texture, isBreaking));
