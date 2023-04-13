@@ -57,7 +57,7 @@ namespace Sinkhole_Sprinter
         const int PLATFORM_MIN_HEIGHT = 100;            // Minimum height above lava
         const float PLATFORM_BONUS_WIGGLE_ROOM = .3f;   // Randomness to platform distance at inf distance
         const float PLATFORM_AVERAGE_DIFFICULTY = .6f;  // Average difficulty, based on max jump distance
-        const int PLATFORM_WIDTH_VARIANCE = 50;         // Randomness to platform width
+        const int PLATFORM_WIDTH_VARIANCE = 30;         // Randomness to platform width
         const double PLATFORM_BREAKING_CHANCE = .3;     // Chance for platform to be a breaking platform
         Texture2D platform;
         Texture2D platformWeak;
@@ -267,6 +267,7 @@ namespace Sinkhole_Sprinter
         {
             mouse = Mouse.GetState();
             KeyboardState kb = Keyboard.GetState();
+            GamePadState gamePad = GamePad.GetState(PlayerIndex.One);
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
@@ -342,7 +343,7 @@ namespace Sinkhole_Sprinter
                     lavaHeight -= LAVA_RISE_SPEED;
 
                     //ensures lava maintains minimum distance from player
-                    if (lavaHeight > player.position.Y + 375 && timer > 300)
+                    if (lavaHeight > camera.position.Y + camera.boundingRectangle.Height / 2 && timer > 300)
                         lavaHeight = Math.Max(MathHelper.Lerp(lavaHeight, player.position.Y + 375, 0.02f), lavaHeight - LAVA_RISE_SPEED * 4); // Capped at additional 4x lava speed
 
                     //ensures rockwall maintains minimum distance from player
@@ -358,7 +359,8 @@ namespace Sinkhole_Sprinter
                     
                     // Update camera position
                     camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
-                    camera.position.Y = Math.Min(Math.Min(player.position.Y, camera.boundingRectangle.Height / 2), lavas[0].Top + LAVA_HEIGHT_SHOWN - camera.boundingRectangle.Height / 2);
+                    camera.FollowY(player);
+                    camera.position.Y = Math.Min(Math.Min(camera.position.Y, camera.boundingRectangle.Height / 2), lavaHeight + LAVA_HEIGHT_SHOWN - camera.boundingRectangle.Height / 2);
 
                     // Create platforms, remove first platform if under lava
                     if (LastPlatform.position.X < camera.boundingRectangle.Right)
@@ -405,7 +407,7 @@ namespace Sinkhole_Sprinter
 
                 case Gamestate.gameover:
                     // Check for restart keybind
-                    if (kb.IsKeyDown(Keys.R) && !oldKb.IsKeyDown(Keys.R))
+                    if (kb.IsKeyDown(Keys.R) && !oldKb.IsKeyDown(Keys.R) || gamePad.Buttons.Start == ButtonState.Pressed)
                     {
                         startGame();
                     }
