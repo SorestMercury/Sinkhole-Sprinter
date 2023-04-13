@@ -23,6 +23,7 @@ namespace Sinkhole_Sprinter
         Texture2D run;
         Texture2D jump;
         Texture2D idle;
+        Texture2D hearts;
         List<Rectangle> running, jumping, standing;
         List<Texture2D> textures;
         Player player;
@@ -216,6 +217,7 @@ namespace Sinkhole_Sprinter
             textures.Add(run);
             textures.Add(jump);
             textures.Add(idle);
+            hearts = Content.Load<Texture2D>("hearts");
 
             // Fonts
             titleTextFont = Content.Load<SpriteFont>("SpriteFont2");
@@ -597,8 +599,19 @@ namespace Sinkhole_Sprinter
                     spriteBatch.DrawString(scoreFont, "score: " + score, new Vector2(0, 00), Color.White); // points distance max height
                     spriteBatch.DrawString(scoreFont, "points: " + points, new Vector2(centerText(scoreFont, "points: " + points), 00), Color.White);
                     spriteBatch.DrawString(scoreFont, "height: " + maxHeight, new Vector2(1280 - (scoreFont.MeasureString("height: " + maxHeight).Length()), 00), Color.White);
-                    spriteBatch.DrawString(scoreFont, "distance: " + distance, new Vector2((1280 - (scoreFont.MeasureString("height: " + maxHeight).Length()) + 
+                    spriteBatch.DrawString(scoreFont, "distance: " + distance, new Vector2((1280 - (scoreFont.MeasureString("distance : " + distance).Length()) + 
                         GraphicsDevice.Viewport.Width / 2 - (scoreFont.MeasureString("points: " + points).Length() / 2)) / 2, 0), Color.White);
+
+                    // score and points
+                    float test = 230;
+                    spriteBatch.DrawString(scoreFont, "hearts: ", new Vector2(test,00), Color.White);
+                    int heartsVectorX = 230;
+                    for (int i = 0; i < player.hearts; i++)
+                    {
+                        spriteBatch.Draw(hearts, new Rectangle((int)(heartsVectorX + scoreFont.MeasureString("hearts: ").X), 0, 30, 30), Color.White);
+                        heartsVectorX += 30; 
+
+                    }
 
                     break;
 

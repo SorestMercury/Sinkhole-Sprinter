@@ -32,6 +32,8 @@ namespace Sinkhole_Sprinter
         int timer;
         // If player is off ground
         private bool canJump;
+        // Number of hearts the player hast
+        public int hearts;
         // For keyboard debounce
         KeyboardState oldkb;
 
@@ -68,6 +70,7 @@ namespace Sinkhole_Sprinter
             timer = 0;
             velocity = new Vector2(0, 0);
             acceleration = new Vector2(0, GRAVITY);
+            hearts = 3;
         }
 
         //constructor that allows for multiple sprite sheets to be utilized for one player
@@ -87,6 +90,7 @@ namespace Sinkhole_Sprinter
             timer = 0;
             velocity = new Vector2(0, 0);
             acceleration = new Vector2(0, GRAVITY);
+            hearts = 3;
         }
 
         // Increment one frame in running animation
