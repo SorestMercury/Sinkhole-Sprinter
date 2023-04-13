@@ -59,8 +59,11 @@ namespace Sinkhole_Sprinter
         const float PLATFORM_AVERAGE_DIFFICULTY = .6f;  // Average difficulty, based on max jump distance
         const int PLATFORM_WIDTH_VARIANCE = 50;         // Randomness to platform width
         const double PLATFORM_BREAKING_CHANCE = .3;     // Chance for platform to be a breaking platform
+        const double PLATFORM_GOLDEN_CHANCE = .05;     // Chance for platform to be a breaking platform
+
         Texture2D platform;
         Texture2D platformWeak;
+        Texture2D goldenPlatform;
         Texture2D placeholder;
         List<Platform> platforms;
         Platform LastPlatform
@@ -234,6 +237,7 @@ namespace Sinkhole_Sprinter
 
             // Other sprites
             placeholder = this.Content.Load<Texture2D>("white");
+            goldenPlatform = this.Content.Load<Texture2D>("ylwPlatform");
             platform = this.Content.Load<Texture2D>("platform");
             platformWeak = this.Content.Load<Texture2D>("platformWeak");
 
@@ -325,9 +329,15 @@ namespace Sinkhole_Sprinter
                             x--;
                             continue;
                         }
-
                         if (platforms[x].rect.Intersects(player.rect))
+                        {
+                            if (platforms[x].texture.Equals(goldenPlatform) && platforms[x].isBreaking)
+                            {
+                                platforms[x].isBreaking = false;
+                                points += 25;
+                            }
                             player.CheckCollisions(platforms[x]);
+                        }
                     }
 
                     //if (timer % 60 == 0)
@@ -554,6 +564,12 @@ namespace Sinkhole_Sprinter
             Texture2D texture = platform;
             if (isBreaking)
                 texture = platformWeak;
+            if (r.NextDouble() < PLATFORM_GOLDEN_CHANCE)
+            {
+                isBreaking = true;
+                texture = goldenPlatform;
+            }
+
             platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), texture, isBreaking));
         }
 
@@ -581,7 +597,7 @@ namespace Sinkhole_Sprinter
                     // spriteBatch.Draw(placeholder, new Rectangle(0, lavas[0].rect.Bottom - 5, 1500, Math.Max(GraphicsDevice.Viewport.Height - lavas[0].rect.Bottom + 5, 0)), new Color(255, 79, 9));
                     foreach (Platform platform in platforms)
                     {
-                        camera.Draw(gameTime, spriteBatch, platform);
+                            camera.Draw(gameTime, spriteBatch, platform);
                     }
                     camera.DrawPlayer(gameTime, spriteBatch, player);
                     foreach (Lava lava in lavas)

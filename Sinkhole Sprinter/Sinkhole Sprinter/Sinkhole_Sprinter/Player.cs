@@ -237,6 +237,7 @@ namespace Sinkhole_Sprinter
                 velocity.Y = 0;
                 if (platform.isBreaking && platform.touchedTimer == -1)
                     platform.touchedTimer = Platform.BREAKING_TIME;
+
             }
         }
 
