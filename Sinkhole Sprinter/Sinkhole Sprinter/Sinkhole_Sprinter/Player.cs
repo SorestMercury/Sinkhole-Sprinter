@@ -13,8 +13,9 @@ namespace Sinkhole_Sprinter
 {
     class Player : Sprite
     {
-        const int MAX_SPEED = 8, JUMP = 20, MAX_FALL_SPEED = 25;
+        const int MAX_SPEED = 8, JUMP = 20, MAX_FALL_SPEED = 25, WIGGLE_ROOM = 20;
         const float ACCELERATION = .8f, GRAVITY = 1, DRAG_FACTOR = .8f, AIR_RESISTANCE = .95f;
+        const float THUMBSTICK_MINIMUM = .2f;
 
         //in the instance that multiple sprite sheets are necessary
         List<Texture2D> textures;
@@ -26,6 +27,7 @@ namespace Sinkhole_Sprinter
         // If player is moving
         public movement playerState;
         public direction moveDirection;
+        public float lastHeight;
         // Frame of animation
         private int currentInt;
         // Timer for animation
@@ -36,6 +38,7 @@ namespace Sinkhole_Sprinter
         public int hearts;
         // For keyboard debounce
         KeyboardState oldkb;
+        GamePadState oldGamePad;
 
         // Physics
         Vector2 velocity;
@@ -55,23 +58,21 @@ namespace Sinkhole_Sprinter
             left, right
         }
 
-        
-        public Player(Rectangle rect, Texture2D s, List<Rectangle> r, List<Rectangle> j, List<Rectangle> st) : base(rect, s)
-        {
-            oldkb = Keyboard.GetState();
-            running = r;
-            jumping = j;
-            currentsource = st[0];
-            standing = st;
-            playerState = movement.idle;
-            moveDirection = direction.right;
-            currentInt = 0;
-            canJump = true;
-            timer = 0;
-            velocity = new Vector2(0, 0);
-            acceleration = new Vector2(0, GRAVITY);
-            hearts = 3;
-        }
+        //public Player(Rectangle rect, Texture2D s, List<Rectangle> r, List<Rectangle> j, List<Rectangle> st) : base(rect, s)
+        //{
+        //    oldkb = Keyboard.GetState();
+        //    running = r;
+        //    jumping = j;
+        //    currentsource = st[0];
+        //    standing = st;
+        //    playerState = movement.idle;
+        //    moveDirection = direction.right;
+        //    currentInt = 0;
+        //    canJump = true;
+        //    timer = 0;
+        //    velocity = new Vector2(0, 0);
+        //    acceleration = new Vector2(0, GRAVITY);
+        //}
 
         //constructor that allows for multiple sprite sheets to be utilized for one player
         public Player(Rectangle rect, List<Texture2D> s, List<Rectangle> r, List<Rectangle> j, List<Rectangle> st) : base(rect, s[0])
@@ -79,6 +80,8 @@ namespace Sinkhole_Sprinter
             texture = s[0];
             textures = s;
             oldkb = Keyboard.GetState();
+            oldGamePad = GamePad.GetState(PlayerIndex.One);
+            lastHeight = rect.Y;
             running = r;
             jumping = j;
             currentsource = st[0];
@@ -102,16 +105,18 @@ namespace Sinkhole_Sprinter
         // Get the maximum distance the player can jump, factoring in player and platform width
         public float GetMaxJumpDistance(float dHeight)
         {
-            return MAX_SPEED * (JUMP + (float)Math.Sqrt(Math.Pow(JUMP, 2) + 2 * dHeight)) + rect.Width;
+            return MAX_SPEED * (JUMP + (float)Math.Sqrt(Math.Pow(JUMP, 2) + 2 * dHeight)) + 2 * WIGGLE_ROOM;
         }
 
         public void Update()
         {
             
             KeyboardState kb = Keyboard.GetState();
+            GamePadState gamePad = GamePad.GetState(PlayerIndex.One);
 
             // Movement, also update source rectangle on spritesheet
-            if (kb.IsKeyDown(Keys.A) || kb.IsKeyDown(Keys.Left))
+            if (kb.IsKeyDown(Keys.A) || kb.IsKeyDown(Keys.Left) ||
+                gamePad.ThumbSticks.Left.X < -THUMBSTICK_MINIMUM || gamePad.DPad.Left == ButtonState.Pressed)
             {
                 acceleration.X = -ACCELERATION;
                 if (timer % 8 == 0 && canJump)
@@ -123,7 +128,8 @@ namespace Sinkhole_Sprinter
                 playerState = movement.running;
                 moveDirection = direction.left;
             }
-            else if (kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.Right))
+            else if (kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.Right) ||
+                gamePad.ThumbSticks.Left.X > THUMBSTICK_MINIMUM || gamePad.DPad.Right == ButtonState.Pressed)
             {
                 acceleration.X = ACCELERATION;
                 if (timer % 8 == 0 && canJump)
@@ -163,7 +169,7 @@ namespace Sinkhole_Sprinter
             }
 
             //check if player can jump, and if they can, make them jump and switch player state
-            if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Up) || kb.IsKeyDown(Keys.Space))
+            if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Up) || kb.IsKeyDown(Keys.Space) || gamePad.Buttons.A == ButtonState.Pressed)
             {
                 if (canJump)
                 {
@@ -228,17 +234,20 @@ namespace Sinkhole_Sprinter
 
             timer++;
             oldkb = kb;
+            oldGamePad = gamePad;
         }
 
 
         // Check if the player is on top of a platform and make functionality
         public void CheckCollisions(Platform platform)
         {
-            if (Bottom - MAX_FALL_SPEED < platform.Top && velocity.Y > 0)
+            if (Bottom - MAX_FALL_SPEED < platform.Top && velocity.Y > 0
+                && position.X - WIGGLE_ROOM <= platform.Right && position.X + WIGGLE_ROOM >= platform.Left)
             {
                 canJump = true;
                 position.Y = platform.Top - rect.Height / 2;
                 velocity.Y = 0;
+                lastHeight = position.Y;
                 if (platform.isBreaking && platform.touchedTimer == -1)
                     platform.touchedTimer = Platform.BREAKING_TIME;
 

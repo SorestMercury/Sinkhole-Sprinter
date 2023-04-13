@@ -9,8 +9,10 @@ namespace Sinkhole_Sprinter
 {
     class Camera
     {
+        const int VERTICAL_SPEED = 3;
         public Vector2 position;
         public Rectangle boundingRectangle;
+        float lastHeight;
 
         /// <summary>
         /// Create a new Camera located at the starting position
@@ -24,6 +26,7 @@ namespace Sinkhole_Sprinter
         {
             this.position = position;
             boundingRectangle = new Rectangle((int)(position.X - screenSize.X / 2), (int)(position.Y - screenSize.Y / 2), (int)screenSize.X, (int)screenSize.Y);
+            lastHeight = position.Y;
         }
 
         /// <summary>
@@ -41,6 +44,19 @@ namespace Sinkhole_Sprinter
         {
             boundingRectangle.X = (int)(position.X - boundingRectangle.Width / 2);
             boundingRectangle.Y = (int)(position.Y - boundingRectangle.Height / 2);
+        }
+        
+        public void FollowY(Player player)
+        {
+            float neededPlayerPos = position.Y + boundingRectangle.Height * .1f;
+            if (Math.Abs(player.lastHeight - neededPlayerPos) < 1)
+            {
+                position.Y = player.lastHeight - boundingRectangle.Height * .1f;
+                lastHeight = position.Y;
+            }
+            else
+                //position.Y += Math.Min(Math.Max((player.lastHeight - neededPlayerPos) * .05f, -VERTICAL_SPEED), VERTICAL_SPEED);
+                position.Y += Math.Min(Math.Max((player.lastHeight - neededPlayerPos) * (float)Math.Sqrt(Math.Abs(position.Y - lastHeight) + 1) * .005f, -VERTICAL_SPEED), VERTICAL_SPEED);
         }
 
         /// <summary>
