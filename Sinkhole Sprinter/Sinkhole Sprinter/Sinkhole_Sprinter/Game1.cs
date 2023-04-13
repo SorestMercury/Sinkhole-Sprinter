@@ -23,6 +23,7 @@ namespace Sinkhole_Sprinter
         Texture2D run;
         Texture2D jump;
         Texture2D idle;
+        Texture2D hearts;
         List<Rectangle> running, jumping, standing;
         List<Texture2D> textures;
         Player player;
@@ -59,8 +60,11 @@ namespace Sinkhole_Sprinter
         const float PLATFORM_AVERAGE_DIFFICULTY = .6f;  // Average difficulty, based on max jump distance
         const int PLATFORM_WIDTH_VARIANCE = 30;         // Randomness to platform width
         const double PLATFORM_BREAKING_CHANCE = .3;     // Chance for platform to be a breaking platform
+        const double PLATFORM_GOLDEN_CHANCE = .05;     // Chance for platform to be a breaking platform
+
         Texture2D platform;
         Texture2D platformWeak;
+        Texture2D goldenPlatform;
         Texture2D placeholder;
         List<Platform> platforms;
         Platform LastPlatform
@@ -216,6 +220,7 @@ namespace Sinkhole_Sprinter
             textures.Add(run);
             textures.Add(jump);
             textures.Add(idle);
+            hearts = Content.Load<Texture2D>("hearts");
 
             // Fonts
             titleTextFont = Content.Load<SpriteFont>("SpriteFont2");
@@ -234,6 +239,7 @@ namespace Sinkhole_Sprinter
 
             // Other sprites
             placeholder = this.Content.Load<Texture2D>("white");
+            goldenPlatform = this.Content.Load<Texture2D>("ylwPlatform");
             platform = this.Content.Load<Texture2D>("platform");
             platformWeak = this.Content.Load<Texture2D>("platformWeak");
 
@@ -326,9 +332,15 @@ namespace Sinkhole_Sprinter
                             x--;
                             continue;
                         }
-
                         if (platforms[x].rect.Intersects(player.rect))
+                        {
+                            if (platforms[x].texture.Equals(goldenPlatform) && platforms[x].isBreaking)
+                            {
+                                platforms[x].isBreaking = false;
+                                points += 25;
+                            }
                             player.CheckCollisions(platforms[x]);
+                        }
                     }
 
                     //if (timer % 60 == 0)
@@ -556,6 +568,12 @@ namespace Sinkhole_Sprinter
             Texture2D texture = platform;
             if (isBreaking)
                 texture = platformWeak;
+            if (r.NextDouble() < PLATFORM_GOLDEN_CHANCE)
+            {
+                isBreaking = true;
+                texture = goldenPlatform;
+            }
+
             platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), texture, isBreaking));
         }
 
@@ -583,7 +601,7 @@ namespace Sinkhole_Sprinter
                     // spriteBatch.Draw(placeholder, new Rectangle(0, lavas[0].rect.Bottom - 5, 1500, Math.Max(GraphicsDevice.Viewport.Height - lavas[0].rect.Bottom + 5, 0)), new Color(255, 79, 9));
                     foreach (Platform platform in platforms)
                     {
-                        camera.Draw(gameTime, spriteBatch, platform);
+                            camera.Draw(gameTime, spriteBatch, platform);
                     }
                     camera.DrawPlayer(gameTime, spriteBatch, player);
                     foreach (Lava lava in lavas)
@@ -599,8 +617,18 @@ namespace Sinkhole_Sprinter
                     spriteBatch.DrawString(scoreFont, "score: " + score, new Vector2(0, 00), Color.White); // points distance max height
                     spriteBatch.DrawString(scoreFont, "points: " + points, new Vector2(centerText(scoreFont, "points: " + points), 00), Color.White);
                     spriteBatch.DrawString(scoreFont, "height: " + maxHeight, new Vector2(1280 - (scoreFont.MeasureString("height: " + maxHeight).Length()), 00), Color.White);
-                    spriteBatch.DrawString(scoreFont, "distance: " + distance, new Vector2((1280 - (scoreFont.MeasureString("height: " + maxHeight).Length()) + 
+                    spriteBatch.DrawString(scoreFont, "distance: " + distance, new Vector2((1280 - (scoreFont.MeasureString("distance : " + distance).Length()) + 
                         GraphicsDevice.Viewport.Width / 2 - (scoreFont.MeasureString("points: " + points).Length() / 2)) / 2, 0), Color.White);
+                    // display number of hearts
+                    float heartsVectorX = 230; // Distance between points & score
+                    spriteBatch.DrawString(scoreFont, "hearts: ", new Vector2(heartsVectorX,00), Color.White);
+                    int heartsX = 230;
+                    for (int i = 0; i < player.hearts; i++)
+                    {
+                        spriteBatch.Draw(hearts, new Rectangle((int)(heartsX + scoreFont.MeasureString("hearts: ").X), 0, 30, 30), Color.White);
+                        heartsX += 30; 
+
+                    }
 
                     break;
 

@@ -34,6 +34,8 @@ namespace Sinkhole_Sprinter
         int timer;
         // If player is off ground
         private bool canJump;
+        // Number of hearts the player hast
+        public int hearts;
         // For keyboard debounce
         KeyboardState oldkb;
         GamePadState oldGamePad;
@@ -56,7 +58,6 @@ namespace Sinkhole_Sprinter
             left, right
         }
 
-        
         //public Player(Rectangle rect, Texture2D s, List<Rectangle> r, List<Rectangle> j, List<Rectangle> st) : base(rect, s)
         //{
         //    oldkb = Keyboard.GetState();
@@ -92,6 +93,7 @@ namespace Sinkhole_Sprinter
             timer = 0;
             velocity = new Vector2(0, 0);
             acceleration = new Vector2(0, GRAVITY);
+            hearts = 3;
         }
 
         // Increment one frame in running animation
@@ -248,6 +250,7 @@ namespace Sinkhole_Sprinter
                 lastHeight = position.Y;
                 if (platform.isBreaking && platform.touchedTimer == -1)
                     platform.touchedTimer = Platform.BREAKING_TIME;
+
             }
         }
 
