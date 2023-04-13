@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 
 namespace Sinkhole_Sprinter
 {
@@ -18,7 +18,7 @@ namespace Sinkhole_Sprinter
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-
+        
         // Player
         Texture2D run;
         Texture2D jump;
@@ -72,6 +72,7 @@ namespace Sinkhole_Sprinter
         }
 
         // Stats
+        string fileName = "..\\..\\..\\..\\Sinkhole_SprinterContent/scores.txt";
         int maxHeight;  // Highest height (flipped to positive, greater is higher)
         int points;     // Gained based on time, used to by items
         int distance;   // Furthest distance
@@ -149,10 +150,56 @@ namespace Sinkhole_Sprinter
             rocks = new List<Texture2D>();
 
             // High Score
-            highScores = new List<int>();
+            LoadScores();
             highScoreTxtRect = mainScreenText = deathScreenText = new Rectangle[5];
             leaderboardPos = new Vector2(600, 100);
             base.Initialize();
+        }
+
+        private void LoadScores()
+        {
+            highScores = new List<int>();
+            try
+            {
+                if (!File.Exists(fileName))
+                {
+                    Console.WriteLine("Score data doesn't exist");
+                    return;
+                }
+                using (StreamReader reader = new StreamReader(fileName))
+                {
+                    while (!reader.EndOfStream)
+                    {
+                        int score = int.Parse(reader.ReadLine());
+                        highScores.Add(score);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            highScores.Sort();
+            highScores.Reverse();
+        }
+
+        private void SaveScores()
+        {
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(fileName))
+                {
+                    foreach (int score in highScores)
+                    {
+                        writer.WriteLine(score);
+                    }
+                    Console.WriteLine("Written");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         /// <summary>
@@ -480,6 +527,7 @@ namespace Sinkhole_Sprinter
             highScores.Reverse();
             while (highScores.Count > 10)
                 highScores.RemoveAt(10);
+            SaveScores();
 
             // Clear platforms
             platforms.Clear();
@@ -584,6 +632,7 @@ namespace Sinkhole_Sprinter
                 case Gamestate.highscores:
                     spriteBatch.DrawString(titleFont, "main menu", new Vector2(GraphicsDevice.Viewport.Width / 4 - (titleFont.MeasureString("main menu").Length() / 2), GraphicsDevice.Viewport.Height / 3), highScoreColors[0]);
                     spriteBatch.DrawString(titleTextFont, "highscores", new Vector2(centerText(titleTextFont,"highscores"),0), Color.Black);
+
                     for (int i = 0; i < 10; i++) // Loop to draw numbers from 1-10
                     {
                         Color color = highScoreCols[Math.Min(i, Math.Max(highScoreCols.Length - 1, 0))];
