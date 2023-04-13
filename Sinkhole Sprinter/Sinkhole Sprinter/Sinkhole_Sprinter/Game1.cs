@@ -601,15 +601,14 @@ namespace Sinkhole_Sprinter
                     spriteBatch.DrawString(scoreFont, "height: " + maxHeight, new Vector2(1280 - (scoreFont.MeasureString("height: " + maxHeight).Length()), 00), Color.White);
                     spriteBatch.DrawString(scoreFont, "distance: " + distance, new Vector2((1280 - (scoreFont.MeasureString("distance : " + distance).Length()) + 
                         GraphicsDevice.Viewport.Width / 2 - (scoreFont.MeasureString("points: " + points).Length() / 2)) / 2, 0), Color.White);
-
-                    // score and points
-                    float test = 230;
-                    spriteBatch.DrawString(scoreFont, "hearts: ", new Vector2(test,00), Color.White);
-                    int heartsVectorX = 230;
+                    // display number of hearts
+                    float heartsVectorX = 230; // Distance between points & score
+                    spriteBatch.DrawString(scoreFont, "hearts: ", new Vector2(heartsVectorX,00), Color.White);
+                    int heartsX = 230;
                     for (int i = 0; i < player.hearts; i++)
                     {
-                        spriteBatch.Draw(hearts, new Rectangle((int)(heartsVectorX + scoreFont.MeasureString("hearts: ").X), 0, 30, 30), Color.White);
-                        heartsVectorX += 30; 
+                        spriteBatch.Draw(hearts, new Rectangle((int)(heartsX + scoreFont.MeasureString("hearts: ").X), 0, 30, 30), Color.White);
+                        heartsX += 30; 
 
                     }
 
