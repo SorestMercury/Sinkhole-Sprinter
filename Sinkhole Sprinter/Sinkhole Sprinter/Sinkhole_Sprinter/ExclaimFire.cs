@@ -13,14 +13,22 @@ namespace Sinkhole_Sprinter
 {
     class ExclaimFire : Sprite
     {
+        private int timer = 0;
         private Random randomGen = new Random();
+        public Vector2 pastPosition;
         public ExclaimFire(Rectangle rect, Texture2D texture) : base(rect,texture)
         {
 
         }
-        public void Update(Rectangle rectangle)
+        public void Update(float flo, int left, int right)
         {
-            
+            timer++;
+            if (timer % 200 == 0)
+            {
+                pastPosition = position;
+                position.X = randomGen.Next(left,right+640);
+            }
+            position.Y = (int)flo - 50;
         }
     }
 }
