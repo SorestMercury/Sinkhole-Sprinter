@@ -87,7 +87,8 @@ namespace Sinkhole_Sprinter
         Rectangle lavaSize; // Base lava sprite rect
         float lavaHeight;   // Top of lava sprite
         List<Lava> lavas;
-
+        ExclaimFire fireExclaim;
+        Fire fire;
         // RockWall
         const int ROCK_SIZE = 40;
         RockWall rockWall;
@@ -240,6 +241,8 @@ namespace Sinkhole_Sprinter
             firesheet = this.Content.Load<Texture2D>("Fire");
             lavaTexture = this.Content.Load<Texture2D>("Lava");
             exclamation = this.Content.Load<Texture2D>("exclamation");
+           
+
 
             // Rocks
             rocks.Add(this.Content.Load<Texture2D>("rock1"));
@@ -355,7 +358,13 @@ namespace Sinkhole_Sprinter
                     {
                         lava.position.Y = lavaHeight + lavaSize.Height / 2;
                     }
-                    
+
+                    //Warning system
+                    fireExclaim.Update(lavaHeight, player.Right,camera.Right);
+
+                    //Fire
+                    fire.Update(fireExclaim.pastPosition);
+
                     // Update camera position
                     camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
                     camera.position.Y = Math.Min(Math.Min(player.position.Y, camera.boundingRectangle.Height / 2), lavas[0].Top + LAVA_HEIGHT_SHOWN - camera.boundingRectangle.Height / 2);
@@ -373,7 +382,10 @@ namespace Sinkhole_Sprinter
                         onDeath();
                     }
 
-
+                    if (player.rect.Intersects(fire.rect))
+                    {
+                        onDeath();
+                    }
                     //Update rockwall position
                     rockWall.position.Y = camera.position.Y;
                     if (player.position.X <= rockWall.Right) // checks if player is dead
@@ -476,6 +488,10 @@ namespace Sinkhole_Sprinter
                 tempRock = new Rock(new Rectangle(r.Next(rockWallRect.Width) + rockWallRect.Left, 0, ROCK_SIZE, ROCK_SIZE), rocks[r.Next(rocks.Count)], r.Next(20) + 10);
                 rockArray[a] = tempRock;
             }
+
+            //create fire
+            fireExclaim = new ExclaimFire(new Rectangle(6000, 6000, 100, 200), exclamation);
+            fire = new Fire(new Rectangle(6000, 6000, 100, 200), firesheet);
 
             // Reset camera
             camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
@@ -590,7 +606,9 @@ namespace Sinkhole_Sprinter
                     //rocks
                     for (int a = 0; a < rockArray.Length; a++)
                         camera.Draw(gameTime, spriteBatch, rockArray[a]);
-
+                    //fire
+                    camera.Draw(gameTime, spriteBatch, fireExclaim);
+                    camera.Draw(gameTime, spriteBatch, fire, fire.currentRect);
 
                     // Draw stat bar at top
                     spriteBatch.Draw(placeholder, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, 25), Color.Black);
