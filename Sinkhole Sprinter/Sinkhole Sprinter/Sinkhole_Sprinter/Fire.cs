@@ -13,14 +13,11 @@ namespace Sinkhole_Sprinter
 {
     class Fire : Sprite
     {
-        public List<Rectangle> fireAnim;
-        public int currentRectangle = 0;
-        private int timer = 0, speed, timer2 = 0;
-        public Rectangle destRectangle, exclaimRectangle;
-        private bool exclaim = false, start = false;
-        public Fire(Texture2D f, Texture2D e, int sp) : base(new Rectangle(2000, 1000, 50, 150), f)
+        private List<Rectangle> fireAnim;
+        private int timer = 0, current = 0;
+        public Rectangle currentRect;
+        public Fire(Rectangle rect, Texture2D texture) : base(rect, texture)
         {
-            speed = sp;
             fireAnim = new List<Rectangle>();
             fireAnim.Add(new Rectangle(70, 70, 80, 314));
             fireAnim.Add(new Rectangle(160, 50, 80, 314));
@@ -29,43 +26,19 @@ namespace Sinkhole_Sprinter
             fireAnim.Add(new Rectangle(455, 65, 80, 314));
             fireAnim.Add(new Rectangle(555, 75, 80, 314));
             fireAnim.Add(new Rectangle(640, 75, 80, 314));
-            exclaimRectangle = new Rectangle(2000, 2000, 75, 75);
-            destRectangle = new Rectangle(2000, 1000, 50, 150);
+            currentRect = new Rectangle(70, 70, 80, 314);
         }
-        public void Update()
+        public void Update(Vector2 p)
         {
-            timer++;
-
-            if (timer > 100)
-                start = true;
-            if (start)
+            if (timer % 10 == 0)
             {
-                if (timer % speed == 0)
-                {
-                    currentRectangle++;
-                    if (currentRectangle == fireAnim.Count)
-                        currentRectangle = 0;
-                }
-                if (timer % 200 == 0)
-                {
-                    exclaim = true;
-                    Random randomGen = new Random();
-                    exclaimRectangle = new Rectangle(randomGen.Next(1280), 550, 75, 75);
-                }
-
-                if (exclaim)
-                {
-                    timer2++;
-                }
-
-                if (timer2 == 200)
-                {
-                    exclaim = false;
-                    timer2 = 0;
-                    destRectangle = new Rectangle(exclaimRectangle.X, exclaimRectangle.Y - 35, 50, 150);
-                }
+                current++;
+                if (current == 7)
+                    current = 0;
+                currentRect = fireAnim[current];
             }
-
+            timer++;
+            position = p;
         }
     }
 }

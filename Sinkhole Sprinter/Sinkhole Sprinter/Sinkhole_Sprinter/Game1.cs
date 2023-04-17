@@ -58,10 +58,13 @@ namespace Sinkhole_Sprinter
         const int PLATFORM_MIN_HEIGHT = 100;            // Minimum height above lava
         const float PLATFORM_BONUS_WIGGLE_ROOM = .3f;   // Randomness to platform distance at inf distance
         const float PLATFORM_AVERAGE_DIFFICULTY = .6f;  // Average difficulty, based on max jump distance
-        const int PLATFORM_WIDTH_VARIANCE = 50;         // Randomness to platform width
+        const int PLATFORM_WIDTH_VARIANCE = 30;         // Randomness to platform width
         const double PLATFORM_BREAKING_CHANCE = .3;     // Chance for platform to be a breaking platform
+        const double PLATFORM_GOLDEN_CHANCE = .05;     // Chance for platform to be a breaking platform
+
         Texture2D platform;
         Texture2D platformWeak;
+        Texture2D goldenPlatform;
         Texture2D placeholder;
         List<Platform> platforms;
         Platform LastPlatform
@@ -88,7 +91,8 @@ namespace Sinkhole_Sprinter
         Rectangle lavaSize; // Base lava sprite rect
         float lavaHeight;   // Top of lava sprite
         List<Lava> lavas;
-
+        ExclaimFire fireExclaim;
+        Fire fire;
         // RockWall
         const int ROCK_SIZE = 40;
         RockWall rockWall;
@@ -239,12 +243,15 @@ namespace Sinkhole_Sprinter
 
             // Other sprites
             placeholder = this.Content.Load<Texture2D>("white");
+            goldenPlatform = this.Content.Load<Texture2D>("ylwPlatform");
             platform = this.Content.Load<Texture2D>("platform");
             platformWeak = this.Content.Load<Texture2D>("platformWeak");
 
             firesheet = this.Content.Load<Texture2D>("Fire");
             lavaTexture = this.Content.Load<Texture2D>("Lava");
             exclamation = this.Content.Load<Texture2D>("exclamation");
+           
+
 
             // Rocks
             rocks.Add(this.Content.Load<Texture2D>("rock1"));
@@ -272,6 +279,7 @@ namespace Sinkhole_Sprinter
         {
             mouse = Mouse.GetState();
             KeyboardState kb = Keyboard.GetState();
+            GamePadState gamePad = GamePad.GetState(PlayerIndex.One);
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
@@ -330,9 +338,15 @@ namespace Sinkhole_Sprinter
                             x--;
                             continue;
                         }
-
                         if (platforms[x].rect.Intersects(player.rect))
+                        {
+                            if (platforms[x].texture.Equals(goldenPlatform) && platforms[x].isBreaking)
+                            {
+                                platforms[x].isBreaking = false;
+                                points += 25;
+                            }
                             player.CheckCollisions(platforms[x]);
+                        }
                     }
 
                     //if (timer % 60 == 0)
@@ -347,7 +361,7 @@ namespace Sinkhole_Sprinter
                     lavaHeight -= LAVA_RISE_SPEED;
 
                     //ensures lava maintains minimum distance from player
-                    if (lavaHeight > player.position.Y + 375 && timer > 300)
+                    if (lavaHeight > camera.position.Y + camera.boundingRectangle.Height / 2 && timer > 300)
                         lavaHeight = Math.Max(MathHelper.Lerp(lavaHeight, player.position.Y + 375, 0.02f), lavaHeight - LAVA_RISE_SPEED * 4); // Capped at additional 4x lava speed
 
                     //ensures rockwall maintains minimum distance from player
@@ -360,10 +374,17 @@ namespace Sinkhole_Sprinter
                     {
                         lava.position.Y = lavaHeight + lavaSize.Height / 2;
                     }
-                    
+
+                    //Warning system
+                    fireExclaim.Update(lavaHeight, player.Right,camera.Right);
+
+                    //Fire
+                    fire.Update(fireExclaim.pastPosition);
+
                     // Update camera position
                     camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
-                    camera.position.Y = Math.Min(Math.Min(player.position.Y, camera.boundingRectangle.Height / 2), lavas[0].Top + LAVA_HEIGHT_SHOWN - camera.boundingRectangle.Height / 2);
+                    camera.FollowY(player);
+                    camera.position.Y = Math.Min(Math.Min(camera.position.Y, camera.boundingRectangle.Height / 2), lavaHeight + LAVA_HEIGHT_SHOWN - camera.boundingRectangle.Height / 2);
 
                     // Create platforms, remove first platform if under lava
                     if (LastPlatform.position.X < camera.boundingRectangle.Right)
@@ -378,7 +399,10 @@ namespace Sinkhole_Sprinter
                         onDeath();
                     }
 
-
+                    if (player.rect.Intersects(fire.rect))
+                    {
+                        onDeath();
+                    }
                     //Update rockwall position
                     rockWall.position.Y = camera.position.Y;
                     if (player.position.X <= rockWall.Right) // checks if player is dead
@@ -410,7 +434,7 @@ namespace Sinkhole_Sprinter
 
                 case Gamestate.gameover:
                     // Check for restart keybind
-                    if (kb.IsKeyDown(Keys.R) && !oldKb.IsKeyDown(Keys.R))
+                    if (kb.IsKeyDown(Keys.R) && !oldKb.IsKeyDown(Keys.R) || gamePad.Buttons.Start == ButtonState.Pressed)
                     {
                         startGame();
                     }
@@ -481,6 +505,10 @@ namespace Sinkhole_Sprinter
                 tempRock = new Rock(new Rectangle(r.Next(rockWallRect.Width) + rockWallRect.Left, 0, ROCK_SIZE, ROCK_SIZE), rocks[r.Next(rocks.Count)], r.Next(20) + 10);
                 rockArray[a] = tempRock;
             }
+
+            //create fire
+            fireExclaim = new ExclaimFire(new Rectangle(6000, 6000, 100, 200), exclamation);
+            fire = new Fire(new Rectangle(6000, 6000, 100, 200), firesheet);
 
             // Reset camera
             camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
@@ -559,6 +587,12 @@ namespace Sinkhole_Sprinter
             Texture2D texture = platform;
             if (isBreaking)
                 texture = platformWeak;
+            if (r.NextDouble() < PLATFORM_GOLDEN_CHANCE)
+            {
+                isBreaking = true;
+                texture = goldenPlatform;
+            }
+
             platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), texture, isBreaking));
         }
 
@@ -587,7 +621,7 @@ namespace Sinkhole_Sprinter
                     // spriteBatch.Draw(placeholder, new Rectangle(0, lavas[0].rect.Bottom - 5, 1500, Math.Max(GraphicsDevice.Viewport.Height - lavas[0].rect.Bottom + 5, 0)), new Color(255, 79, 9));
                     foreach (Platform platform in platforms)
                     {
-                        camera.Draw(gameTime, spriteBatch, platform);
+                            camera.Draw(gameTime, spriteBatch, platform);
                     }
                     camera.DrawPlayer(gameTime, spriteBatch, player);
                     foreach (Lava lava in lavas)
@@ -596,7 +630,9 @@ namespace Sinkhole_Sprinter
                     //rocks
                     for (int a = 0; a < rockArray.Length; a++)
                         camera.Draw(gameTime, spriteBatch, rockArray[a]);
-
+                    //fire
+                    camera.Draw(gameTime, spriteBatch, fireExclaim);
+                    camera.Draw(gameTime, spriteBatch, fire, fire.currentRect);
 
                     // Draw stat bar at top
                     spriteBatch.Draw(placeholder, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, 25), Color.Black);
