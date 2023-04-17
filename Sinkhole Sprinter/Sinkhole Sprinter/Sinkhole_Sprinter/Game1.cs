@@ -97,6 +97,8 @@ namespace Sinkhole_Sprinter
         Rock tempRock;
         Rock[] rockArray = new Rock[200];
 
+        Texture2D background;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -218,6 +220,7 @@ namespace Sinkhole_Sprinter
             textures.Add(jump);
             textures.Add(idle);
             hearts = Content.Load<Texture2D>("hearts");
+            background = Content.Load<Texture2D>("cave");
 
             // Fonts
             titleTextFont = Content.Load<SpriteFont>("SpriteFont2");
@@ -580,6 +583,7 @@ namespace Sinkhole_Sprinter
 
                     break;
                 case Gamestate.play:
+                    spriteBatch.Draw(background, new Rectangle(0, -200, 1280, 1100), new Rectangle(0, 0, 785, 442),  Color.White);
                     // spriteBatch.Draw(placeholder, new Rectangle(0, lavas[0].rect.Bottom - 5, 1500, Math.Max(GraphicsDevice.Viewport.Height - lavas[0].rect.Bottom + 5, 0)), new Color(255, 79, 9));
                     foreach (Platform platform in platforms)
                     {
