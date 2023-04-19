@@ -99,19 +99,16 @@ namespace Sinkhole_Sprinter
             sprite.rect.X = (int)(sprite.position.X - sprite.rect.Width / 2 - position.X + boundingRectangle.Width / 2);
             sprite.rect.Y = (int)(sprite.position.Y - sprite.rect.Height / 2 - position.Y + boundingRectangle.Height / 2);
             Color color = Color.White;
-
-            if (sprite is Platform)
+            
+            if (sprite is BreakingPlatform)
             {
-                Platform platform = (Platform)sprite;
-                if (platform.isBreaking)
-                {
-                    // Fade colors if the platform is breaking
-                    byte value = (byte)(255 * platform.touchedTimer / Platform.BREAKING_TIME);
-                    color = new Color(value, value, value, value);
-                }
+                BreakingPlatform platform = (BreakingPlatform)sprite;
+                // Fade colors if the platform is breaking
+                byte value = (byte)(255 * platform.touchedTimer / BreakingPlatform.BREAKING_TIME);
+                color = new Color(value, value, value, value);
             }
 
-            spriteBatch.Draw(sprite.texture, sprite.rect, null, color);
+            spriteBatch.Draw(sprite.texture, sprite.rect, color);
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Sprite sprite, Rectangle sourceRect)
@@ -120,17 +117,6 @@ namespace Sinkhole_Sprinter
             sprite.rect.X = (int)(sprite.position.X - sprite.rect.Width / 2 - position.X + boundingRectangle.Width / 2);
             sprite.rect.Y = (int)(sprite.position.Y - sprite.rect.Height / 2 - position.Y + boundingRectangle.Height / 2);
             Color color = Color.White;
-
-            if (sprite is Platform)
-            {
-                Platform platform = (Platform)sprite;
-                if (platform.isBreaking)
-                {
-                    // Fade colors if the platform is breaking
-                    byte value = (byte)(255 * platform.touchedTimer / Platform.BREAKING_TIME);
-                    color = new Color(value, value, value, value);
-                }
-            }
 
             spriteBatch.Draw(sprite.texture, sprite.rect, sourceRect, color);
         }
