@@ -11,13 +11,12 @@ using System.Linq;
 
 namespace Sinkhole_Sprinter
 {
-    class ExclaimFire : Sprite
+    class ExclaimRocks : Sprite
     {
-        public bool collisionCheck;
-        private int timer = 0;
+        public int timer = 100;
         private Random randomGen = new Random();
         public Vector2 pastPosition;
-        public ExclaimFire(Rectangle rect, Texture2D texture) : base(rect,texture)
+        public ExclaimRocks(Rectangle rect, Texture2D texture) : base(rect, texture)
         {
 
         }
@@ -27,10 +26,9 @@ namespace Sinkhole_Sprinter
             if (timer % 200 == 0)
             {
                 pastPosition = position;
-                position.X = randomGen.Next(left,right+40); //change back ot +40
-                collisionCheck = false;
+                position.X = randomGen.Next(left, right + 640);
             }
-            position.Y = (int)flo - 205; // cjhange back to 50
+            position.Y = (int)flo;
         }
     }
 }

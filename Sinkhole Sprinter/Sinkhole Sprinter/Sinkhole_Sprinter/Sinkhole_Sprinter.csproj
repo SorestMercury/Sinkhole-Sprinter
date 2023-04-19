@@ -59,6 +59,8 @@
     <Compile Include="BreakingPlatform.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="ExclaimFire.cs" />
+    <Compile Include="ExclaimRocks.cs" />
+    <Compile Include="FallingRock.cs" />
     <Compile Include="Lava.cs" />
     <Compile Include="MovingPlatform.cs" />
     <Compile Include="Platform.cs" />
