@@ -63,17 +63,31 @@ namespace Sinkhole_Sprinter
             boundingRectangle.Y = (int)(position.Y - boundingRectangle.Height / 2);
         }
         
-        public void FollowY(Player player)
+        public void FollowX(Player player, Player player2)
+        {
+            float x = player.position.X;
+            if (player2 != null)
+            {
+                // Avg position, at most .2x screen width left of the rightmost player
+                x = Math.Max((x + player2.position.X) / 2, Math.Max(player.position.X, player2.position.X) - .2f * boundingRectangle.Width);
+            }
+            position.X = Math.Max(x, boundingRectangle.Width / 2);
+        }
+
+        public void FollowY(Player player, Player player2)
         {
             float neededPlayerPos = position.Y + boundingRectangle.Height * .1f;
-            if (Math.Abs(player.lastHeight - neededPlayerPos) < 1)
+            float avgHeight = player.lastHeight;
+            if (player2 != null)
+                avgHeight += (player2.lastHeight - avgHeight) / 2;
+            if (Math.Abs(avgHeight - neededPlayerPos) < 1)
             {
-                position.Y = player.lastHeight - boundingRectangle.Height * .1f;
+                position.Y = avgHeight - boundingRectangle.Height * .1f;
                 lastHeight = position.Y;
             }
             else
                 //position.Y += Math.Min(Math.Max((player.lastHeight - neededPlayerPos) * .05f, -VERTICAL_SPEED), VERTICAL_SPEED);
-                position.Y += Math.Min(Math.Max((player.lastHeight - neededPlayerPos) * (float)Math.Sqrt(Math.Abs(position.Y - lastHeight) + 1) * .005f, -VERTICAL_SPEED), VERTICAL_SPEED);
+                position.Y += Math.Min(Math.Max((avgHeight - neededPlayerPos) * (float)Math.Sqrt(Math.Abs(position.Y - lastHeight) + 1) * .005f, -VERTICAL_SPEED), VERTICAL_SPEED);
         }
 
         /// <summary>
@@ -151,7 +165,7 @@ namespace Sinkhole_Sprinter
             player.rect.X = (int)(player.position.X - player.rect.Width / 2 - position.X + boundingRectangle.Width / 2);
             player.rect.Y = (int)(player.position.Y - player.rect.Height / 2 - position.Y + boundingRectangle.Height / 2);
 
-            spriteBatch.Draw(player.texture, player.rect, player.currentsource, Color.White, 0, new Vector2(0, 0), flip, 0);
+            spriteBatch.Draw(player.texture, player.rect, player.currentsource, player.GetColor(), 0, new Vector2(0, 0), flip, 0);
         }
     }
 }

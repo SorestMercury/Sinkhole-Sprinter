@@ -16,6 +16,8 @@ namespace Sinkhole_Sprinter
         const int MAX_SPEED = 8, JUMP = 20, MAX_FALL_SPEED = 25, WIGGLE_ROOM = 20;
         const float ACCELERATION = .8f, GRAVITY = 1, DRAG_FACTOR = .8f, AIR_RESISTANCE = .95f;
         const float THUMBSTICK_MINIMUM = .2f;
+        static Color p1Color = new Color(180, 180, 255), p2Color = Color.Orange;
+        static PlayerIndex[] playerIndices = new PlayerIndex[] { PlayerIndex.One, PlayerIndex.Two };
 
         //in the instance that multiple sprite sheets are necessary
         List<Texture2D> textures;
@@ -39,6 +41,7 @@ namespace Sinkhole_Sprinter
         // For keyboard debounce
         KeyboardState oldkb;
         GamePadState oldGamePad;
+        public int playerNum;
 
         // Physics
         Vector2 velocity;
@@ -75,7 +78,7 @@ namespace Sinkhole_Sprinter
         //}
 
         //constructor that allows for multiple sprite sheets to be utilized for one player
-        public Player(Rectangle rect, List<Texture2D> s, List<Rectangle> r, List<Rectangle> j, List<Rectangle> st) : base(rect, s[0])
+        public Player(Rectangle rect, List<Texture2D> s, List<Rectangle> r, List<Rectangle> j, List<Rectangle> st, int playerNum) : base(rect, s[0])
         {
             texture = s[0];
             textures = s;
@@ -94,6 +97,7 @@ namespace Sinkhole_Sprinter
             velocity = new Vector2(0, 0);
             acceleration = new Vector2(0, GRAVITY);
             hearts = 3;
+            this.playerNum = playerNum;
         }
 
         // Increment one frame in running animation
@@ -112,10 +116,10 @@ namespace Sinkhole_Sprinter
         {
             
             KeyboardState kb = Keyboard.GetState();
-            GamePadState gamePad = GamePad.GetState(PlayerIndex.One);
+            GamePadState gamePad = GamePad.GetState(GetPlayerIndex());
 
             // Movement, also update source rectangle on spritesheet
-            if (kb.IsKeyDown(Keys.A) || kb.IsKeyDown(Keys.Left) ||
+            if ((playerNum != 2 && kb.IsKeyDown(Keys.A)) || (playerNum != 1 && kb.IsKeyDown(Keys.Left)) ||
                 gamePad.ThumbSticks.Left.X < -THUMBSTICK_MINIMUM || gamePad.DPad.Left == ButtonState.Pressed)
             {
                 acceleration.X = -ACCELERATION;
@@ -128,7 +132,7 @@ namespace Sinkhole_Sprinter
                 playerState = movement.running;
                 moveDirection = direction.left;
             }
-            else if (kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.Right) ||
+            else if ((playerNum != 2 && kb.IsKeyDown(Keys.D)) || (playerNum != 1 && kb.IsKeyDown(Keys.Right)) ||
                 gamePad.ThumbSticks.Left.X > THUMBSTICK_MINIMUM || gamePad.DPad.Right == ButtonState.Pressed)
             {
                 acceleration.X = ACCELERATION;
@@ -169,7 +173,7 @@ namespace Sinkhole_Sprinter
             }
 
             //check if player can jump, and if they can, make them jump and switch player state
-            if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Up) || kb.IsKeyDown(Keys.Space) || gamePad.Buttons.A == ButtonState.Pressed)
+            if ((playerNum != 2 && (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Space))) || (playerNum != 1 && kb.IsKeyDown(Keys.Up)) || gamePad.Buttons.A == ButtonState.Pressed)
             {
                 if (canJump)
                 {
@@ -235,6 +239,24 @@ namespace Sinkhole_Sprinter
             timer++;
             oldkb = kb;
             oldGamePad = gamePad;
+        }
+
+        public Color GetColor()
+        {
+            switch (playerNum)
+            {
+                case 1:
+                    return p1Color;
+                case 2:
+                    return p2Color;
+                default:
+                    return Color.White;
+            }
+        }
+
+        public PlayerIndex GetPlayerIndex()
+        {
+            return playerIndices[playerNum / 2];
         }
 
 
