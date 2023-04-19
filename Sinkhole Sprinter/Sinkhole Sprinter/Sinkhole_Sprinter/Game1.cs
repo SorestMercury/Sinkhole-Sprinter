@@ -30,8 +30,9 @@ namespace Sinkhole_Sprinter
         Player player2;
         int players;
 
-        // Info
+        // General
         Camera camera;
+        Texture2D background;
         MouseState mouse, oldMouse;
         KeyboardState oldKb;
         enum Gamestate
@@ -63,12 +64,12 @@ namespace Sinkhole_Sprinter
         const float PLATFORM_AVERAGE_DIFFICULTY = .6f;  // Average difficulty, based on max jump distance
         const int PLATFORM_WIDTH_VARIANCE = 30;         // Randomness to platform width
         
-        const int PLATFORM_GOLDEN_POINTS = 50;
-        const int PLATFORM_POINTS = 20;
-        const double PLATFORM_BREAKING_CHANCE = .3;     // Chance for platform to be a breaking platform
-        const double PLATFORM_POINT_CHANCE = .1;        // Chance for platform to be a point platform
-        const double PLATFORM_GOLDEN_CHANCE = .25;      // Chance for point platform to be a golden platform
-        const double PLATFORM_MOVING_CHANCE = .05;
+        const int PLATFORM_GOLDEN_POINTS = 50;          // Points gained by touching a golden platform
+        const int PLATFORM_POINTS = 20;                 // Points gained by touching a point platform
+        const double PLATFORM_BREAKING_CHANCE = .3;     // Chance for a platform to be a breaking platform
+        const double PLATFORM_POINT_CHANCE = .1;        // Chance for a platform to be a point platform
+        const double PLATFORM_GOLDEN_CHANCE = .25;      // Chance for a point platform to be a golden platform
+        const double PLATFORM_MOVING_CHANCE = .05;      // Chance for a platform to be a moving platform
 
         Texture2D platform;
         Texture2D weakPlatform;
@@ -103,11 +104,13 @@ namespace Sinkhole_Sprinter
         List<Lava> lavas;
         ExclaimFire fireExclaim;
         Fire fire;
-        //FallingRocks
+
+        // FallingRocks
         ExclaimRocks exclaimRocks;
         FallingRocks fallingRocks;
         Texture2D stalagsheet;
         List<bool> hazardCollisionCheck;
+
         // RockWall
         const int ROCK_SIZE = 40;
         RockWall rockWall;
@@ -116,9 +119,6 @@ namespace Sinkhole_Sprinter
         Rock tempRock;
         Rock[] rockArray = new Rock[200];
 
-        Texture2D background;
-
-        
 
         public Game1()
         {
@@ -677,6 +677,8 @@ namespace Sinkhole_Sprinter
         private void createPlatform(Vector2 position, int width, bool variants)
         {
             Rectangle rect = new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT);
+            
+            // Platform Variants
             if (variants)
             {
                 if (r.NextDouble() < PLATFORM_MOVING_CHANCE)
@@ -735,6 +737,7 @@ namespace Sinkhole_Sprinter
                     spriteBatch.DrawString(titleFont, "high scores", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("high scores").Length() / 2), 400), titleScreenColors[2]);
 
                     break;
+
                 case Gamestate.play:
                     spriteBatch.Draw(background, new Rectangle(0, -200, 1280, 1100), new Rectangle(0, 0, 785, 442),  Color.White);
                     // spriteBatch.Draw(placeholder, new Rectangle(0, lavas[0].rect.Bottom - 5, 1500, Math.Max(GraphicsDevice.Viewport.Height - lavas[0].rect.Bottom + 5, 0)), new Color(255, 79, 9));
@@ -783,7 +786,6 @@ namespace Sinkhole_Sprinter
                         heartsX += 30; 
 
                     }
-
                     
                     break;
 
