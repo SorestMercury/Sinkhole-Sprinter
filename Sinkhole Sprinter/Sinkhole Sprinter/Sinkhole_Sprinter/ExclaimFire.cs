@@ -13,6 +13,7 @@ namespace Sinkhole_Sprinter
 {
     class ExclaimFire : Sprite
     {
+        public bool collisionCheck;
         private int timer = 0;
         private Random randomGen = new Random();
         public Vector2 pastPosition;
@@ -26,9 +27,10 @@ namespace Sinkhole_Sprinter
             if (timer % 200 == 0)
             {
                 pastPosition = position;
-                position.X = randomGen.Next(left,right+640);
+                position.X = randomGen.Next(left,right+40); //change back ot +40
+                collisionCheck = false;
             }
-            position.Y = (int)flo - 50;
+            position.Y = (int)flo - 205; // cjhange back to 50
         }
     }
 }
