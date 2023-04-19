@@ -10,31 +10,18 @@ namespace Sinkhole_Sprinter
     class Platform : Sprite
     {
         public const int HEIGHT = 20, MIN_WIDTH = 60, MAX_WIDTH = 200;
-        public const int BREAKING_TIME = 40;
-
-        // Does the platform break on touch
-        public bool isBreaking;
-        public int touchedTimer;
+        
 
         /// <summary>
-        /// Create a new permanent Platform
+        /// Create a new Platform
         /// </summary>
-        public Platform(Rectangle rect, Texture2D texture) : this(rect, texture, false) { }
-
-        /// <summary>
-        /// Create a new Platform with specified type
-        /// </summary>
-        public Platform(Rectangle rect, Texture2D texture, bool isBreaking) : base(rect, texture) {
-            this.isBreaking = isBreaking;
-            touchedTimer = -1;
+        public Platform(Rectangle rect, Texture2D texture) : base(rect, texture) {
+            
         }
 
-        public void Update()
+        public virtual void Update()
         {
-            if (isBreaking && touchedTimer != -1)
-            {
-                touchedTimer--;
-            }
+            
         }
 
     }
