@@ -96,6 +96,10 @@ namespace Sinkhole_Sprinter
         List<Lava> lavas;
         ExclaimFire fireExclaim;
         Fire fire;
+        //FallingRocks
+        ExclaimRocks exclaimRocks;
+        FallingRocks fallingRocks;
+        Texture2D stalagsheet;
         // RockWall
         const int ROCK_SIZE = 40;
         RockWall rockWall;
@@ -105,6 +109,8 @@ namespace Sinkhole_Sprinter
         Rock[] rockArray = new Rock[200];
 
         Texture2D background;
+
+        
 
         public Game1()
         {
@@ -254,7 +260,7 @@ namespace Sinkhole_Sprinter
             firesheet = this.Content.Load<Texture2D>("Fire");
             lavaTexture = this.Content.Load<Texture2D>("Lava");
             exclamation = this.Content.Load<Texture2D>("exclamation");
-           
+            stalagsheet = this.Content.Load<Texture2D>("stalagmites");
 
 
             // Rocks
@@ -394,9 +400,14 @@ namespace Sinkhole_Sprinter
 
                     //Warning system
                     fireExclaim.Update(lavaHeight, player.Right,camera.Right);
+                    exclaimRocks.Update(camera.Top, player.Right, camera.Right);
 
                     //Fire
                     fire.Update(fireExclaim.pastPosition);
+                    if (exclaimRocks.timer % 200 == 0)
+                        fallingRocks.Update(exclaimRocks.pastPosition);
+                    else
+                        fallingRocks.Update();
 
                     // Update camera position
                     camera.FollowX(player, player2);
@@ -427,6 +438,10 @@ namespace Sinkhole_Sprinter
                         onDeath();
                     }
 
+                    if(player.rect.Intersects(fallingRocks.rect))
+                    {
+                        onDeath();
+                    }    
                     //Update rockwall position
                     rockWall.position.Y = camera.position.Y;
                     if (player.position.X <= rockWall.Right) // checks if player is dead
@@ -556,6 +571,9 @@ namespace Sinkhole_Sprinter
             fireExclaim = new ExclaimFire(new Rectangle(6000, 6000, 100, 200), exclamation);
             fire = new Fire(new Rectangle(6000, 6000, 100, 200), firesheet);
 
+            //create stalagmites
+            exclaimRocks = new ExclaimRocks(new Rectangle(6000, 6000, 100, 200), exclamation);
+            fallingRocks = new FallingRocks(new Rectangle(6000, 6000, 75, 200), stalagsheet);
             // Reset camera
             camera.position.X = Math.Max(player.position.X, camera.boundingRectangle.Width / 2);
             camera.position.Y = Math.Min(Math.Min(player.position.Y, camera.boundingRectangle.Height / 2), lavas[0].Top + LAVA_HEIGHT_SHOWN - camera.boundingRectangle.Height / 2);
@@ -674,7 +692,7 @@ namespace Sinkhole_Sprinter
                         camera.DrawPlayer(gameTime, spriteBatch, player2);
                     foreach (Lava lava in lavas)
                         camera.Draw(gameTime, spriteBatch, lava);
-                    
+
                     //rocks
                     for (int a = 0; a < rockArray.Length; a++)
                         camera.Draw(gameTime, spriteBatch, rockArray[a]);
@@ -682,6 +700,9 @@ namespace Sinkhole_Sprinter
                     camera.Draw(gameTime, spriteBatch, fireExclaim);
                     camera.Draw(gameTime, spriteBatch, fire, fire.currentRect);
 
+                    //rocks
+                    camera.Draw(gameTime, spriteBatch, exclaimRocks);
+                    camera.Draw(gameTime, spriteBatch, fallingRocks,fallingRocks.currentRect);
                     // Draw stat bar at top
                     spriteBatch.Draw(placeholder, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, 25), Color.Black);
                     if (player2 != null)
@@ -708,6 +729,7 @@ namespace Sinkhole_Sprinter
 
                     }
 
+                    
                     break;
 
                 case Gamestate.gameover:

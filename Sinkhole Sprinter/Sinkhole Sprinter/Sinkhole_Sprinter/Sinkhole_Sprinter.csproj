@@ -58,6 +58,8 @@
   <ItemGroup>
     <Compile Include="Camera.cs" />
     <Compile Include="ExclaimFire.cs" />
+    <Compile Include="ExclaimRocks.cs" />
+    <Compile Include="FallingRock.cs" />
     <Compile Include="Lava.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="Player.cs" />
