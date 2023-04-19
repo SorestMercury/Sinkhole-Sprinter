@@ -62,7 +62,7 @@ namespace Sinkhole_Sprinter
         const float PLATFORM_BONUS_WIGGLE_ROOM = .3f;   // Randomness to platform distance at inf distance
         const float PLATFORM_AVERAGE_DIFFICULTY = .6f;  // Average difficulty, based on max jump distance
         const int PLATFORM_WIDTH_VARIANCE = 30;         // Randomness to platform width
-        const double PLATFORM_BREAKING_CHANCE = .3;     // Chance for platform to be a breaking platform
+        const double PLATFORM_BREAKING_CHANCE = .0;     // Chance for platform to be a breaking platform
         const double PLATFORM_GOLDEN_CHANCE = .05;     // Chance for platform to be a breaking platform
 
         Texture2D platform;
@@ -100,6 +100,7 @@ namespace Sinkhole_Sprinter
         ExclaimRocks exclaimRocks;
         FallingRocks fallingRocks;
         Texture2D stalagsheet;
+        List<bool> hazardCollisionCheck;
         // RockWall
         const int ROCK_SIZE = 40;
         RockWall rockWall;
@@ -158,6 +159,7 @@ namespace Sinkhole_Sprinter
             // Other Sprites
             platforms = new List<Platform>();
             lavas = new List<Lava>();
+            hazardCollisionCheck = new List<bool>();
             lavaSize = new Rectangle(0, 0, 1500, 300);
             rockWallRect = new Rectangle(-800, 360, 700, 720);
             rocks = new List<Texture2D>();
@@ -388,6 +390,8 @@ namespace Sinkhole_Sprinter
                         lavaHeight = Math.Max(MathHelper.Lerp(lavaHeight, camera.boundingRectangle.Bottom, 0.02f), lavaHeight - LAVA_RISE_SPEED * 4); // Capped at additional 4x lava speed
 
                     //ensures rockwall maintains minimum distance from player
+                    if (rockWall.position.X < player.position.X - 950 && timer > 300)
+                        rockWall.position.X = MathHelper.Lerp(rockWall.position.X, player.position.X - 950, .02f);
                     if (rockWall.position.X < camera.boundingRectangle.Left && timer > 300)
                         rockWall.position.X = MathHelper.Lerp(rockWall.position.X, camera.boundingRectangle.Left, .02f);
                     
@@ -432,10 +436,18 @@ namespace Sinkhole_Sprinter
                         endText = "player one wins";
                         onDeath();
                     }
-
-                    if (player.rect.Intersects(fire.rect))
+                    if (player.hearts <= 0) // Kills player if they run out of hearts
                     {
                         onDeath();
+                    }
+
+                    if (player.rect.Intersects(fire.rect)) // Takes a heart away from the player if they touch a fire hazard
+                    {
+                        if (!fireExclaim.collisionCheck)
+                        {
+                            player.hearts--;
+                            fireExclaim.collisionCheck = true;
+                        }
                     }
 
                     if(player.rect.Intersects(fallingRocks.rect))
@@ -446,6 +458,9 @@ namespace Sinkhole_Sprinter
                     rockWall.position.Y = camera.position.Y;
                     if (player.position.X <= rockWall.Right) // checks if player is dead
                     {
+                        rockCollisionDrainHearts();
+                        //player.hearts--;
+                        //onDeath();
                         endText = player2 != null ? "player two wins" : "you died";
                         onDeath();
                     }
@@ -658,6 +673,13 @@ namespace Sinkhole_Sprinter
             }
 
             platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), texture, isBreaking));
+        }
+        private void rockCollisionDrainHearts() // Removes a heart from the player every half second when they are in the rockwall
+        {
+            if (timer % 30 == 0)
+            {
+                player.hearts--;
+            }
         }
 
 
