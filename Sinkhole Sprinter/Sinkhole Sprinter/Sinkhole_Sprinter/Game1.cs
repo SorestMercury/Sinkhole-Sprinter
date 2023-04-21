@@ -583,8 +583,8 @@ namespace Sinkhole_Sprinter
             }
 
             //create fire
-            fireExclaim = new ExclaimFire(new Rectangle(6000, 6000, 100, 200), exclamation);
-            fire = new Fire(new Rectangle(6000, 6000, 100, 200), firesheet);
+            fireExclaim = new ExclaimFire(new Rectangle(6000, 6000, 100, 400), exclamation);
+            fire = new Fire(new Rectangle(6000, 6000, 100, 400), firesheet);
 
             //create stalagmites
             exclaimRocks = new ExclaimRocks(new Rectangle(6000, 6000, 100, 200), exclamation);
