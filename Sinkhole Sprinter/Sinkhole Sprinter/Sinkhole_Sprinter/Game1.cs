@@ -70,10 +70,13 @@ namespace Sinkhole_Sprinter
         Texture2D goldenPlatform;
         Texture2D placeholder;
         List<Platform> platforms;
+        List<Platform> extraPlatforms;
         Platform LastPlatform
         {
             get => platforms[platforms.Count - 1];
         }
+
+        int extraPlatformSpawn;
 
         // Stats
         string fileName = "..\\..\\..\\..\\Sinkhole_SprinterContent/scores.txt";
@@ -149,6 +152,7 @@ namespace Sinkhole_Sprinter
 
             // Other Sprites
             platforms = new List<Platform>();
+            extraPlatforms = new List<Platform>();
             lavas = new List<Lava>();
             lavaSize = new Rectangle(0, 0, 1500, 300);
             rockWallRect = new Rectangle(-800, 360, 700, 720);
@@ -361,6 +365,37 @@ namespace Sinkhole_Sprinter
                         }
                     }
 
+                    //do same thing for extra platforms
+                    for (int x = 0; x < extraPlatforms.Count; x++)
+                    {
+                        //extraPlatforms[x].update(PLATFORM_SPEED);
+                        extraPlatforms[x].Update();
+                        if (extraPlatforms[x].touchedTimer == 0)
+                        {
+                            extraPlatforms.RemoveAt(x);
+                            x--;
+                            continue;
+                        }
+                        if (extraPlatforms[x].rect.Intersects(player.rect))
+                        {
+                            if (extraPlatforms[x].texture.Equals(goldenPlatform) && extraPlatforms[x].isBreaking)
+                            {
+                                extraPlatforms[x].isBreaking = false;
+                                points += 25;
+                            }
+                            player.CheckCollisions(extraPlatforms[x]);
+                        }
+                        if (player2 != null && extraPlatforms[x].rect.Intersects(player2.rect))
+                        {
+                            if (extraPlatforms[x].texture.Equals(goldenPlatform) && extraPlatforms[x].isBreaking)
+                            {
+                                extraPlatforms[x].isBreaking = false;
+                                points += 25;
+                            }
+                            player2.CheckCollisions(extraPlatforms[x]);
+                        }
+                    }
+
                     //if (timer % 60 == 0)
                     //{
                     //    platforms.Add(new Platform(new Rectangle(1280, platforms[platforms.Count-1].rect.Y+r.Next(-150,50), 70, 10), placeholder));
@@ -404,7 +439,14 @@ namespace Sinkhole_Sprinter
                     if (LastPlatform.position.X < camera.boundingRectangle.Right)
                     {
                         createPlatform();
+                        extraPlatformSpawn = timer + r.Next(0, 30);
                     }
+
+                    
+
+                        
+                    
+
                     if (platforms[0].Top - PLATFORM_MIN_HEIGHT > lavaHeight)
                         platforms.RemoveAt(0);
 
@@ -524,6 +566,7 @@ namespace Sinkhole_Sprinter
         {
             // Create sprites
             createPlatform(new Vector2(Platform.MAX_WIDTH / 2, camera.boundingRectangle.Height * .7f), Platform.MAX_WIDTH, false);
+            createExtraPlatform(new Vector2(Platform.MAX_WIDTH / 2, camera.boundingRectangle.Height * .7f), Platform.MAX_WIDTH, false);
 
             if (players == 1)
             {
@@ -622,6 +665,13 @@ namespace Sinkhole_Sprinter
             bool isBreaking = r.NextDouble() < PLATFORM_BREAKING_CHANCE;
 
             createPlatform(position, width, isBreaking);
+
+            
+            if(r.Next(100)<30)
+                createExtraPlatform(new Vector2(position.X + r.Next(-175, 175), position.Y + r.Next(75, 400)), width, isBreaking);
+
+            if (r.Next(100) < 60)
+                createExtraPlatform(new Vector2(position.X + r.Next(-175, 175), position.Y + r.Next(-400, -75)), width, isBreaking);
         }
 
         // Spawn a platform (mainly to specify first platform position)
@@ -637,6 +687,45 @@ namespace Sinkhole_Sprinter
             }
 
             platforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), texture, isBreaking));
+        }
+
+        //so that extra platforms do not interfere with the algorithm for regular ones
+
+        private void createExtraPlatform()
+        {
+            // Average height gain based on difficulty (max distance)
+            int avgGain = PLATFORM_HEIGHT_GAIN + (int)(PLATFORM_EXTRA_HEIGHT_GAIN * Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
+            int dHeight = r.Next(-(avgGain + PLATFORM_HEIGHT_VARIANCE), -(avgGain - PLATFORM_HEIGHT_VARIANCE));
+            Vector2 position = new Vector2();
+            position.Y = Math.Min(LastPlatform.position.Y + dHeight, lavas[0].Top - PLATFORM_MIN_HEIGHT)+r.Next(-1000,1000);
+
+            // Platform width calculations
+            int width = (int)(Platform.MIN_WIDTH + (Platform.MAX_WIDTH - Platform.MIN_WIDTH) * Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
+            width = r.Next(Math.Max(Platform.MIN_WIDTH, width - PLATFORM_WIDTH_VARIANCE), Math.Min(Platform.MAX_WIDTH, width + PLATFORM_WIDTH_VARIANCE));
+
+            // Fraction of the max jump distance based on difficulty (max distance)
+            float difficultyVariance = PLATFORM_BONUS_WIGGLE_ROOM * (1 - (float)Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
+            float distanceModifier = (float)(PLATFORM_AVERAGE_DIFFICULTY + (r.NextDouble() * difficultyVariance * 2 - difficultyVariance));
+            float dDistance = distanceModifier * (player.GetMaxJumpDistance(dHeight) + width);
+            position.X = Math.Max(LastPlatform.position.X + dDistance, LastPlatform.position.X + width * 2)+r.Next(0,500);
+
+            // Platform modifiers
+            bool isBreaking = r.NextDouble() < PLATFORM_BREAKING_CHANCE;
+
+            createExtraPlatform(position, width, isBreaking);
+        }
+        private void createExtraPlatform(Vector2 position, int width, bool isBreaking)
+        {
+            Texture2D texture = platform;
+            if (isBreaking)
+                texture = platformWeak;
+            if (r.NextDouble() < PLATFORM_GOLDEN_CHANCE)
+            {
+                isBreaking = true;
+                texture = goldenPlatform;
+            }
+
+            extraPlatforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), texture, isBreaking));
         }
 
 
@@ -664,6 +753,11 @@ namespace Sinkhole_Sprinter
                     foreach (Platform platform in platforms)
                     {
                             camera.Draw(gameTime, spriteBatch, platform);
+                    }
+
+                    foreach (Platform platform in extraPlatforms)
+                    {
+                        camera.Draw(gameTime, spriteBatch, platform);
                     }
                     camera.DrawPlayer(gameTime, spriteBatch, player);
                     if (players == 2)
