@@ -76,7 +76,6 @@ namespace Sinkhole_Sprinter
             get => platforms[platforms.Count - 1];
         }
 
-        int extraPlatformSpawn;
 
         // Stats
         string fileName = "..\\..\\..\\..\\Sinkhole_SprinterContent/scores.txt";
@@ -439,7 +438,6 @@ namespace Sinkhole_Sprinter
                     if (LastPlatform.position.X < camera.boundingRectangle.Right)
                     {
                         createPlatform();
-                        extraPlatformSpawn = timer + r.Next(0, 30);
                     }
 
                     
@@ -666,7 +664,7 @@ namespace Sinkhole_Sprinter
 
             createPlatform(position, width, isBreaking);
 
-            
+            //random chance to spawn bonus platforms relative to main ones
             if(r.Next(100)<30)
                 createExtraPlatform(new Vector2(position.X + r.Next(-175, 175), position.Y + r.Next(75, 400)), width, isBreaking);
 
@@ -690,30 +688,6 @@ namespace Sinkhole_Sprinter
         }
 
         //so that extra platforms do not interfere with the algorithm for regular ones
-
-        private void createExtraPlatform()
-        {
-            // Average height gain based on difficulty (max distance)
-            int avgGain = PLATFORM_HEIGHT_GAIN + (int)(PLATFORM_EXTRA_HEIGHT_GAIN * Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
-            int dHeight = r.Next(-(avgGain + PLATFORM_HEIGHT_VARIANCE), -(avgGain - PLATFORM_HEIGHT_VARIANCE));
-            Vector2 position = new Vector2();
-            position.Y = Math.Min(LastPlatform.position.Y + dHeight, lavas[0].Top - PLATFORM_MIN_HEIGHT)+r.Next(-1000,1000);
-
-            // Platform width calculations
-            int width = (int)(Platform.MIN_WIDTH + (Platform.MAX_WIDTH - Platform.MIN_WIDTH) * Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
-            width = r.Next(Math.Max(Platform.MIN_WIDTH, width - PLATFORM_WIDTH_VARIANCE), Math.Min(Platform.MAX_WIDTH, width + PLATFORM_WIDTH_VARIANCE));
-
-            // Fraction of the max jump distance based on difficulty (max distance)
-            float difficultyVariance = PLATFORM_BONUS_WIGGLE_ROOM * (1 - (float)Math.Pow(.5, LastPlatform.position.X / PLATFORM_DIFFICULTY_DISTANCE));
-            float distanceModifier = (float)(PLATFORM_AVERAGE_DIFFICULTY + (r.NextDouble() * difficultyVariance * 2 - difficultyVariance));
-            float dDistance = distanceModifier * (player.GetMaxJumpDistance(dHeight) + width);
-            position.X = Math.Max(LastPlatform.position.X + dDistance, LastPlatform.position.X + width * 2)+r.Next(0,500);
-
-            // Platform modifiers
-            bool isBreaking = r.NextDouble() < PLATFORM_BREAKING_CHANCE;
-
-            createExtraPlatform(position, width, isBreaking);
-        }
         private void createExtraPlatform(Vector2 position, int width, bool isBreaking)
         {
             Texture2D texture = platform;
