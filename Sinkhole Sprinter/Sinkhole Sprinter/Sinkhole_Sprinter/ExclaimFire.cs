@@ -27,10 +27,10 @@ namespace Sinkhole_Sprinter
             if (timer % 200 == 0)
             {
                 pastPosition = position;
-                position.X = randomGen.Next(left,right)+75; //change back ot +40
+                position.X = randomGen.Next(left,right)+75; 
                 collisionCheck = false;
             }
-            position.Y = (int)flo - 100; // cjhange back to 50
+            position.Y = (int)flo - 125; 
         }
     }
 }
