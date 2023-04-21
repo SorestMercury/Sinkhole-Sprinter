@@ -63,6 +63,7 @@ namespace Sinkhole_Sprinter
             boundingRectangle.Y = (int)(position.Y - boundingRectangle.Height / 2);
         }
         
+        // Follow the players' x coordinates
         public void FollowX(Player player, Player player2)
         {
             float x = player.position.X;
@@ -74,12 +75,16 @@ namespace Sinkhole_Sprinter
             position.X = Math.Max(x, boundingRectangle.Width / 2);
         }
 
+        // Follow the players' y coordinates
         public void FollowY(Player player, Player player2)
         {
+            // Avg y position needs to be 60% line
             float neededPlayerPos = position.Y + boundingRectangle.Height * .1f;
             float avgHeight = player.lastHeight;
             if (player2 != null)
                 avgHeight += (player2.lastHeight - avgHeight) / 2;
+
+            // If close, set equal
             if (Math.Abs(avgHeight - neededPlayerPos) < 1)
             {
                 position.Y = avgHeight - boundingRectangle.Height * .1f;
@@ -87,50 +92,37 @@ namespace Sinkhole_Sprinter
             }
             else
                 //position.Y += Math.Min(Math.Max((player.lastHeight - neededPlayerPos) * .05f, -VERTICAL_SPEED), VERTICAL_SPEED);
+                // Slowly move camera to position
                 position.Y += Math.Min(Math.Max((avgHeight - neededPlayerPos) * (float)Math.Sqrt(Math.Abs(position.Y - lastHeight) + 1) * .005f, -VERTICAL_SPEED), VERTICAL_SPEED);
         }
 
-        /// <summary>
-        /// Draws one sprite to the screen relative to the camera's position
-        /// </summary>
+        // Draws one sprite to the screen relative to the camera's position
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Sprite sprite)
         {
             // Set the rectangle to the correct relative position
             sprite.rect.X = (int)(sprite.position.X - sprite.rect.Width / 2 - position.X + boundingRectangle.Width / 2);
             sprite.rect.Y = (int)(sprite.position.Y - sprite.rect.Height / 2 - position.Y + boundingRectangle.Height / 2);
             Color color = Color.White;
-
-            if (sprite is Platform)
+            
+            // Breaking platform disappearing
+            if (sprite is BreakingPlatform)
             {
-                Platform platform = (Platform)sprite;
-                if (platform.isBreaking)
-                {
-                    // Fade colors if the platform is breaking
-                    byte value = (byte)(255 * platform.touchedTimer / Platform.BREAKING_TIME);
-                    color = new Color(value, value, value, value);
-                }
+                BreakingPlatform platform = (BreakingPlatform)sprite;
+                // Fade colors if the platform is breaking
+                byte value = (byte)(255 * platform.touchedTimer / BreakingPlatform.BREAKING_TIME);
+                color = new Color(value, value, value, value);
             }
 
-            spriteBatch.Draw(sprite.texture, sprite.rect, null, color);
+            spriteBatch.Draw(sprite.texture, sprite.rect, color);
         }
 
+        // Draw a sprite that requires a source rectangle
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Sprite sprite, Rectangle sourceRect)
         {
             // Set the rectangle to the correct relative position
             sprite.rect.X = (int)(sprite.position.X - sprite.rect.Width / 2 - position.X + boundingRectangle.Width / 2);
             sprite.rect.Y = (int)(sprite.position.Y - sprite.rect.Height / 2 - position.Y + boundingRectangle.Height / 2);
             Color color = Color.White;
-
-            if (sprite is Platform)
-            {
-                Platform platform = (Platform)sprite;
-                if (platform.isBreaking)
-                {
-                    // Fade colors if the platform is breaking
-                    byte value = (byte)(255 * platform.touchedTimer / Platform.BREAKING_TIME);
-                    color = new Color(value, value, value, value);
-                }
-            }
 
             spriteBatch.Draw(sprite.texture, sprite.rect, sourceRect, color);
         }

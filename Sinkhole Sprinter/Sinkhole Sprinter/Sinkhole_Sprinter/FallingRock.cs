@@ -34,7 +34,7 @@ namespace Sinkhole_Sprinter
         }
         public void Update(Vector2 p)
         {
-                position = p;
+            position = p;
         }
     }
 }

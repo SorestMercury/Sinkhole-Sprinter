@@ -270,8 +270,12 @@ namespace Sinkhole_Sprinter
                 position.Y = platform.Top - rect.Height / 2;
                 velocity.Y = 0;
                 lastHeight = position.Y;
-                if (platform.isBreaking && platform.touchedTimer == -1)
-                    platform.touchedTimer = Platform.BREAKING_TIME;
+                if (platform is BreakingPlatform)
+                {
+                    BreakingPlatform breakingPlatform = (BreakingPlatform)platform;
+                    if (breakingPlatform.touchedTimer == -1)
+                        breakingPlatform.touchedTimer = BreakingPlatform.BREAKING_TIME;
+                }
 
             }
         }
