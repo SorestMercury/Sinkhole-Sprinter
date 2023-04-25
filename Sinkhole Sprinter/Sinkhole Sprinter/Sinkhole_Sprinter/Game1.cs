@@ -121,7 +121,6 @@ namespace Sinkhole_Sprinter
         Rock tempRock;
         Rock[] rockArray = new Rock[200];
 
-
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -853,9 +852,11 @@ namespace Sinkhole_Sprinter
                     for (int a = 0; a < rockArray.Length; a++)
                         camera.Draw(gameTime, spriteBatch, rockArray[a]);
                     //fire
-                    camera.Draw(gameTime, spriteBatch, fireExclaim);
-                    camera.Draw(gameTime, spriteBatch, fire, fire.currentRect);
-
+                    if (timer > 1000)
+                    {
+                        camera.Draw(gameTime, spriteBatch, fireExclaim);
+                        camera.Draw(gameTime, spriteBatch, fire, fire.currentRect);
+                    }
                     //rocks
                     camera.Draw(gameTime, spriteBatch, exclaimRocks);
                     camera.Draw(gameTime, spriteBatch, fallingRocks,fallingRocks.currentRect);
