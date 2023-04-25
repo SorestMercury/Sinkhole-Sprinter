@@ -393,9 +393,9 @@ namespace Sinkhole_Sprinter
                     //do same thing for extra platforms
                     for (int x = 0; x < extraPlatforms.Count; x++)
                     {
-                        //platforms[x].update(PLATFORM_SPEED);
+                        //extraPlatforms[x].update(PLATFORM_SPEED);
                         extraPlatforms[x].Update();
-                        if (extraPlatforms[x] is BreakingPlatform && ((BreakingPlatform)extraPlatforms[x]).touchedTimer == 0)
+                        if (extraPlatforms[x].touchedTimer == 0)
                         {
                             extraPlatforms.RemoveAt(x);
                             x--;
@@ -403,27 +403,19 @@ namespace Sinkhole_Sprinter
                         }
                         if (extraPlatforms[x].rect.Intersects(player.rect))
                         {
-                            if (extraPlatforms[x] is PointPlatform)
+                            if (extraPlatforms[x].texture.Equals(goldenPlatform) && extraPlatforms[x].isBreaking)
                             {
-                                PointPlatform pointPlatform = (PointPlatform)extraPlatforms[x];
-                                if (!pointPlatform.used)
-                                {
-                                    pointPlatform.used = true;
-                                    points += pointPlatform.points;
-                                }
+                                extraPlatforms[x].isBreaking = false;
+                                points += 25;
                             }
                             player.CheckCollisions(extraPlatforms[x]);
                         }
                         if (player2 != null && extraPlatforms[x].rect.Intersects(player2.rect))
                         {
-                            if (extraPlatforms[x] is PointPlatform)
+                            if (extraPlatforms[x].texture.Equals(goldenPlatform) && extraPlatforms[x].isBreaking)
                             {
-                                PointPlatform pointPlatform = (PointPlatform)extraPlatforms[x];
-                                if (!pointPlatform.used)
-                                {
-                                    pointPlatform.used = true;
-                                    points += pointPlatform.points;
-                                }
+                                extraPlatforms[x].isBreaking = false;
+                                points += 25;
                             }
                             player2.CheckCollisions(extraPlatforms[x]);
                         }
@@ -480,6 +472,11 @@ namespace Sinkhole_Sprinter
                     {
                         createPlatform();
                     }
+
+                    
+
+                        
+                    
 
                     if (platforms[0].Top - PLATFORM_MIN_HEIGHT > lavaHeight)
                         platforms.RemoveAt(0);
@@ -771,40 +768,18 @@ namespace Sinkhole_Sprinter
         }
 
         //so that extra platforms do not interfere with the algorithm for regular ones
-        private void createExtraPlatform(Vector2 position, int width, bool variants)
+        private void createExtraPlatform(Vector2 position, int width, bool isBreaking)
         {
-            Rectangle rect = new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT);
-
-            // Platform Variants
-            if (variants)
+            Texture2D texture = platform;
+            if (isBreaking)
+                texture = platformWeak;
+            if (r.NextDouble() < PLATFORM_GOLDEN_CHANCE)
             {
-                if (r.NextDouble() < PLATFORM_MOVING_CHANCE)
-                {
-                    string axis = r.Next(2) == 0 ? "x" : "y";
-                    extraPlatforms.Add(new MovingPlatform(rect, movingPlatform, axis));
-                    return;
-                }
-                if (r.NextDouble() < PLATFORM_POINT_CHANCE)
-                {
-                    if (r.NextDouble() < PLATFORM_GOLDEN_CHANCE)
-                    {
-                        extraPlatforms.Add(new PointPlatform(rect, goldenPlatform, PLATFORM_GOLDEN_POINTS));
-                    }
-                    else
-                    {
-                        extraPlatforms.Add(new PointPlatform(rect, pointPlatform, PLATFORM_POINTS));
-                    }
-                    return;
-                }
-                if (r.NextDouble() < PLATFORM_BREAKING_CHANCE)
-                {
-                    extraPlatforms.Add(new BreakingPlatform(rect, weakPlatform));
-                    return;
-                }
-                extraPlatforms.Add(new Platform(rect, platform));
-                return;
+                isBreaking = true;
+                texture = goldenPlatform;
             }
-            extraPlatforms.Add(new Platform(rect, platform));
+
+            extraPlatforms.Add(new Platform(new Rectangle((int)position.X, (int)position.Y, width, Platform.HEIGHT), texture, isBreaking));
         }
 
 
