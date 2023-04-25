@@ -726,6 +726,9 @@ namespace Sinkhole_Sprinter
 
             if (r.Next(100) < 60)
                 createExtraPlatform(new Vector2(position.X + r.Next(-175, 175), position.Y + r.Next(-400, -75)), width, isBreaking);
+
+            //if(r.Next(100)<5)
+
         }
 
         // Spawn a platform (mainly to specify first platform position)
