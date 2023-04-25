@@ -178,6 +178,7 @@ namespace Sinkhole_Sprinter
             LoadScores();
             highScoreTxtRect = mainScreenText = deathScreenText = new Rectangle[5];
             leaderboardPos = new Vector2(600, 100);
+            endText = "you died";
 
             base.Initialize();
         }
