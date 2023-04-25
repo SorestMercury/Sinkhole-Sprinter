@@ -693,6 +693,7 @@ namespace Sinkhole_Sprinter
 
             // Clear platforms
             platforms.Clear();
+            extraPlatforms.Clear();
         }
 
         // Create a new platform in calculated position automatically
