@@ -24,10 +24,10 @@ namespace Sinkhole_Sprinter
         public void Update(float flo, int left, int right)
         {
             timer++;
-            if (timer % 200 == 0)
+            if (timer % 150 == 0)
             {
                 pastPosition = position;
-                position.X = randomGen.Next(left,right)+75; 
+                position.X = randomGen.Next(left,right)+600; 
                 collisionCheck = false;
             }
             position.Y = (int)flo - 125; 
