@@ -42,6 +42,8 @@ namespace Sinkhole_Sprinter
         KeyboardState oldkb;
         GamePadState oldGamePad;
         public int playerNum;
+        // player color
+        Color playerColor;
 
         // Physics
         Vector2 velocity;
@@ -98,6 +100,7 @@ namespace Sinkhole_Sprinter
             acceleration = new Vector2(0, GRAVITY);
             hearts = 3;
             this.playerNum = playerNum;
+            playerColor = Color.White;
         }
 
         // Increment one frame in running animation
@@ -170,6 +173,11 @@ namespace Sinkhole_Sprinter
                 }
                 if (Math.Abs(velocity.X) < MAX_SPEED / 20f)
                     velocity.X = 0;
+            }
+            //Change player color back to white after taking damage
+            if (playerColor == Color.Red && timer % 90 == 0)
+            {
+                playerColor = Color.White;
             }
 
             //check if player can jump, and if they can, make them jump and switch player state
@@ -250,13 +258,17 @@ namespace Sinkhole_Sprinter
                 case 2:
                     return p2Color;
                 default:
-                    return Color.White;
+                    return playerColor;
             }
         }
 
         public PlayerIndex GetPlayerIndex()
         {
             return playerIndices[playerNum / 2];
+        }
+        public void setColor(Color color)
+        {
+            playerColor = color;
         }
 
 

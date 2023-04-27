@@ -29,6 +29,7 @@ namespace Sinkhole_Sprinter
         Player player;
         Player player2;
         int players;
+        Texture2D playerOneHeartText, playerTwoHeartText;
 
         // General
         Camera camera;
@@ -170,7 +171,7 @@ namespace Sinkhole_Sprinter
             extraPlatforms = new List<Platform>();
             lavas = new List<Lava>();
             hazardCollisionCheck = new List<bool>();
-            lavaSize = new Rectangle(0, 0, 1500, 300);
+            lavaSize = new Rectangle(0, -200, 1500, 300);
             rockWallRect = new Rectangle(-800, 360, 700, 720);
             rocks = new List<Texture2D>();
 
@@ -246,6 +247,9 @@ namespace Sinkhole_Sprinter
             textures.Add(jump);
             textures.Add(idle);
             hearts = Content.Load<Texture2D>("hearts");
+            playerOneHeartText= Content.Load<Texture2D>("purple hearts");
+            playerTwoHeartText= Content.Load<Texture2D>("orange hearts");
+
             background = Content.Load<Texture2D>("cave");
 
             // Fonts
@@ -505,15 +509,33 @@ namespace Sinkhole_Sprinter
                     {
                         if (!fireExclaim.collisionCheck)
                         {
+                            player.setColor(Color.Red);
                             player.hearts--;
                             fireExclaim.collisionCheck = true;
                         }
                     }
-
-                    if(player.rect.Intersects(fallingRocks.rect))
+                    if (player.rect.Intersects(fallingRocks.rect)) // Takes a heart away from the player if they touch a stalagmite
                     {
-                        onDeath();
-                    }    
+                        if (!fallingRocks.collisionCheck)
+                        {
+                            player.setColor(Color.Red);
+                            player.hearts--;
+                            fallingRocks.collisionCheck = true;
+                        }
+                    }
+                    if (players == 2 && player2.rect.Intersects(fire.rect)) // Takes a heart away from the player if they touch a fire hazard
+                    {
+                        if (!fireExclaim.collisionCheck)
+                        {
+                            player2.hearts--;
+                            fireExclaim.collisionCheck = true;
+                        }
+                    }
+
+                    //if (player.rect.Intersects(fallingRocks.rect))
+                    //{
+                    //    onDeath();
+                    //}    
                     //Update rockwall position
                     rockWall.position.Y = camera.position.Y;
                     if (player.position.X <= rockWall.Right) // checks if player is dead
@@ -875,13 +897,37 @@ namespace Sinkhole_Sprinter
                             GraphicsDevice.Viewport.Width / 2 - (scoreFont.MeasureString("points: " + points).Length() / 2)) / 2, 0), Color.White);
                     }
                     // display number of hearts
-                    float heartsVectorX = 230; // Distance between points & score
-                    spriteBatch.DrawString(scoreFont, "hearts: ", new Vector2(heartsVectorX,00), Color.White);
-                    int heartsX = 230;
-                    for (int i = 0; i < player.hearts; i++)
+                    if (players != 2)
                     {
-                        spriteBatch.Draw(hearts, new Rectangle((int)(heartsX + scoreFont.MeasureString("hearts: ").X), 0, 30, 30), Color.White);
-                        heartsX += 30; 
+                        float heartsVectorX = 230; // Distance between points & score
+                        spriteBatch.DrawString(scoreFont, "hearts: ", new Vector2(heartsVectorX, 00), Color.White);
+                        int heartsX = 230;
+                        for (int i = 0; i < player.hearts; i++)
+                        {
+                            spriteBatch.Draw(hearts, new Rectangle((int)(heartsX + scoreFont.MeasureString("hearts: ").X), 0, 30, 30), Color.White);
+                            heartsX += 30;
+                        }
+                    }
+                    else
+                    {
+                        float P1heartsVectorX = 230; // Distance between points & score
+                        spriteBatch.DrawString(scoreFont, "hearts: ", new Vector2(P1heartsVectorX, 00), Color.White);
+                        int heartsX = 230;
+                        for (int i = 0; i < player.hearts; i++)
+                        {
+                            spriteBatch.Draw(playerOneHeartText, new Rectangle((int)(heartsX + scoreFont.MeasureString("hearts: ").X), 0, 30, 30), Color.White);
+                            heartsX += 30;
+                        }
+
+                        float P2heartsVectorX = 1280 - 500;// Distance between points & score
+                        spriteBatch.DrawString(scoreFont, "hearts: ", new Vector2(P2heartsVectorX, 00), Color.White);
+                        int P2heartsX = 1280 - 500;
+                        for (int i = 0; i < player2.hearts; i++)
+                        {
+                            spriteBatch.Draw(playerTwoHeartText, new Rectangle((int)(P2heartsX + scoreFont.MeasureString("hearts: ").X), 0, 30, 30), Color.White);
+                            P2heartsX += 30;
+                        }
+
 
                     }
                     
