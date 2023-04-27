@@ -37,7 +37,7 @@ namespace Sinkhole_Sprinter
         KeyboardState oldKb;
         enum Gamestate
         {
-            title, play, gameover, highscores
+            title, play, gameover, highscores, credits
         }
         Gamestate currentState;
 
@@ -45,7 +45,7 @@ namespace Sinkhole_Sprinter
         SpriteFont titleFont, titleTextFont, scoreFont, testFont;
         Color titleColor = Color.Black;
         Rectangle titleRect, multiplayerTextRect;
-        Color[] titleScreenColors = { Color.Black, Color.Black, Color.Black };
+        Color[] titleScreenColors = { Color.Black, Color.Black, Color.Black, Color.Black };
         Color[] deathScreenColors = { Color.Black, Color.Black, Color.Black };
         Color[] highScoreColors = { Color.Black, Color.Black, Color.Black};
         Color[] highScoreCols = { Color.Gold, Color.Silver, Color.Brown, Color.Black };
@@ -255,6 +255,7 @@ namespace Sinkhole_Sprinter
             mainScreenText[0]=titleRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("singleplayer").Length() / 2)), 200, 30, 30);
             mainScreenText[1]=multiplayerTextRect = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("multiplayer").Length() / 2)), 300, 30, 30);
             mainScreenText[2] = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("highscores").Length() / 2)), 400, 30, 30);
+            mainScreenText[3] = new Rectangle((int)(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("credits").Length() / 2)), 500, 30, 30);
             //
             deathScreenText[0] = new Rectangle((int)(GraphicsDevice.Viewport.Width / 4 - (titleFont.MeasureString("play again").Length() / 2)), 350, 30, 30);
             deathScreenText[1] = new Rectangle((int)(GraphicsDevice.Viewport.Width / 4 + (GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("main menu").Length() / 2))), 350, 30, 30); 
@@ -349,6 +350,18 @@ namespace Sinkhole_Sprinter
                     }
                     else
                         titleScreenColors[2] = Color.Black;
+
+                    // Open credits menu
+                    if (changeColors(mouse, "credits", mainScreenText[3]))
+                    {
+                        titleScreenColors[3] = Color.Gold;
+                        if (mouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released)
+                        {
+                            currentState = Gamestate.credits;
+                        }
+                    }
+                    else
+                        titleScreenColors[3] = Color.Black;
 
                     break;
 
@@ -604,6 +617,19 @@ namespace Sinkhole_Sprinter
                     else
                         highScoreColors[0] = Color.Black;
                     break;
+                case Gamestate.credits:
+                    if (changeColors(mouse, "credits", highScoreTxtRect[0]))
+                    {
+                        highScoreColors[0] = Color.Gold;
+                        if (mouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released)
+                        {
+                            currentState = Gamestate.title;
+                        }
+                    }
+                    else
+                        highScoreColors[0] = Color.Black;
+                    break;
+
             }
 
             oldMouse = mouse;
@@ -827,7 +853,7 @@ namespace Sinkhole_Sprinter
                     spriteBatch.DrawString(titleFont, "single player", new Vector2(centerText(titleFont, "single player"), 200), titleScreenColors[0]);
                     spriteBatch.DrawString(titleFont, "multiplayer", new Vector2(centerText(titleFont, "multiplayer"), 300), titleScreenColors[1]);
                     spriteBatch.DrawString(titleFont, "high scores", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("high scores").Length() / 2), 400), titleScreenColors[2]);
-
+                    spriteBatch.DrawString(titleFont, "credits", new Vector2(GraphicsDevice.Viewport.Width / 2 - (titleFont.MeasureString("credits").Length() / 2), 500), titleScreenColors[3]);
                     break;
 
                 case Gamestate.play:
@@ -915,6 +941,16 @@ namespace Sinkhole_Sprinter
                             spriteBatch.DrawString(scoreFont, i +1+ ". ", new Vector2(leaderboardPos.X, leaderboardPos.Y + (i * 50)), color);
                         }
                     }
+                    break;
+
+                case Gamestate.credits:
+                    spriteBatch.DrawString(titleFont, "main menu", new Vector2(GraphicsDevice.Viewport.Width / 4 - (titleFont.MeasureString("main menu").Length() / 2), GraphicsDevice.Viewport.Height / 3), highScoreColors[0]);
+                    spriteBatch.DrawString(titleTextFont, "credits", new Vector2(centerText(titleTextFont, "credits"), 0), Color.Black);
+                    spriteBatch.DrawString(titleFont, "Many   thanks   too", new Vector2(centerText(titleFont, "Many   thanks   too"), 100), Color.Black);
+                    spriteBatch.DrawString(scoreFont, "Font Monger", new Vector2(centerText(scoreFont, "Font Monger"), 150), Color.Black);
+                    spriteBatch.DrawString(scoreFont, "Pizzadude", new Vector2(centerText(scoreFont, "Pizzadude"), 200), Color.Black);
+                    spriteBatch.DrawString(scoreFont, "Karl Casey @ White Bat Audio", new Vector2(centerText(scoreFont, "Karl Casey @ White Bat Audio"), 250), Color.Black);
+                    
                     break;
             }
             spriteBatch.End();
