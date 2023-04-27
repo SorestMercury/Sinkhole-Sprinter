@@ -15,7 +15,7 @@ namespace Sinkhole_Sprinter
             jump,
         }
 
-        variant type; 
+        public variant type; 
         public Power(Rectangle rect, Texture2D texture, variant type) : base(rect, texture) 
         {
             this.type = type;

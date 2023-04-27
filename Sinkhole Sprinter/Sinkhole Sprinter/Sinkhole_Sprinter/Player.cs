@@ -47,6 +47,15 @@ namespace Sinkhole_Sprinter
         Vector2 velocity;
         Vector2 acceleration;
 
+        public power effect;
+        public int extraJumps=0;
+
+        public enum power
+        {
+            speed,
+            jump
+        }
+
         //state of player
         public enum movement
         {
@@ -172,12 +181,21 @@ namespace Sinkhole_Sprinter
                     velocity.X = 0;
             }
 
+
             //check if player can jump, and if they can, make them jump and switch player state
-            if ((playerNum != 2 && (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Space))) || (playerNum != 1 && kb.IsKeyDown(Keys.Up)) || gamePad.Buttons.A == ButtonState.Pressed)
+            if ((playerNum != 2 && (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Space))) || (playerNum != 1 && kb.IsKeyDown(Keys.Up)) || gamePad.Buttons.A == ButtonState.Pressed &&
+                ((playerNum != 2 && (!oldkb.IsKeyDown(Keys.W) || !oldkb.IsKeyDown(Keys.Space))) || (playerNum != 1 && !oldkb.IsKeyDown(Keys.Up)) || oldGamePad.Buttons.A != ButtonState.Pressed))
             {
-                if (canJump)
+                if(canJump)
                 {
                     canJump = false;
+                    velocity.Y = -JUMP;
+                    playerState = movement.jumping;
+                }
+
+                else if (extraJumps>0)
+                {
+                    extraJumps--;
                     velocity.Y = -JUMP;
                     playerState = movement.jumping;
                 }
@@ -239,6 +257,18 @@ namespace Sinkhole_Sprinter
             timer++;
             oldkb = kb;
             oldGamePad = gamePad;
+
+            switch(effect)
+            {
+                case (power.speed):
+                    break;
+                case (power.jump):
+                    if (canJump)
+                        extraJumps = 1;
+                    break;
+            }
+
+            
         }
 
         public Color GetColor()

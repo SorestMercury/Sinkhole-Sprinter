@@ -389,6 +389,19 @@ namespace Sinkhole_Sprinter
                             }
                             player2.CheckCollisions(platforms[x]);
                         }
+                        if (platforms[x].power != null && platforms[x].power.rect.Intersects(player.rect))
+                        {
+                            switch(platforms[x].power.type)
+                            {
+                                case Power.variant.speed:
+                                    player.effect = Player.power.speed;
+                                    break;
+                                case Power.variant.jump:
+                                    player.effect = Player.power.jump;
+                                    break;
+                            }
+                            platforms[x].power = null;
+                        }
                     }
 
                     //do same thing for extra platforms
@@ -719,6 +732,16 @@ namespace Sinkhole_Sprinter
             bool isBreaking = r.NextDouble() < PLATFORM_BREAKING_CHANCE;
 
             createPlatform(position, width, isBreaking);
+            if (r.Next(100) < 50)
+            {
+                Rectangle rect = new Rectangle(
+                    platforms[platforms.Count - 1].rect.X,
+                    platforms[platforms.Count - 1].rect.Y - 40,
+                    50,
+                    50);
+
+                platforms[platforms.Count - 1].power = new Power(rect, placeholder, Power.variant.jump);
+            }
 
             //random chance to spawn bonus platforms relative to main ones
             if(r.Next(100)<30)
@@ -726,8 +749,8 @@ namespace Sinkhole_Sprinter
 
             if (r.Next(100) < 60)
                 createExtraPlatform(new Vector2(position.X + r.Next(-175, 175), position.Y + r.Next(-400, -75)), width, isBreaking);
-
-            //if(r.Next(100)<5)
+                
+                
 
         }
 
@@ -839,6 +862,9 @@ namespace Sinkhole_Sprinter
                     foreach (Platform platform in platforms)
                     {
                         camera.Draw(gameTime, spriteBatch, platform);
+
+                        if (platform.power != null)
+                            camera.Draw(gameTime, spriteBatch, platform.power);
                     }
 
                     foreach (Platform platform in extraPlatforms)
