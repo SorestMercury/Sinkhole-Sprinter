@@ -80,8 +80,8 @@ namespace Sinkhole_Sprinter
         List<Platform> platforms;
         List<Platform> extraPlatforms;
 
-        //
         Song music;
+
         Platform LastPlatform
         {
             get => platforms[platforms.Count - 1];
@@ -124,6 +124,10 @@ namespace Sinkhole_Sprinter
         Rock tempRock;
         Rock[] rockArray = new Rock[200];
 
+
+        //test
+        Rectangle hitbox;
+        Rectangle temp;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -518,9 +522,11 @@ namespace Sinkhole_Sprinter
                         onDeath();
                     }
 
-                    Rectangle temp = fire.rect;
-                    temp.Y += 50;
-                    temp.Height -= 50;
+                    temp = fire.rect;
+                    temp.Y += 15;
+                    temp.Height -= 15;
+                    temp.Width -= 60;
+                    temp.X += 30;
                     if (player.rect.Intersects(temp)) // Takes a heart away from the player if they touch a fire hazard
                     {
                         if (!fireExclaim.collisionCheck)
@@ -857,6 +863,7 @@ namespace Sinkhole_Sprinter
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
+            
             switch (currentState)
             {
                 case Gamestate.title:
@@ -889,11 +896,13 @@ namespace Sinkhole_Sprinter
                     for (int a = 0; a < rockArray.Length; a++)
                         camera.Draw(gameTime, spriteBatch, rockArray[a]);
                     //fire
+                    //spriteBatch.Draw(placeholder, temp, Color.Red);
                     if (timer > 100)
                     {
                         camera.Draw(gameTime, spriteBatch, fireExclaim);
                         camera.Draw(gameTime, spriteBatch, fire, fire.currentRect);
                     }
+                    
                     //rocks
                     camera.Draw(gameTime, spriteBatch, exclaimRocks);
                     camera.Draw(gameTime, spriteBatch, fallingRocks,fallingRocks.currentRect);
@@ -964,6 +973,8 @@ namespace Sinkhole_Sprinter
                     
                     break;
             }
+
+            
             spriteBatch.End();
             base.Draw(gameTime);
         }
