@@ -79,6 +79,9 @@ namespace Sinkhole_Sprinter
         Texture2D placeholder;
         List<Platform> platforms;
         List<Platform> extraPlatforms;
+
+        //
+        Song music;
         Platform LastPlatform
         {
             get => platforms[platforms.Count - 1];
@@ -178,8 +181,8 @@ namespace Sinkhole_Sprinter
             highScoreTxtRect = mainScreenText = deathScreenText = new Rectangle[5];
             leaderboardPos = new Vector2(600, 100);
             endText = "you died";
-
             base.Initialize();
+
         }
 
         private void LoadScores()
@@ -283,7 +286,9 @@ namespace Sinkhole_Sprinter
             rocks.Add(this.Content.Load<Texture2D>("rock2"));
             rocks.Add(this.Content.Load<Texture2D>("rock3"));
             rocks.Add(this.Content.Load<Texture2D>("rock4"));
-            
+
+            //sound
+            music = this.Content.Load<Song>("Music");
         }
 
         /// <summary>
@@ -685,6 +690,9 @@ namespace Sinkhole_Sprinter
             distance = 0;
             points = 0;
             timer = 0;
+
+            //music
+            MediaPlayer.Play(music);
         }
 
         // Create and remove lava objects to keep necessary ones on screen
