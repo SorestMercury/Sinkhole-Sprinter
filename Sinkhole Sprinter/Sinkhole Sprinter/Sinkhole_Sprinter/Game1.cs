@@ -518,7 +518,10 @@ namespace Sinkhole_Sprinter
                         onDeath();
                     }
 
-                    if (player.rect.Intersects(fire.rect)) // Takes a heart away from the player if they touch a fire hazard
+                    Rectangle temp = fire.rect;
+                    temp.Y += 50;
+                    temp.Height -= 50;
+                    if (player.rect.Intersects(temp)) // Takes a heart away from the player if they touch a fire hazard
                     {
                         if (!fireExclaim.collisionCheck)
                         {
@@ -886,7 +889,7 @@ namespace Sinkhole_Sprinter
                     for (int a = 0; a < rockArray.Length; a++)
                         camera.Draw(gameTime, spriteBatch, rockArray[a]);
                     //fire
-                    if (timer > 1000)
+                    if (timer > 100)
                     {
                         camera.Draw(gameTime, spriteBatch, fireExclaim);
                         camera.Draw(gameTime, spriteBatch, fire, fire.currentRect);
