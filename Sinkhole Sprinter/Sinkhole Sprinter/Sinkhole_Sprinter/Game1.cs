@@ -732,7 +732,7 @@ namespace Sinkhole_Sprinter
             bool isBreaking = r.NextDouble() < PLATFORM_BREAKING_CHANCE;
 
             createPlatform(position, width, isBreaking);
-            if (r.Next(100) < 50)
+            if (r.Next(100) < 5)
             {
                 Rectangle rect = new Rectangle(
                     platforms[platforms.Count - 1].rect.X,
