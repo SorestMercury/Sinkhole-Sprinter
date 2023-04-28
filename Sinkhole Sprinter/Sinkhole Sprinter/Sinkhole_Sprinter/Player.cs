@@ -48,10 +48,12 @@ namespace Sinkhole_Sprinter
         Vector2 acceleration;
 
         public power effect;
-        public int extraJumps=0;
+        public bool canDoubleJump=false;
+        public int extraJumps;
 
         public enum power
         {
+            none,
             speed,
             jump
         }
@@ -183,17 +185,19 @@ namespace Sinkhole_Sprinter
 
 
             //check if player can jump, and if they can, make them jump and switch player state
-            if (((playerNum != 2 && (kb.IsKeyDown(Keys.W)) || (kb.IsKeyDown(Keys.Space) ))) || (playerNum != 1 && kb.IsKeyDown(Keys.Up)) || (gamePad.Buttons.A == ButtonState.Pressed))
+            if (((playerNum != 2 && (kb.IsKeyDown(Keys.W)) || playerNum!=2 && (kb.IsKeyDown(Keys.Space) ))) || (playerNum != 1 && kb.IsKeyDown(Keys.Up)) || (gamePad.Buttons.A == ButtonState.Pressed))
             {
                 if(canJump)
                 {
                     canJump = false;
+                    canDoubleJump = true;
                     velocity.Y = -JUMP;
                     playerState = movement.jumping;
                 }
 
-                else if (extraJumps>0 && (playerNum!=2 && (!oldkb.IsKeyDown(Keys.Space) && !oldkb.IsKeyDown(Keys.W)) && (playerNum != 1 && !oldkb.IsKeyDown(Keys.Up)) && (oldGamePad.Buttons.A != ButtonState.Pressed)))
+                else if (extraJumps>0 && canDoubleJump && (playerNum!=2 && (!oldkb.IsKeyDown(Keys.Space) && !oldkb.IsKeyDown(Keys.W)) && (playerNum != 1 && !oldkb.IsKeyDown(Keys.Up)) && (oldGamePad.Buttons.A != ButtonState.Pressed)))
                 {
+                    canDoubleJump=false;
                     extraJumps--;
                     velocity.Y = -JUMP;
                     playerState = movement.jumping;
@@ -263,7 +267,9 @@ namespace Sinkhole_Sprinter
                     break;
                 case (power.jump):
                     if (canJump)
-                        extraJumps = 1;
+                        canDoubleJump=true;
+                        extraJumps = 3;
+                        effect = power.none;
                     break;
             }
 
