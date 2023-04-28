@@ -183,7 +183,7 @@ namespace Sinkhole_Sprinter
 
 
             //check if player can jump, and if they can, make them jump and switch player state
-            if (((playerNum != 2 && (kb.IsKeyDown(Keys.W) && playerNum != 2 && (!oldkb.IsKeyDown(Keys.W)) || (kb.IsKeyDown(Keys.Space) && !oldkb.IsKeyDown(Keys.Space)))) || (playerNum != 1 && kb.IsKeyDown(Keys.Up) && playerNum != 1 && !oldkb.IsKeyDown(Keys.Up)) || (gamePad.Buttons.A == ButtonState.Pressed) && oldGamePad.Buttons.A != ButtonState.Pressed))
+            if (((playerNum != 2 && (kb.IsKeyDown(Keys.W)) || (kb.IsKeyDown(Keys.Space) ))) || (playerNum != 1 && kb.IsKeyDown(Keys.Up)) || (gamePad.Buttons.A == ButtonState.Pressed))
             {
                 if(canJump)
                 {
@@ -192,7 +192,7 @@ namespace Sinkhole_Sprinter
                     playerState = movement.jumping;
                 }
 
-                else if (extraJumps>0)
+                else if (extraJumps>0 && (playerNum!=2 && (!oldkb.IsKeyDown(Keys.Space) && !oldkb.IsKeyDown(Keys.W)) && (playerNum != 1 && !oldkb.IsKeyDown(Keys.Up)) && (oldGamePad.Buttons.A != ButtonState.Pressed)))
                 {
                     extraJumps--;
                     velocity.Y = -JUMP;
