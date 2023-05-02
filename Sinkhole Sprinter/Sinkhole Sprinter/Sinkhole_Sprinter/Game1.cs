@@ -124,6 +124,9 @@ namespace Sinkhole_Sprinter
         Rock tempRock;
         Rock[] rockArray = new Rock[200];
 
+        //Double Jump
+        Texture2D doubleJump;
+
 
         //test
         Rectangle hitbox;
@@ -179,6 +182,7 @@ namespace Sinkhole_Sprinter
             lavaSize = new Rectangle(0, 0, 1500, 300);
             rockWallRect = new Rectangle(-800, 360, 700, 720);
             rocks = new List<Texture2D>();
+            doubleJump = this.Content.Load<Texture2D>("double jump copy");
 
             // High Score
             LoadScores();
@@ -410,6 +414,33 @@ namespace Sinkhole_Sprinter
                                 }
                             }
                             player2.CheckCollisions(platforms[x]);
+                        }
+                        if (platforms[x].power != null && platforms[x].power.rect.Intersects(player.rect))
+                        {
+                            switch(platforms[x].power.type)
+                            {
+                                case Power.variant.speed:
+                                    player.effect = Player.power.speed;
+                                    break;
+                                case Power.variant.jump:
+                                    player.effect = Player.power.jump;
+                                    break;
+                            }
+                            platforms[x].power = null;
+                        }
+
+                        if (player2!=null && platforms[x].power != null && platforms[x].power.rect.Intersects(player2.rect))
+                        {
+                            switch (platforms[x].power.type)
+                            {
+                                case Power.variant.speed:
+                                    player2.effect = Player.power.speed;
+                                    break;
+                                case Power.variant.jump:
+                                    player2.effect = Player.power.jump;
+                                    break;
+                            }
+                            platforms[x].power = null;
                         }
                     }
 
@@ -762,6 +793,16 @@ namespace Sinkhole_Sprinter
             bool isBreaking = r.NextDouble() < PLATFORM_BREAKING_CHANCE;
 
             createPlatform(position, width, isBreaking);
+            if (r.Next(100) < 5)
+            {
+                Rectangle rect = new Rectangle(
+                    platforms[platforms.Count - 1].rect.X,
+                    platforms[platforms.Count - 1].rect.Y - 40,
+                    50,
+                    50);
+
+                platforms[platforms.Count - 1].power = new Power(rect, doubleJump, Power.variant.jump);
+            }
 
             //random chance to spawn bonus platforms relative to main ones
             if(r.Next(100)<30)
@@ -769,6 +810,9 @@ namespace Sinkhole_Sprinter
 
             if (r.Next(100) < 60)
                 createExtraPlatform(new Vector2(position.X + r.Next(-175, 175), position.Y + r.Next(-400, -75)), width, isBreaking);
+                
+                
+
         }
 
         // Spawn a platform (mainly to specify first platform position)
@@ -880,6 +924,9 @@ namespace Sinkhole_Sprinter
                     foreach (Platform platform in platforms)
                     {
                         camera.Draw(gameTime, spriteBatch, platform);
+
+                        if (platform.power != null)
+                            camera.Draw(gameTime, spriteBatch, platform.power);
                     }
 
                     foreach (Platform platform in extraPlatforms)

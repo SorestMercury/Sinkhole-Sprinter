@@ -10,6 +10,7 @@ namespace Sinkhole_Sprinter
     class Platform : Sprite
     {
         public const int HEIGHT = 20, MIN_WIDTH = 60, MAX_WIDTH = 200;
+        public Power power;
         
 
         /// <summary>
