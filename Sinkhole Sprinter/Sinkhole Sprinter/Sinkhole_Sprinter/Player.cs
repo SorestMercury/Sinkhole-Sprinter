@@ -195,7 +195,7 @@ namespace Sinkhole_Sprinter
                     playerState = movement.jumping;
                 }
 
-                else if (extraJumps>0 && canDoubleJump && (playerNum!=2 && (!oldkb.IsKeyDown(Keys.Space) && !oldkb.IsKeyDown(Keys.W)) && (playerNum != 1 && !oldkb.IsKeyDown(Keys.Up)) && (oldGamePad.Buttons.A != ButtonState.Pressed)))
+                else if (extraJumps>0 && canDoubleJump && ((playerNum!=2 && (!oldkb.IsKeyDown(Keys.Space) && !oldkb.IsKeyDown(Keys.W))) && (playerNum != 1 && !oldkb.IsKeyDown(Keys.Up)) && (oldGamePad.Buttons.A != ButtonState.Pressed)))
                 {
                     canDoubleJump=false;
                     extraJumps--;

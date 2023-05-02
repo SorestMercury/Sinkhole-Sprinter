@@ -121,6 +121,9 @@ namespace Sinkhole_Sprinter
         Rock tempRock;
         Rock[] rockArray = new Rock[200];
 
+        //Double Jump
+        Texture2D doubleJump;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -172,6 +175,7 @@ namespace Sinkhole_Sprinter
             lavaSize = new Rectangle(0, 0, 1500, 300);
             rockWallRect = new Rectangle(-800, 360, 700, 720);
             rocks = new List<Texture2D>();
+            doubleJump = this.Content.Load<Texture2D>("double jump copy");
 
             // High Score
             LoadScores();
@@ -398,6 +402,20 @@ namespace Sinkhole_Sprinter
                                     break;
                                 case Power.variant.jump:
                                     player.effect = Player.power.jump;
+                                    break;
+                            }
+                            platforms[x].power = null;
+                        }
+
+                        if (player2!=null && platforms[x].power != null && platforms[x].power.rect.Intersects(player2.rect))
+                        {
+                            switch (platforms[x].power.type)
+                            {
+                                case Power.variant.speed:
+                                    player2.effect = Player.power.speed;
+                                    break;
+                                case Power.variant.jump:
+                                    player2.effect = Player.power.jump;
                                     break;
                             }
                             platforms[x].power = null;
@@ -740,7 +758,7 @@ namespace Sinkhole_Sprinter
                     50,
                     50);
 
-                platforms[platforms.Count - 1].power = new Power(rect, placeholder, Power.variant.jump);
+                platforms[platforms.Count - 1].power = new Power(rect, doubleJump, Power.variant.jump);
             }
 
             //random chance to spawn bonus platforms relative to main ones
