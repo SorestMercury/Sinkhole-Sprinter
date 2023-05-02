@@ -207,6 +207,11 @@
       <Name>Lava</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
+      </Compile>
+    <Compile Include="Music.mp3">
+      <Name>Music</Name>
+      <Importer>Mp3Importer</Importer>
+      <Processor>SongProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
