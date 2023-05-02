@@ -420,7 +420,7 @@ namespace Sinkhole_Sprinter
                         }
                         if (platforms[x].power != null && platforms[x].power.rect.Intersects(player.rect))
                         {
-                            switch(platforms[x].power.type)
+                            switch (platforms[x].power.type)
                             {
                                 case Power.variant.speed:
                                     player.effect = Player.power.speed;
@@ -432,7 +432,7 @@ namespace Sinkhole_Sprinter
                             platforms[x].power = null;
                         }
 
-                        if (player2!=null && platforms[x].power != null && platforms[x].power.rect.Intersects(player2.rect))
+                        if (player2 != null && platforms[x].power != null && platforms[x].power.rect.Intersects(player2.rect))
                         {
                             switch (platforms[x].power.type)
                             {
@@ -500,13 +500,13 @@ namespace Sinkhole_Sprinter
                     lavaHeight -= LAVA_RISE_SPEED;
 
                     //ensures lava maintains minimum distance from player
-                    if (lavaHeight > camera.boundingRectangle.Bottom + 150 && timer > 300)
-                        lavaHeight = Math.Max(MathHelper.Lerp(lavaHeight, camera.boundingRectangle.Bottom, 0.02f), lavaHeight - LAVA_RISE_SPEED * 4); // Capped at additional 4x lava speed
+                    if (lavaHeight > camera.boundingRectangle.Bottom + 50 && timer > 300)
+                        lavaHeight = Math.Max(MathHelper.Lerp(lavaHeight, camera.boundingRectangle.Bottom + 50, 0.02f), lavaHeight - LAVA_RISE_SPEED * 4); // Capped at additional 4x lava speed
 
                     //ensures rockwall maintains minimum distance from player
-                    if (rockWall.position.X < camera.boundingRectangle.Left - 500 && timer > 300)
-                        rockWall.position.X = MathHelper.Lerp(rockWall.position.X, camera.boundingRectangle.Left, .02f);
-                    
+                    if (rockWall.Right < camera.boundingRectangle.Left - 300 && timer > 300)
+                        rockWall.position.X = MathHelper.Lerp(rockWall.Right, camera.boundingRectangle.Left - 300, .02f) - rockWall.rect.Width / 2;
+
                     // Tile lava and adjust height
                     tileLava();
                     foreach (Lava lava in lavas)
@@ -515,15 +515,21 @@ namespace Sinkhole_Sprinter
                     }
 
                     //Warning system
-                    fireExclaim.Update(lavaHeight, player.Right,camera.Right);
-                    exclaimRocks.Update(camera.Top, player.Right, camera.Right);
+                    fireExclaim.Update(lavaHeight, player.Right, camera.Right);
+                    exclaimRocks.Update(camera.Top + exclaimRocks.rect.Height / 4, player.Right, camera.Right);
 
                     //Fire
                     fire.Update(fireExclaim.pastPosition);
                     if (exclaimRocks.timer % 200 == 0)
-                        fallingRocks.Update(exclaimRocks.pastPosition);
+                    {
+                        Vector2 p = exclaimRocks.pastPosition;
+                        p.Y -= exclaimRocks.rect.Height / 4 + fallingRocks.rect.Height;
+                        fallingRocks.Update(p);
+                    }
                     else
+                    {
                         fallingRocks.Update();
+                    }
 
                     // Update camera position
                     camera.FollowX(player, player2);
@@ -549,8 +555,15 @@ namespace Sinkhole_Sprinter
                         endText = "player one wins";
                         onDeath();
                     }
-                    if (player.hearts <= 0) // Kills player if they run out of hearts
+                    // Kills player if they run out of hearts
+                    if (player.hearts <= 0)
                     {
+                        endText = player2 != null ? "player two wins" : "you died";
+                        onDeath();
+                    }
+                    if (player2 != null && player2.hearts <= 0)
+                    {
+                        endText = "player one wins";
                         onDeath();
                     }
 
@@ -559,30 +572,35 @@ namespace Sinkhole_Sprinter
                     temp.Height -= 15;
                     temp.Width -= 60;
                     temp.X += 30;
-                    if (player.rect.Intersects(temp)) // Takes a heart away from the player if they touch a fire hazard
+
+                    // Takes a heart away from the player if they touch a fire hazard
+                    if (player.rect.Intersects(temp))
                     {
                         if (!fireExclaim.collisionCheck)
                         {
-                            player.setColor(Color.Red);
-                            player.hearts--;
-                            fireExclaim.collisionCheck = true;
+                            player.TakeDamage();
+                            fireExclaim.OnCollide();
                         }
                     }
-                    if (player.rect.Intersects(fallingRocks.rect)) // Takes a heart away from the player if they touch a stalagmite
+
+                    temp = fallingRocks.rect;
+                    temp.X += 25;
+                    temp.Width -= 50;
+                    // Takes a heart away from the player if they touch a stalagmite
+                    if (player.rect.Intersects(temp))
                     {
                         if (!fallingRocks.collisionCheck)
                         {
-                            player.setColor(Color.Red);
-                            player.hearts--;
-                            fallingRocks.collisionCheck = true;
+                            player.TakeDamage();
+                            fallingRocks.OnCollide();
                         }
                     }
                     if (players == 2 && player2.rect.Intersects(fire.rect)) // Takes a heart away from the player if they touch a fire hazard
                     {
                         if (!fireExclaim.collisionCheck)
                         {
-                            player2.hearts--;
-                            fireExclaim.collisionCheck = true;
+                            player2.TakeDamage();
+                            fireExclaim.OnCollide();
                         }
                     }
 
@@ -594,11 +612,8 @@ namespace Sinkhole_Sprinter
                     rockWall.position.Y = camera.position.Y;
                     if (player.position.X <= rockWall.Right) // checks if player is dead
                     {
-                        rockCollisionDrainHearts();
-                        //player.hearts--;
-                        //onDeath();
-                        endText = player2 != null ? "player two wins" : "you died";
-                        onDeath();
+                        player.TakeDamage();
+                        rockWall.OnCollide();
                     }
                     if (player2 != null && player2.position.X <= rockWall.Right)
                     {
@@ -869,13 +884,6 @@ namespace Sinkhole_Sprinter
                 return;
             }
             platforms.Add(new Platform(rect, platform));
-        }
-        private void rockCollisionDrainHearts() // Removes a heart from the player every half second when they are in the rockwall
-        {
-            if (timer % 30 == 0)
-            {
-                player.hearts--;
-            }
         }
 
         //so that extra platforms do not interfere with the algorithm for regular ones

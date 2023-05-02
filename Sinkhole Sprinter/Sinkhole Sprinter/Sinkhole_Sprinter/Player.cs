@@ -34,6 +34,8 @@ namespace Sinkhole_Sprinter
         private int currentInt;
         // Timer for animation
         int timer;
+        // Timer for damage
+        int damageTimer;
         // If player is off ground
         private bool canJump;
         // Number of hearts the player hast
@@ -185,30 +187,29 @@ namespace Sinkhole_Sprinter
                 if (Math.Abs(velocity.X) < MAX_SPEED / 20f)
                     velocity.X = 0;
             }
-            //Change player color back to white after taking damage
-            if (playerColor == Color.Red && timer % 90 == 0)
-            {
-                playerColor = Color.White;
-            }
-
 
             //check if player can jump, and if they can, make them jump and switch player state
-            if (((playerNum != 2 && (kb.IsKeyDown(Keys.W)) || playerNum!=2 && (kb.IsKeyDown(Keys.Space) ))) || (playerNum != 1 && kb.IsKeyDown(Keys.Up)) || (gamePad.Buttons.A == ButtonState.Pressed))
+            if (playerNum != 2 && (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Space)) || playerNum != 1 && kb.IsKeyDown(Keys.Up) || gamePad.Buttons.A == ButtonState.Pressed)
             {
-                if(canJump)
+                if (canJump)
                 {
                     canJump = false;
                     canDoubleJump = true;
                     velocity.Y = -JUMP;
                     playerState = movement.jumping;
                 }
-
-                else if (extraJumps>0 && canDoubleJump && ((playerNum!=2 && (!oldkb.IsKeyDown(Keys.Space) && !oldkb.IsKeyDown(Keys.W))) && (playerNum != 1 && !oldkb.IsKeyDown(Keys.Up)) && (oldGamePad.Buttons.A != ButtonState.Pressed)))
+                // Make sure no jump key is pressed
+                else if (extraJumps > 0 && canDoubleJump && oldGamePad.Buttons.A != ButtonState.Pressed)
                 {
-                    canDoubleJump=false;
-                    extraJumps--;
-                    velocity.Y = -JUMP;
-                    playerState = movement.jumping;
+                    bool p1 = oldkb.IsKeyUp(Keys.Space) && oldkb.IsKeyUp(Keys.W);
+                    bool p2 = oldkb.IsKeyUp(Keys.Up);
+                    if (playerNum == 1 && p1 || playerNum == 2 && p2 || playerNum == 0 && p1 && p2)
+                    {
+                        canDoubleJump = false;
+                        extraJumps--;
+                        velocity.Y = -JUMP;
+                        playerState = movement.jumping;
+                    }
                 }
             }
 
@@ -265,6 +266,13 @@ namespace Sinkhole_Sprinter
                 velocity.Y = 0;
             }
 
+            // Change color back to white after taking damage
+            if (damageTimer < 60)
+                damageTimer++;
+            else if (damageTimer == 60)
+            {
+                SetColor(Color.White);
+            }
             timer++;
             oldkb = kb;
             oldGamePad = gamePad;
@@ -301,9 +309,17 @@ namespace Sinkhole_Sprinter
         {
             return playerIndices[playerNum / 2];
         }
-        public void setColor(Color color)
+
+        public void SetColor(Color color)
         {
             playerColor = color;
+        }
+
+        public void TakeDamage()
+        {
+            hearts--;
+            SetColor(Color.Red);
+            damageTimer = 1;
         }
 
 

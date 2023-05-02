@@ -19,14 +19,14 @@ namespace Sinkhole_Sprinter
         public Fire(Rectangle rect, Texture2D texture) : base(rect, texture)
         {
             fireAnim = new List<Rectangle>();
-            fireAnim.Add(new Rectangle(70, 70, 80, 314));
-            fireAnim.Add(new Rectangle(160, 50, 80, 314));
-            fireAnim.Add(new Rectangle(255, 65, 80, 314));
-            fireAnim.Add(new Rectangle(355, 70, 80, 314));
-            fireAnim.Add(new Rectangle(455, 65, 80, 314));
-            fireAnim.Add(new Rectangle(555, 75, 80, 314));
-            fireAnim.Add(new Rectangle(640, 75, 80, 314));
-            currentRect = new Rectangle(70, 70, 80, 314);
+            fireAnim.Add(new Rectangle(0, 20, 80, 216));
+            fireAnim.Add(new Rectangle(90, 0, 80, 216));
+            fireAnim.Add(new Rectangle(185, 15, 80, 216));
+            fireAnim.Add(new Rectangle(285, 20, 80, 216));
+            fireAnim.Add(new Rectangle(385, 15, 80, 216));
+            fireAnim.Add(new Rectangle(485, 25, 80, 216));
+            fireAnim.Add(new Rectangle(580, 25, 80, 216));
+            currentRect = fireAnim[0];
         }
         public void Update(Vector2 p)
         {

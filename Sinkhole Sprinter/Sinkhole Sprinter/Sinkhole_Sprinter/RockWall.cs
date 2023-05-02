@@ -12,18 +12,32 @@ namespace Sinkhole_Sprinter
 {
     class RockWall : Sprite
     {
-        const float MAX_SPEED = 6.5f;
-        float SPEED = 2;
+        const float MAX_SPEED = 6;
+        private float speed;
+        private int timer;
+        public bool collisionCheck;
         public RockWall(Rectangle rect, Texture2D texture) : base(rect, texture)
         {
-
+            speed = 2;
         }
         public void Update()
         {
-            if (SPEED < MAX_SPEED)
-                SPEED += (MAX_SPEED - SPEED) / 4000;
-
-            position.X += SPEED;
+            if (speed < MAX_SPEED)
+                speed += (MAX_SPEED - speed) / 10000;
+            position.X += speed;
+            if (collisionCheck)
+            {
+                timer++;
+            }
+            if (timer % 60 == 0)
+            {
+                collisionCheck = false;
+            }
+        }
+        public void OnCollide()
+        {
+            collisionCheck = true;
+            timer = 1;
         }
     }
 }
