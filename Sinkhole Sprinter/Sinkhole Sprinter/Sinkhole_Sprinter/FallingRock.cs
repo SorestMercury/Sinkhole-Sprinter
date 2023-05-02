@@ -13,6 +13,7 @@ namespace Sinkhole_Sprinter
 {
     class FallingRocks : Sprite
     {
+        public bool collisionCheck; // boolean to make sure that the players hearts dont drain to 0 on collision
         private List<Rectangle> fireAnim;
         private int timer = 0, current = 0;
         public Rectangle currentRect;
@@ -31,6 +32,11 @@ namespace Sinkhole_Sprinter
         public void Update()
         {
             position.Y+=7;
+            timer++;
+            if (timer % 150 == 0)
+            {
+                collisionCheck = false;
+            }
         }
         public void Update(Vector2 p)
         {
