@@ -13,7 +13,6 @@ namespace Sinkhole_Sprinter
     class Rock : Sprite
     {
         private int speed;
-        public bool playerCollision;
         public Rock(Rectangle rect, Texture2D texture, int s) : base(rect, texture)
         {
             speed = s;

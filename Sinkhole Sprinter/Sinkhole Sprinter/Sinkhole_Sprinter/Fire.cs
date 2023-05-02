@@ -13,7 +13,6 @@ namespace Sinkhole_Sprinter
 {
     class Fire : Sprite
     {
-        public bool collisionWithPlayer;
         private List<Rectangle> fireAnim;
         private int timer = 0, current = 0;
         public Rectangle currentRect;

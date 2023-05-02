@@ -130,7 +130,6 @@ namespace Sinkhole_Sprinter
 
 
         //test
-        Rectangle hitbox;
         Rectangle temp;
         public Game1()
         {

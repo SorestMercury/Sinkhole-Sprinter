@@ -15,9 +15,8 @@ namespace Sinkhole_Sprinter
     {
         public bool collisionCheck; // boolean to make sure that the players hearts dont drain to 0 on collision
         private List<Rectangle> fireAnim;
-        private int timer = 0, current = 0;
+        private int timer = 0;
         public Rectangle currentRect;
-        private Vector2 pastposition;
         public FallingRocks(Rectangle rect, Texture2D texture) : base(rect, texture)
         {
             fireAnim = new List<Rectangle>();
