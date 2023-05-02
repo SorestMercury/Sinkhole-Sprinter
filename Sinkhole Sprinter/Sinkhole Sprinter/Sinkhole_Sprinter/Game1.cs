@@ -501,7 +501,7 @@ namespace Sinkhole_Sprinter
                     lavaHeight -= LAVA_RISE_SPEED;
 
                     //ensures lava maintains minimum distance from player
-                    if (lavaHeight > camera.boundingRectangle.Bottom + 300 && timer > 300)
+                    if (lavaHeight > camera.boundingRectangle.Bottom + 150 && timer > 300)
                         lavaHeight = Math.Max(MathHelper.Lerp(lavaHeight, camera.boundingRectangle.Bottom, 0.02f), lavaHeight - LAVA_RISE_SPEED * 4); // Capped at additional 4x lava speed
 
                     //ensures rockwall maintains minimum distance from player
