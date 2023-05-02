@@ -501,13 +501,11 @@ namespace Sinkhole_Sprinter
                     lavaHeight -= LAVA_RISE_SPEED;
 
                     //ensures lava maintains minimum distance from player
-                    if (lavaHeight > camera.boundingRectangle.Bottom && timer > 300)
+                    if (lavaHeight > camera.boundingRectangle.Bottom + 300 && timer > 300)
                         lavaHeight = Math.Max(MathHelper.Lerp(lavaHeight, camera.boundingRectangle.Bottom, 0.02f), lavaHeight - LAVA_RISE_SPEED * 4); // Capped at additional 4x lava speed
 
                     //ensures rockwall maintains minimum distance from player
-                    if (rockWall.position.X < player.position.X - 950 && timer > 300)
-                        rockWall.position.X = MathHelper.Lerp(rockWall.position.X, player.position.X - 950, .02f);
-                    if (rockWall.position.X < camera.boundingRectangle.Left && timer > 300)
+                    if (rockWall.position.X < camera.boundingRectangle.Left - 500 && timer > 300)
                         rockWall.position.X = MathHelper.Lerp(rockWall.position.X, camera.boundingRectangle.Left, .02f);
                     
                     // Tile lava and adjust height
@@ -713,13 +711,13 @@ namespace Sinkhole_Sprinter
 
             if (players == 1)
             {
-                player = new Player(new Rectangle(50, STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - 38, 75, 75), textures, running, jumping, standing, 0);
+                player = new Player(new Rectangle(50, STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - 50, 75, 75), textures, running, jumping, standing, 0);
                 player2 = null;
             }
             else
             {
-                player = new Player(new Rectangle(30, STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - 38, 75, 75), textures, running, jumping, standing, 1);
-                player2 = new Player(new Rectangle(60, STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - 38, 75, 75), textures, running, jumping, standing, 2);
+                player = new Player(new Rectangle(30, STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - 50, 75, 75), textures, running, jumping, standing, 1);
+                player2 = new Player(new Rectangle(60, STARTING_PLATFORM_HEIGHT - Platform.HEIGHT / 2 - 50, 75, 75), textures, running, jumping, standing, 2);
             }
 
             // Create lava
