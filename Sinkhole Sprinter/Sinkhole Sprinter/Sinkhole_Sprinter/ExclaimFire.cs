@@ -13,7 +13,7 @@ namespace Sinkhole_Sprinter
 {
     class ExclaimFire : Sprite
     {
-        public bool collisionCheck;
+        public bool collisionCheck; // boolean to make sure that the players hearts dont drain to 0 on collision
         private int timer = 0;
         private Random randomGen = new Random();
         public Vector2 pastPosition;

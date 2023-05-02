@@ -57,13 +57,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Lava.png">
-      <Name>Lava</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="player_running_spritesheet_25.png">
       <Name>player_running_spritesheet_25</Name>
       <Importer>TextureImporter</Importer>
@@ -198,6 +191,23 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="orange hearts.png">
+      <Name>orange hearts</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="purple hearts.png">
+      <Name>purple hearts</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Lava.png">
+      <Name>Lava</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      </Compile>
     <Compile Include="Music.mp3">
       <Name>Music</Name>
       <Importer>Mp3Importer</Importer>
