@@ -55,7 +55,7 @@ namespace Sinkhole_Sprinter
         string endText;
 
         // Platforms
-        const int STARTING_PLATFORM_HEIGHT = 500;       // Height of first platform
+        const int STARTING_PLATFORM_HEIGHT = 450;       // Height of first platform
         const int PLATFORM_HEIGHT_VARIANCE = 100;       // Randomness to platform height
         const int PLATFORM_HEIGHT_GAIN = 10;            // Minimum average height gain
         const int PLATFORM_EXTRA_HEIGHT_GAIN = 40;      // Additional height gain, lowers with time
