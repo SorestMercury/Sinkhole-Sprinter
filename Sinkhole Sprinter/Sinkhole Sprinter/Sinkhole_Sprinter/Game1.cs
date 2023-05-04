@@ -972,7 +972,7 @@ namespace Sinkhole_Sprinter
                         camera.Draw(gameTime, spriteBatch, rockArray[a]);
                     //fire
                     //spriteBatch.Draw(placeholder, temp, Color.Red);
-                    if (timer > 100)
+                    if (timer > 600)
                     {
                         camera.Draw(gameTime, spriteBatch, fireExclaim);
                         camera.Draw(gameTime, spriteBatch, fire, fire.currentRect);
