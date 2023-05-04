@@ -207,7 +207,7 @@
       <Name>Lava</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
-      </Compile>
+    </Compile>
     <Compile Include="Music.mp3">
       <Name>Music</Name>
       <Importer>Mp3Importer</Importer>
@@ -215,6 +215,20 @@
     </Compile>
     <Compile Include="double jump copy.png">
       <Name>double jump copy</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="darkCave.png">
+      <Name>darkCave</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="lightCave.png">
+      <Name>lightCave</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

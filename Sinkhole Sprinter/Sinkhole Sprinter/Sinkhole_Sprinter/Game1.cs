@@ -33,7 +33,7 @@ namespace Sinkhole_Sprinter
 
         // General
         Camera camera;
-        Texture2D background;
+        Texture2D background, mainMenuBG, deathScreenBG;
         MouseState mouse, oldMouse;
         KeyboardState oldKb;
         enum Gamestate
@@ -260,6 +260,9 @@ namespace Sinkhole_Sprinter
             playerTwoHeartText= Content.Load<Texture2D>("orange hearts");
 
             background = Content.Load<Texture2D>("cave");
+            deathScreenBG= Content.Load<Texture2D>("darkCave");
+            mainMenuBG = Content.Load<Texture2D>("lightCave");
+
 
             // Fonts
             titleTextFont = Content.Load<SpriteFont>("SpriteFont2");
@@ -824,10 +827,7 @@ namespace Sinkhole_Sprinter
             float dDistance = distanceModifier * (player.GetMaxJumpDistance(dHeight) + width);
             position.X = Math.Max(LastPlatform.position.X + dDistance, LastPlatform.position.X + width * 2);
 
-            // Platform modifiers
-            bool isBreaking = r.NextDouble() < PLATFORM_BREAKING_CHANCE;
-
-            createPlatform(position, width, isBreaking);
+            createPlatform(position, width, true);
             if (r.Next(100) < 5)
             {
                 Rectangle rect = new Rectangle(
@@ -841,10 +841,10 @@ namespace Sinkhole_Sprinter
 
             //random chance to spawn bonus platforms relative to main ones
             if(r.Next(100)<30)
-                createExtraPlatform(new Vector2(position.X + r.Next(-175, 175), position.Y + r.Next(75, 400)), width, isBreaking);
+                createExtraPlatform(new Vector2(position.X + r.Next(-175, 175), position.Y + r.Next(75, 400)), width, false);
 
             if (r.Next(100) < 60)
-                createExtraPlatform(new Vector2(position.X + r.Next(-175, 175), position.Y + r.Next(-400, -75)), width, isBreaking);
+                createExtraPlatform(new Vector2(position.X + r.Next(-175, 175), position.Y + r.Next(-400, -75)), width, false);
                 
                 
 
@@ -939,6 +939,7 @@ namespace Sinkhole_Sprinter
             switch (currentState)
             {
                 case Gamestate.title:
+                    spriteBatch.Draw(mainMenuBG, new Rectangle(0, -200, 1280, 1100), new Rectangle(0, 0, 785, 442), Color.White);
                     spriteBatch.DrawString(titleTextFont, "SINKHOLE SPRINTER", new Vector2(centerText(titleTextFont, "SINKHOLE SPRINTER"), 50), Color.Black);
                     spriteBatch.DrawString(titleFont, "single player", new Vector2(centerText(titleFont, "single player"), 200), titleScreenColors[0]);
                     spriteBatch.DrawString(titleFont, "multiplayer", new Vector2(centerText(titleFont, "multiplayer"), 300), titleScreenColors[1]);
@@ -1034,6 +1035,7 @@ namespace Sinkhole_Sprinter
                     break;
 
                 case Gamestate.gameover:
+                    spriteBatch.Draw(deathScreenBG, new Rectangle(0, -200, 1280, 1100), new Rectangle(0, 0, 785, 442), Color.White);
                     spriteBatch.DrawString(titleTextFont, endText, new Vector2(centerText(titleTextFont, endText), 50), Color.DarkRed);
                     spriteBatch.DrawString(titleFont, "play again", new Vector2(GraphicsDevice.Viewport.Width / 4 - (titleFont.MeasureString("play again").Length() / 2), 350), deathScreenColors[0]); //1280
                     spriteBatch.DrawString(titleFont, "main menu", new Vector2(GraphicsDevice.Viewport.Width / 2 + GraphicsDevice.Viewport.Width / 4 - (titleFont.MeasureString("main menu").Length() / 2), 350), deathScreenColors[1]);
