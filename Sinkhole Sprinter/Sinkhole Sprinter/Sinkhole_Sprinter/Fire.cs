@@ -13,8 +13,9 @@ namespace Sinkhole_Sprinter
 {
     class Fire : Sprite
     {
+        public bool collisionCheck; // boolean to make sure that the players hearts dont drain to 0 on collision
         private List<Rectangle> fireAnim;
-        private int timer = 0, current = 0;
+        private int timer, current, animTimer;
         public Rectangle currentRect;
         public Fire(Rectangle rect, Texture2D texture) : base(rect, texture)
         {
@@ -27,18 +28,34 @@ namespace Sinkhole_Sprinter
             fireAnim.Add(new Rectangle(485, 25, 80, 216));
             fireAnim.Add(new Rectangle(580, 25, 80, 216));
             currentRect = fireAnim[0];
+            collisionCheck = false;
+            current = 0;
+            animTimer = 0;
         }
         public void Update(Vector2 p)
         {
-            if (timer % 10 == 0)
+            if (animTimer % 10 == 0)
             {
                 current++;
                 if (current == 7)
                     current = 0;
                 currentRect = fireAnim[current];
             }
-            timer++;
+            if (collisionCheck)
+            {
+                timer++;
+            }
+            if (timer % 120 == 0)
+            {
+                collisionCheck = false;
+            }
+            animTimer++;
             position = p;
+        }
+        public void OnCollide()
+        {
+            collisionCheck = true;
+            timer = 1;
         }
     }
 }

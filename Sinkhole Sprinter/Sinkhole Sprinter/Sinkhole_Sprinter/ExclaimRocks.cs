@@ -23,7 +23,7 @@ namespace Sinkhole_Sprinter
         public void Update(float flo, int left, int right)
         {
             timer++;
-            if (timer % 200 == 0)
+            if (timer % 180 == 0)
             {
                 pastPosition = position;
                 position.X = randomGen.Next(left, right + 640);

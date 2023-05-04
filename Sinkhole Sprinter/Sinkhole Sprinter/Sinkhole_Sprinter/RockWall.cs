@@ -12,7 +12,7 @@ namespace Sinkhole_Sprinter
 {
     class RockWall : Sprite
     {
-        const float MAX_SPEED = 6;
+        public const float MAX_SPEED = 7;
         private float speed;
         private int timer;
         public bool collisionCheck;
@@ -23,7 +23,7 @@ namespace Sinkhole_Sprinter
         public void Update()
         {
             if (speed < MAX_SPEED)
-                speed += (MAX_SPEED - speed) / 10000;
+                speed += (MAX_SPEED - speed) / 3000;
             position.X += speed;
             if (collisionCheck)
             {

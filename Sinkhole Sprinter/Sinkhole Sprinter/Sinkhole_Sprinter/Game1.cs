@@ -501,11 +501,11 @@ namespace Sinkhole_Sprinter
 
                     //ensures lava maintains minimum distance from player
                     if (lavaHeight > camera.boundingRectangle.Bottom + 50 && timer > 300)
-                        lavaHeight = Math.Max(MathHelper.Lerp(lavaHeight, camera.boundingRectangle.Bottom + 50, 0.02f), lavaHeight - LAVA_RISE_SPEED * 4); // Capped at additional 4x lava speed
+                        lavaHeight = Math.Max(MathHelper.Lerp(lavaHeight, camera.boundingRectangle.Bottom + 50, .02f), lavaHeight - LAVA_RISE_SPEED * 3); // Capped at additional 4x lava speed
 
                     //ensures rockwall maintains minimum distance from player
                     if (rockWall.Right < camera.boundingRectangle.Left - 300 && timer > 300)
-                        rockWall.position.X = MathHelper.Lerp(rockWall.Right, camera.boundingRectangle.Left - 300, .02f) - rockWall.rect.Width / 2;
+                        rockWall.position.X = Math.Max(MathHelper.Lerp(rockWall.Right, camera.boundingRectangle.Left - 300, .02f), rockWall.Right + RockWall.MAX_SPEED * 2) - rockWall.rect.Width / 2;
 
                     // Tile lava and adjust height
                     tileLava();
@@ -576,10 +576,10 @@ namespace Sinkhole_Sprinter
                     // Takes a heart away from the player if they touch a fire hazard
                     if (player.rect.Intersects(temp))
                     {
-                        if (!fireExclaim.collisionCheck)
+                        if (!fire.collisionCheck)
                         {
                             player.TakeDamage();
-                            fireExclaim.OnCollide();
+                            fire.OnCollide();
                         }
                     }
 
@@ -597,10 +597,10 @@ namespace Sinkhole_Sprinter
                     }
                     if (players == 2 && player2.rect.Intersects(fire.rect)) // Takes a heart away from the player if they touch a fire hazard
                     {
-                        if (!fireExclaim.collisionCheck)
+                        if (!fire.collisionCheck)
                         {
                             player2.TakeDamage();
-                            fireExclaim.OnCollide();
+                            fire.OnCollide();
                         }
                     }
 
@@ -799,6 +799,7 @@ namespace Sinkhole_Sprinter
                 highScores.RemoveAt(10);
             SaveScores();
 
+            MediaPlayer.Stop();
             // Clear platforms
             platforms.Clear();
             extraPlatforms.Clear();
